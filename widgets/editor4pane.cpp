@@ -3,6 +3,12 @@
 #include <QSplitter>
 #include <QPushButton>
 #include <QVBoxLayout>
+#include <QGLWidget>
+
+// OpenGL
+#include <QGLFormat>
+#include <QGLWidget>
+
 
 Editor4Pane::Editor4Pane(QWidget *parent) : QDockWidget(parent)
 {
@@ -28,11 +34,18 @@ Editor4Pane::Editor4Pane(QWidget *parent) : QDockWidget(parent)
 
 	// TODO: Synchronize the splitter sizes
 
-	// Put buttons in them for testing
-	QPushButton *button = new QPushButton(tr("Top Left"), leftUpDownSplitter);
-	QPushButton *button3 = new QPushButton(tr("Bottom Left"), leftUpDownSplitter);
-	QPushButton *button2 = new QPushButton(tr("Top Right"), rightUpDownSplitter);
-	QPushButton *button4 = new QPushButton(tr("Bottom Right"), rightUpDownSplitter);
+    // Top-left is a OpenGL widget
+    QGLWidget *glWidget = new QGLWidget(leftUpDownSplitter);
+
+    // some quick test rendering
+    glWidget->makeCurrent();
+    // clear the screen
+    glClearColor(0.0f, 0.5f, 0.5f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+    // swap buffers
+    glWidget->swapBuffers();
+    glWidget->doneCurrent();
+    
 
     // Disable all features
     // UITODO: At some point, this will be floatable, closable, etc.

@@ -17,8 +17,12 @@ set(SRC
     widgets/editor4pane.hpp
 )
 
-find_package(Qt5 REQUIRED COMPONENTS Widgets Core Gui)
+# Core, Widgets, Gui, and openGL
+find_package(Qt5 REQUIRED COMPONENTS Widgets Core Gui OpenGL)
+
+# OpenGL itself
+find_package(OpenGL REQUIRED)
 
 add_executable(${PROJECT_NAME} ${SRC})
-target_link_libraries(${PROJECT_NAME} Qt5::Widgets Qt5::Core Qt5::Gui)
-target_include_directories(${PROJECT_NAME} PRIVATE ${QT_INCLUDE}/QtWidgets ${QT_INCLUDE}/QtCore ${QT_INCLUDE}/QtGui)
+target_link_libraries(${PROJECT_NAME} Qt5::Widgets Qt5::Core Qt5::Gui Qt5::OpenGL OpenGL::GL)
+target_include_directories(${PROJECT_NAME} PRIVATE ${QT_INCLUDE}/QtWidgets ${QT_INCLUDE}/QtCore ${QT_INCLUDE}/QtGui ${QT_INCLUDE}/QtOpenGL)
