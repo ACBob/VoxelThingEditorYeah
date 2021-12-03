@@ -1,0 +1,7 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+    <qresource>
+        <!-- Icons -->
+        <file>img/tool.png</file>
+    </qresource>
+</RCC>

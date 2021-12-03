@@ -30,6 +30,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 		QAction *action = new QAction(this);
 		action->setCheckable(true);
 		action->setText(tr("Tool %1").arg(i));
+		action->setIcon(QIcon(":/img/tool.png"));
 		toolGroup->addAction(action);
 		toolsBar->addAction(action);
 	}

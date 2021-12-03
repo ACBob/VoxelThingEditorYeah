@@ -8,6 +8,11 @@
 // OpenGL
 #include <QGLFormat>
 #include <QGLWidget>
+#include <QGLFunctions>
+
+#include "renderwidget.hpp"
+
+#include <math.h>
 
 
 Editor4Pane::Editor4Pane(QWidget *parent) : QDockWidget(parent)
@@ -22,30 +27,22 @@ Editor4Pane::Editor4Pane(QWidget *parent) : QDockWidget(parent)
 
 	// Split the central widget into left/right
 	QSplitter *leftRightSplitter = new QSplitter(Qt::Horizontal, centralWidget);
-	leftRightSplitter->setChildrenCollapsible(false);
     layout->addWidget(leftRightSplitter);
 
 	// Split the left/right into top/bottom
 	QSplitter *leftUpDownSplitter = new QSplitter(Qt::Vertical, leftRightSplitter);
-	leftUpDownSplitter->setChildrenCollapsible(false);
 	
 	QSplitter *rightUpDownSplitter = new QSplitter(Qt::Vertical, leftRightSplitter);
-	rightUpDownSplitter->setChildrenCollapsible(false);
 
 	// TODO: Synchronize the splitter sizes
 
-    // Top-left is a OpenGL widget
-    QGLWidget *glWidget = new QGLWidget(leftUpDownSplitter);
+    // Top-left is the viewport
+    RenderWidget *viewPort = new RenderWidget(leftUpDownSplitter);
 
-    // some quick test rendering
-    glWidget->makeCurrent();
-    // clear the screen
-    glClearColor(0.0f, 0.5f, 0.5f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-    // swap buffers
-    glWidget->swapBuffers();
-    glWidget->doneCurrent();
-    
+    // The rest are also renderwidgets, but they are for the grid
+    RenderWidget *gridXY = new RenderWidget(leftUpDownSplitter);
+    RenderWidget *gridXZ = new RenderWidget(rightUpDownSplitter);
+    RenderWidget *gridYZ = new RenderWidget(rightUpDownSplitter);
 
     // Disable all features
     // UITODO: At some point, this will be floatable, closable, etc.
