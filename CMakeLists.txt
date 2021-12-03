@@ -13,6 +13,8 @@ set(SRC
 
     widgets/mainwindow.cpp
     widgets/mainwindow.hpp
+    widgets/editor4pane.cpp
+    widgets/editor4pane.hpp
 )
 
 find_package(Qt5 REQUIRED COMPONENTS Widgets Core Gui)

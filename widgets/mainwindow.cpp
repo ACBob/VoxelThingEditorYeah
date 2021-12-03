@@ -1,12 +1,13 @@
 #include "mainwindow.hpp"
 
 #include <QToolBar>
-#include <QSplitter>
 #include <QMenu>
 #include <QMenuBar>
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QDockWidget>
+
+#include "editor4pane.hpp"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
@@ -33,14 +34,6 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 		toolsBar->addAction(action);
 	}
 
-	// Create the central widget that expands to fill the window
-	QWidget *centralWidget = new QWidget(this);
-	this->setCentralWidget(centralWidget);
-	
-	// Layout the central widget
-	QVBoxLayout *layout = new QVBoxLayout(centralWidget);
-	centralWidget->setLayout(layout);
-
 	// Menubar
 	QMenuBar *menuBar = new QMenuBar(this);
 	this->setMenuBar(menuBar);
@@ -60,24 +53,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 	// Help menu
 	QMenu *helpMenu = menuBar->addMenu(tr("&Help"));
 
-
-	// Split the central widget into left/right
-	QSplitter *leftRightSplitter = new QSplitter(Qt::Horizontal, centralWidget);
-	leftRightSplitter->setChildrenCollapsible(false);
-	layout->addWidget(leftRightSplitter);
-
-	// Split the left/right into top/bottom
-	QSplitter *leftUpDownSplitter = new QSplitter(Qt::Vertical, leftRightSplitter);
-	leftUpDownSplitter->setChildrenCollapsible(false);
-	
-	QSplitter *rightUpDownSplitter = new QSplitter(Qt::Vertical, leftRightSplitter);
-	rightUpDownSplitter->setChildrenCollapsible(false);
-
-	// TODO: Synchronize the splitter sizes
-
-	// Put buttons in them for testing
-	QPushButton *button = new QPushButton(tr("Top Left"), leftUpDownSplitter);
-	QPushButton *button3 = new QPushButton(tr("Bottom Left"), leftUpDownSplitter);
-	QPushButton *button2 = new QPushButton(tr("Top Right"), rightUpDownSplitter);
-	QPushButton *button4 = new QPushButton(tr("Bottom Right"), rightUpDownSplitter);
+	// Editor 4-pane
+	Editor4Pane *editor = new Editor4Pane(this);
+	this->setCentralWidget(editor);
 }
