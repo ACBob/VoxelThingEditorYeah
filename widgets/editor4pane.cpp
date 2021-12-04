@@ -11,6 +11,7 @@
 #include <QGLFunctions>
 
 #include "renderwidget.hpp"
+#include "gridwidget.hpp"
 
 #include <math.h>
 
@@ -39,10 +40,10 @@ Editor4Pane::Editor4Pane(QWidget *parent) : QDockWidget(parent)
     // Top-left is the viewport
     RenderWidget *viewPort = new RenderWidget(leftUpDownSplitter);
 
-    // The rest are also renderwidgets, but they are for the grid
-    RenderWidget *gridXY = new RenderWidget(leftUpDownSplitter);
-    RenderWidget *gridXZ = new RenderWidget(rightUpDownSplitter);
-    RenderWidget *gridYZ = new RenderWidget(rightUpDownSplitter);
+    // Then we have grid views
+    GridWidget *gridXY = new GridWidget(leftUpDownSplitter);
+    GridWidget *gridXZ = new GridWidget(rightUpDownSplitter);
+    GridWidget *gridYZ = new GridWidget(rightUpDownSplitter);
 
     // Disable all features
     // UITODO: At some point, this will be floatable, closable, etc.

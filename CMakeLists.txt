@@ -17,6 +17,8 @@ set(SRC
     widgets/editor4pane.hpp
     widgets/renderwidget.cpp
     widgets/renderwidget.hpp
+    widgets/gridwidget.cpp
+    widgets/gridwidget.hpp
 )
 
 set(RESOURCES resources/resources.qrc)
