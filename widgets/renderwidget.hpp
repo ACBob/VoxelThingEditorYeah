@@ -3,6 +3,7 @@
 
 #include <QGLWidget>
 #include <QVector3D>
+#include <QOpenGLTexture>
 
 class CChunk; // forward declaration
 
@@ -35,4 +36,6 @@ class RenderWidget : public QGLWidget
         QPoint m_lastMousePos;
 
         bool m_captureMouse;
+
+        QOpenGLTexture *m_texture;
 };

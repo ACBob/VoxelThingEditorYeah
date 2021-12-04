@@ -22,6 +22,12 @@ void RenderWidget::initializeGL()
 {
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_TEXTURE_2D);
+    
+    m_texture = new QOpenGLTexture(QImage(":/img/devoxel.png"));
+    m_texture->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
+    m_texture->setMagnificationFilter(QOpenGLTexture::Linear);
+    m_texture->setWrapMode(QOpenGLTexture::Repeat);
 }
 
 void RenderWidget::resizeGL(int w, int h)
@@ -58,6 +64,8 @@ void RenderWidget::paintGL()
     QVector3D target = m_camera + m_camera_forward;
     gluLookAt(m_camera.x(), m_camera.y(), m_camera.z(), target.x(), target.y(), target.z(), 0.0f, 1.0f, 0.0f);
 
+    m_texture->bind();
+
     for (int x = 0; x < m_chunk->getSizeX(); x++)
     {
         for (int y = 0; y < m_chunk->getSizeX(); y++)
@@ -68,15 +76,22 @@ void RenderWidget::paintGL()
                 {
                     glBegin(GL_QUADS);
                     glColor3f(1.0f, 1.0f, 1.0f);
+
+                    glTexCoord2f(0.0f, 0.0f);
                     glVertex3f(x, y, z);
+                    glTexCoord2f(1.0f, 0.0f);
                     glVertex3f(x + 1, y, z);
+                    glTexCoord2f(1.0f, 1.0f);
                     glVertex3f(x + 1, y + 1, z);
+                    glTexCoord2f(0.0f, 1.0f);
                     glVertex3f(x, y + 1, z);
                     glEnd();
                 }
             }
         }
     }
+
+    m_texture->release();
 }
 
 void RenderWidget::setChunk(CChunk *chunk)

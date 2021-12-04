@@ -3,5 +3,7 @@
     <qresource>
         <!-- Icons -->
         <file>img/tool.png</file>
+        <!-- Textures -->
+        <file>img/devoxel.png</file>
     </qresource>
 </RCC>
