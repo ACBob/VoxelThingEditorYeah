@@ -20,10 +20,17 @@ class RenderWidget : public QGLWidget
         void setChunk(CChunk *chunk);
 
         void keyPressEvent(QKeyEvent *event);
+        void mouseMoveEvent(QMouseEvent *event);
 
     private:
         CChunk *m_chunk;
 
         QVector3D m_camera;
-        QVector3D m_camera_target;
+        QVector3D m_camera_forward;
+        QVector3D m_camera_right;
+
+        float m_camera_pitch;
+        float m_camera_yaw;
+
+        QPoint m_lastMousePos;
 };

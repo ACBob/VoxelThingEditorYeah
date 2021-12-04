@@ -6,6 +6,9 @@
 
 #include <QVector3D>
 #include <QKeyEvent>
+#include <QMatrix4x4>
+
+#include <math.h>
 
 RenderWidget::RenderWidget(QWidget *parent) : QGLWidget(parent)
 {
@@ -52,7 +55,8 @@ void RenderWidget::paintGL()
     gluPerspective(70.0f, 800.0f / 600.0f, 0.1f, 100.0f);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    gluLookAt(m_camera.x(), m_camera.y(), m_camera.z(), m_camera_target.x(), m_camera_target.y(), m_camera_target.z(), 0.0f, 1.0f, 0.0f);
+    QVector3D target = m_camera + m_camera_forward;
+    gluLookAt(m_camera.x(), m_camera.y(), m_camera.z(), target.x(), target.y(), target.z(), 0.0f, 1.0f, 0.0f);
 
     for (int x = 0; x < m_chunk->getSizeX(); x++)
     {
@@ -86,18 +90,41 @@ void RenderWidget::keyPressEvent(QKeyEvent *event)
     switch (event->key())
     {
     case Qt::Key_W:
-        m_camera += QVector3D(0.0f, 0.0f, -0.1f);
+        m_camera += m_camera_forward;
         break;
     case Qt::Key_S:
-        m_camera += QVector3D(0.0f, 0.0f, 0.1f);
+        m_camera -= m_camera_forward;
         break;
     case Qt::Key_A:
-        m_camera += QVector3D(-0.1f, 0.0f, 0.0f);
+        m_camera -= m_camera_right;
         break;
     case Qt::Key_D:
-        m_camera += QVector3D(0.1f, 0.0f, 0.0f);
+        m_camera += m_camera_right;
         break;
     }
 
     update();
+}
+
+void RenderWidget::mouseMoveEvent(QMouseEvent *event)
+{
+    if (event->buttons() & Qt::LeftButton)
+    {
+        // camera_forward is -1.0f on Z, rotated by the pitch and yaw
+        m_camera_yaw += (event->x() - m_lastMousePos.x()) * 0.1f;
+        m_camera_pitch += (event->y() - m_lastMousePos.y()) * 0.1f;
+        m_camera_pitch = qBound(-89.0f, m_camera_pitch, 89.0f);
+
+        m_camera_forward = QVector3D(0.0f, 0.0f, -1.0f);
+        QMatrix4x4 rotation;
+        rotation.rotate(m_camera_yaw, 0.0f, 1.0f, 0.0f);
+        rotation.rotate(m_camera_pitch, 1.0f, 0.0f, 0.0f);
+        m_camera_forward = rotation * m_camera_forward;
+
+        m_camera_right = QVector3D::crossProduct(m_camera_forward, QVector3D(0.0f, 1.0f, 0.0f));
+
+        update();
+    }
+    
+    m_lastMousePos = event->pos();
 }
