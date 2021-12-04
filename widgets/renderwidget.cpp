@@ -47,14 +47,31 @@ void RenderWidget::paintGL()
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // glBegin(GL_TRIANGLES);
-    // glColor3f(1.0f, 0.0f, 0.0f);
-    // glVertex3f(-0.5f, -0.5f, 0.0f);
-    // glColor3f(0.0f, 1.0f, 0.0f);
-    // glVertex3f(0.5f, -0.5f, 0.0f);
-    // glColor3f(0.0f, 0.0f, 1.0f);
-    // glVertex3f(0.0f, 0.5f, 0.0f);
-    // glEnd();
+    // Up in the corner display the mode
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0.0, width(), 0.0, height(), -1.0, 1.0);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+    QString mode;
+    switch (m_displayMode)
+    {
+        case DISP_3D:
+            mode = "Normal";
+            break;
+        case DISP_GRID_XY:
+            mode = "XY";
+            break;
+        case DISP_GRID_XZ:
+            mode = "XZ";
+            break;
+        case DISP_GRID_YZ:
+            mode = "YZ";
+            break;
+    }
+    renderText(10, 10, mode);
+
 
     if (m_chunk == nullptr)
         return;
@@ -62,43 +79,103 @@ void RenderWidget::paintGL()
     // glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
     // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // first-person camera
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    gluPerspective(70.0f, (float)width() / (float)height(), 0.1f, 100.0f);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    QVector3D target = m_camera + m_camera_forward;
-    gluLookAt(m_camera.x(), m_camera.y(), m_camera.z(), target.x(), target.y(), target.z(), 0.0f, 1.0f, 0.0f);
-
-    m_texture->bind();
-
-    for (int x = 0; x < m_chunk->getSizeX(); x++)
+    if (m_displayMode == DISP_3D)
     {
-        for (int y = 0; y < m_chunk->getSizeX(); y++)
-        {
-            for (int z = 0; z < m_chunk->getSizeX(); z++)
-            {
-                if (m_chunk->getID(x, y, z) != 0)
-                {
-                    glBegin(GL_QUADS);
-                    glColor3f(1.0f, 1.0f, 1.0f);
+        // first-person camera
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        gluPerspective(70.0f, (float)width() / (float)height(), 0.1f, 100.0f);
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+        QVector3D target = m_camera + m_camera_forward;
+        gluLookAt(m_camera.x(), m_camera.y(), m_camera.z(), target.x(), target.y(), target.z(), 0.0f, 1.0f, 0.0f);
 
-                    glTexCoord2f(0.0f, 0.0f);
-                    glVertex3f(x, y, z);
-                    glTexCoord2f(1.0f, 0.0f);
-                    glVertex3f(x + 1, y, z);
-                    glTexCoord2f(1.0f, 1.0f);
-                    glVertex3f(x + 1, y + 1, z);
-                    glTexCoord2f(0.0f, 1.0f);
-                    glVertex3f(x, y + 1, z);
-                    glEnd();
+        m_texture->bind();
+
+        for (int x = 0; x < m_chunk->getSizeX(); x++)
+        {
+            for (int y = 0; y < m_chunk->getSizeX(); y++)
+            {
+                for (int z = 0; z < m_chunk->getSizeX(); z++)
+                {
+                    if (m_chunk->getID(x, y, z) != 0)
+                    {
+                        glBegin(GL_QUADS);
+                        glColor3f(1.0f, 1.0f, 1.0f);
+
+                        glTexCoord2f(0.0f, 0.0f);
+                        glVertex3f(x, y, z);
+                        glTexCoord2f(1.0f, 0.0f);
+                        glVertex3f(x + 1, y, z);
+                        glTexCoord2f(1.0f, 1.0f);
+                        glVertex3f(x + 1, y + 1, z);
+                        glTexCoord2f(0.0f, 1.0f);
+                        glVertex3f(x, y + 1, z);
+                        glEnd();
+                    }
+                }
+            }
+        }
+
+        m_texture->release();
+    }
+    else if (m_displayMode >= DISP_GRID_XY && m_displayMode <= DISP_GRID_YZ)
+    {
+        // orthographic camera
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        glOrtho(0.0f, m_chunk->getSizeX(), 0.0f, m_chunk->getSizeY(), 0.0f, m_chunk->getSizeZ());
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+
+        // Draw the grid
+        glBegin(GL_LINES);
+        glColor3f(0.25f, 0.25f, 0.25f);
+        for (int x = 0; x <= m_chunk->getSizeX(); x++)
+        {
+            glVertex3f(x, 0.0f, 0.0f);
+            glVertex3f(x, m_chunk->getSizeY(), 0.0f);
+        }
+        for (int y = 0; y <= m_chunk->getSizeY(); y++)
+        {
+            glVertex3f(0.0f, y, 0.0f);
+            glVertex3f(m_chunk->getSizeX(), y, 0.0f);
+        }
+        for (int z = 0; z <= m_chunk->getSizeZ(); z++)
+        {
+            glVertex3f(0.0f, 0.0f, z);
+            glVertex3f(m_chunk->getSizeX(), 0.0f, z);
+        }
+        glEnd();
+
+
+        m_texture->bind();
+
+        for (int x = 0; x < m_chunk->getSizeX(); x++)
+        {
+            for (int y = 0; y < m_chunk->getSizeX(); y++)
+            {
+                for (int z = 0; z < m_chunk->getSizeX(); z++)
+                {
+                    if (m_chunk->getID(x, y, z) != 0)
+                    {
+                        glBegin(GL_QUADS);
+                        glColor3f(1.0f, 1.0f, 1.0f);
+
+                        glTexCoord2f(0.0f, 0.0f);
+                        glVertex3f(x, y, z);
+                        glTexCoord2f(1.0f, 0.0f);
+                        glVertex3f(x + 1, y, z);
+                        glTexCoord2f(1.0f, 1.0f);
+                        glVertex3f(x + 1, y + 1, z);
+                        glTexCoord2f(0.0f, 1.0f);
+                        glVertex3f(x, y + 1, z);
+                        glEnd();
+                    }
                 }
             }
         }
     }
-
-    m_texture->release();
 }
 
 void RenderWidget::setChunk(CChunk *chunk)
@@ -130,7 +207,7 @@ void RenderWidget::keyPressEvent(QKeyEvent *event)
         m_camera += QVector3D(0.0f, 1.0f, 0.0f);
         break;
     case Qt::Key_Z:
-        m_captureMouse = !m_captureMouse;
+        m_captureMouse = !m_captureMouse && m_displayMode == DISP_3D;
         if (m_captureMouse)
             setCursor(Qt::BlankCursor);
         else
@@ -143,7 +220,7 @@ void RenderWidget::keyPressEvent(QKeyEvent *event)
 
 void RenderWidget::mouseMoveEvent(QMouseEvent *event)
 {
-    if (event->buttons() & Qt::LeftButton || m_captureMouse)
+    if (event->buttons() & Qt::RightButton || m_captureMouse)
     {
         // camera_forward is -1.0f on Z, rotated by the pitch and yaw
         m_camera_yaw += (event->x() - m_lastMousePos.x()) * 0.1f;
@@ -169,4 +246,10 @@ void RenderWidget::mouseMoveEvent(QMouseEvent *event)
         QCursor::setPos(mapToGlobal(QPoint(width() / 2, height() / 2)));
         m_lastMousePos = QPoint(width() / 2, height() / 2);
     }
+}
+
+void RenderWidget::setDispMode(DispMode mode)
+{
+    m_displayMode = mode;
+    update();
 }

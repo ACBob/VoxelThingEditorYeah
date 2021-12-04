@@ -21,7 +21,7 @@ class Editor4Pane : public QDockWidget
         CChunk *chunk;
 
         RenderWidget *m_viewport;
-        GridWidget *m_gridXY;
-        GridWidget *m_gridXZ;
-        GridWidget *m_gridYZ;
+        RenderWidget *m_gridXY;
+        RenderWidget *m_gridXZ;
+        RenderWidget *m_gridYZ;
 };

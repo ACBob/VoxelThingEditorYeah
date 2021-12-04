@@ -11,7 +11,6 @@
 #include <QGLFunctions>
 
 #include "renderwidget.hpp"
-#include "gridwidget.hpp"
 
 #include "../world/chunk.hpp"
 
@@ -43,9 +42,12 @@ Editor4Pane::Editor4Pane(QWidget *parent) : QDockWidget(parent)
     m_viewport = new RenderWidget(leftUpDownSplitter);
 
     // Then we have grid views
-    m_gridXY = new GridWidget(leftUpDownSplitter);
-    m_gridXZ = new GridWidget(rightUpDownSplitter);
-    m_gridYZ = new GridWidget(rightUpDownSplitter);
+    m_gridXY = new RenderWidget(leftUpDownSplitter);
+    m_gridXY->setDispMode(RenderWidget::DISP_GRID_XY);
+    m_gridXZ = new RenderWidget(rightUpDownSplitter);
+    m_gridXZ->setDispMode(RenderWidget::DISP_GRID_XZ);
+    m_gridYZ = new RenderWidget(rightUpDownSplitter);
+    m_gridYZ->setDispMode(RenderWidget::DISP_GRID_YZ);
 
     // Disable all features
     // UITODO: At some point, this will be floatable, closable, etc.
@@ -55,7 +57,7 @@ Editor4Pane::Editor4Pane(QWidget *parent) : QDockWidget(parent)
 void Editor4Pane::setChunk(CChunk *chunk)
 {
     m_viewport->setChunk(chunk);
-    // m_gridXY->setChunk(chunk);
-    // m_gridXZ->setChunk(chunk);
-    // m_gridYZ->setChunk(chunk);
+    m_gridXY->setChunk(chunk);
+    m_gridXZ->setChunk(chunk);
+    m_gridYZ->setChunk(chunk);
 }

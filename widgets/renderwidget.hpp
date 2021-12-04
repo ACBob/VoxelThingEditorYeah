@@ -23,6 +23,16 @@ class RenderWidget : public QGLWidget
         void keyPressEvent(QKeyEvent *event);
         void mouseMoveEvent(QMouseEvent *event);
 
+
+        enum DispMode {
+            DISP_3D, // Displays in 3D
+            DISP_GRID_XY, // Draws a grid in the XY plane
+            DISP_GRID_XZ, // Draws a grid in the XZ plane
+            DISP_GRID_YZ, // Draws a grid in the YZ plane
+        };
+
+        void setDispMode(DispMode mode);
+
     private:
         CChunk *m_chunk;
 
@@ -36,6 +46,8 @@ class RenderWidget : public QGLWidget
         QPoint m_lastMousePos;
 
         bool m_captureMouse;
+
+        DispMode m_displayMode;
 
         QOpenGLTexture *m_texture;
 };
