@@ -33,4 +33,6 @@ class RenderWidget : public QGLWidget
         float m_camera_yaw;
 
         QPoint m_lastMousePos;
+
+        bool m_captureMouse;
 };

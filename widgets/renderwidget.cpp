@@ -101,6 +101,19 @@ void RenderWidget::keyPressEvent(QKeyEvent *event)
     case Qt::Key_D:
         m_camera += m_camera_right;
         break;
+    case Qt::Key_Q:
+        m_camera -= QVector3D(0.0f, 1.0f, 0.0f);
+        break;
+    case Qt::Key_E:
+        m_camera += QVector3D(0.0f, 1.0f, 0.0f);
+        break;
+    case Qt::Key_Z:
+        m_captureMouse = !m_captureMouse;
+        if (m_captureMouse)
+            setCursor(Qt::BlankCursor);
+        else
+            unsetCursor();
+        break;
     }
 
     update();
@@ -108,16 +121,16 @@ void RenderWidget::keyPressEvent(QKeyEvent *event)
 
 void RenderWidget::mouseMoveEvent(QMouseEvent *event)
 {
-    if (event->buttons() & Qt::LeftButton)
+    if (event->buttons() & Qt::LeftButton || m_captureMouse)
     {
         // camera_forward is -1.0f on Z, rotated by the pitch and yaw
         m_camera_yaw += (event->x() - m_lastMousePos.x()) * 0.1f;
         m_camera_pitch += (event->y() - m_lastMousePos.y()) * 0.1f;
         m_camera_pitch = qBound(-89.0f, m_camera_pitch, 89.0f);
 
-        m_camera_forward = QVector3D(0.0f, 0.0f, -1.0f);
+        m_camera_forward = QVector3D(0.0f, 0.0f, 1.0f);
         QMatrix4x4 rotation;
-        rotation.rotate(m_camera_yaw, 0.0f, 1.0f, 0.0f);
+        rotation.rotate(-m_camera_yaw, 0.0f, 1.0f, 0.0f);
         rotation.rotate(m_camera_pitch, 1.0f, 0.0f, 0.0f);
         m_camera_forward = rotation * m_camera_forward;
 
@@ -127,4 +140,11 @@ void RenderWidget::mouseMoveEvent(QMouseEvent *event)
     }
     
     m_lastMousePos = event->pos();
+
+    // If mouse is captured, we want to reset the cursor position
+    if (m_captureMouse)
+    {
+        QCursor::setPos(mapToGlobal(QPoint(width() / 2, height() / 2)));
+        m_lastMousePos = QPoint(width() / 2, height() / 2);
+    }
 }
