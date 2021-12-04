@@ -16,6 +16,13 @@ RenderWidget::RenderWidget(QWidget *parent) : QGLWidget(parent)
     setMouseTracking(true);
 
     m_chunk = nullptr;
+    m_camera_pitch = 0.0f;
+    m_camera_yaw = 0.0f;
+    m_camera_forward = QVector3D(0.0f, 0.0f, -1.0f);
+    m_camera_right = QVector3D(1.0f, 0.0f, 0.0f);
+    m_camera = QVector3D(0.0f, 0.0f, 0.0f);
+
+    m_captureMouse = false;
 }
 
 void RenderWidget::initializeGL()
@@ -24,7 +31,7 @@ void RenderWidget::initializeGL()
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_TEXTURE_2D);
     
-    m_texture = new QOpenGLTexture(QImage(":/img/devoxel.png"));
+    m_texture = new QOpenGLTexture(QImage(":/img/devoxel.png").mirrored());
     m_texture->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
     m_texture->setMagnificationFilter(QOpenGLTexture::Linear);
     m_texture->setWrapMode(QOpenGLTexture::Repeat);
@@ -52,8 +59,8 @@ void RenderWidget::paintGL()
     if (m_chunk == nullptr)
         return;
     
-    glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    // glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
+    // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // first-person camera
     glMatrixMode(GL_PROJECTION);
