@@ -52,7 +52,7 @@ void RenderWidget::paintGL()
     // first-person camera
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(70.0f, 800.0f / 600.0f, 0.1f, 100.0f);
+    gluPerspective(70.0f, (float)width() / (float)height(), 0.1f, 100.0f);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     QVector3D target = m_camera + m_camera_forward;
