@@ -3,6 +3,7 @@
 #include <GL/glu.h>
 
 #include "../world/chunk.hpp"
+#include "../world/raycast.hpp"
 
 #include <QVector3D>
 #include <QKeyEvent>
@@ -23,6 +24,8 @@ RenderWidget::RenderWidget(QWidget *parent) : QGLWidget(parent)
     m_camera = QVector3D(0.0f, 0.0f, 0.0f);
 
     m_captureMouse = false;
+
+    m_raycast = new CRaycast(this);
 }
 
 void RenderWidget::initializeGL()
@@ -220,7 +223,7 @@ void RenderWidget::keyPressEvent(QKeyEvent *event)
 
 void RenderWidget::mouseMoveEvent(QMouseEvent *event)
 {
-    if (event->buttons() & Qt::RightButton || m_captureMouse)
+    if (event->buttons() & Qt::MidButton || m_captureMouse)
     {
         // camera_forward is -1.0f on Z, rotated by the pitch and yaw
         m_camera_yaw += (event->x() - m_lastMousePos.x()) * 0.1f;
@@ -245,6 +248,16 @@ void RenderWidget::mouseMoveEvent(QMouseEvent *event)
     {
         QCursor::setPos(mapToGlobal(QPoint(width() / 2, height() / 2)));
         m_lastMousePos = QPoint(width() / 2, height() / 2);
+    }
+
+    if (event->buttons() & Qt::LeftButton)
+    {
+        QVector3D p = m_raycast->cast(m_chunk, m_camera, m_camera_forward, 16.0f);
+        if (p != QVector3D(0.0f, 0.0f, 0.0f))
+        {
+            m_chunk->setID(p.x(), p.y(), p.z(), 0);
+            update();
+        }
     }
 }
 

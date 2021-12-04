@@ -20,6 +20,8 @@ set(SRC
 
     world/chunk.cpp
     world/chunk.hpp
+    world/raycast.cpp
+    world/raycast.hpp
 )
 
 set(RESOURCES resources/resources.qrc)

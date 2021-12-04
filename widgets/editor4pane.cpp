@@ -33,10 +33,7 @@ Editor4Pane::Editor4Pane(QWidget *parent) : QDockWidget(parent)
 
 	// Split the left/right into top/bottom
 	QSplitter *leftUpDownSplitter = new QSplitter(Qt::Vertical, leftRightSplitter);
-	
 	QSplitter *rightUpDownSplitter = new QSplitter(Qt::Vertical, leftRightSplitter);
-
-	// TODO: Synchronize the splitter sizes
 
     // Top-left is the viewport
     m_viewport = new RenderWidget(leftUpDownSplitter);

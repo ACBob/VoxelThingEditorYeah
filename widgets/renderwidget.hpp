@@ -6,6 +6,7 @@
 #include <QOpenGLTexture>
 
 class CChunk; // forward declaration
+class CRaycast; // forward declaration
 
 class RenderWidget : public QGLWidget
 {
@@ -50,4 +51,6 @@ class RenderWidget : public QGLWidget
         DispMode m_displayMode;
 
         QOpenGLTexture *m_texture;
+
+        CRaycast *m_raycast;
 };

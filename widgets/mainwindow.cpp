@@ -23,20 +23,16 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 	// This toolbar holds the... well, tools
 	QToolBar *toolsBar = new QToolBar(this);
 	this->addToolBar(Qt::LeftToolBarArea, toolsBar);
+	toolsBar->setIconSize(QSize(64, 64));
 
 	QActionGroup *toolGroup = new QActionGroup(this);
 	toolGroup->setExclusive(true);
 
-	// We don't have any tools so here's dummy code
-	for (int i = 0; i < 10; i++)
-	{
-		QAction *action = new QAction(this);
-		action->setCheckable(true);
-		action->setText(tr("Tool %1").arg(i));
-		action->setIcon(QIcon(":/img/tool.png"));
-		toolGroup->addAction(action);
-		toolsBar->addAction(action);
-	}
+	QAction *handTool = new QAction(QIcon(":/img/tool_hand.png"), tr("Hand"), this);
+	handTool->setCheckable(true);
+	handTool->setChecked(true);
+	handTool->setActionGroup(toolGroup);
+	toolsBar->addAction(handTool);
 
 	// To the right side of the screen we have a list of chunks
 	QDockWidget *thingsDock = new QDockWidget(tr("Chunks"), this);
