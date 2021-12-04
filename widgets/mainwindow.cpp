@@ -6,8 +6,11 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QDockWidget>
+#include <QListWidget>
 
 #include "editor4pane.hpp"
+
+#include "../world/chunk.hpp"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
@@ -35,6 +38,25 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 		toolsBar->addAction(action);
 	}
 
+	// To the right side of the screen we have a list of chunks
+	QDockWidget *thingsDock = new QDockWidget(tr("Chunks"), this);
+	thingsDock->setAllowedAreas(Qt::RightDockWidgetArea);
+	this->addDockWidget(Qt::RightDockWidgetArea, thingsDock);
+
+	QListWidget *thingsList = new QListWidget(thingsDock);
+	thingsDock->setWidget(thingsList);
+
+	for (int i = 0; i < 5; i++)
+	{
+		thingsList->addItem(tr("Chunk %1").arg(i));
+		m_chunks.push_back(
+			new CChunk(i, 0, 0)
+		);
+	}
+
+	// when a different chunk is selected, we need to update the editor
+	connect(thingsList, SIGNAL(currentRowChanged(int)), this, SLOT(onChunkSelected(int)));
+
 	// Menubar
 	QMenuBar *menuBar = new QMenuBar(this);
 	this->setMenuBar(menuBar);
@@ -55,6 +77,21 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 	QMenu *helpMenu = menuBar->addMenu(tr("&Help"));
 
 	// Editor 4-pane
-	Editor4Pane *editor = new Editor4Pane(this);
-	this->setCentralWidget(editor);
+	m_editor = new Editor4Pane(this);
+	this->setCentralWidget(m_editor);
+}
+
+MainWindow::~MainWindow()
+{
+	for (CChunk* chunk : m_chunks)
+	{
+		delete chunk;
+	}
+}
+
+void MainWindow::onChunkSelected(int index)
+{
+	// update the editor
+	CChunk *chunk = m_chunks[index];
+	m_editor->setChunk(chunk);
 }

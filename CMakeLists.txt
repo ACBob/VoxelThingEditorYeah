@@ -19,6 +19,9 @@ set(SRC
     widgets/renderwidget.hpp
     widgets/gridwidget.cpp
     widgets/gridwidget.hpp
+
+    world/chunk.cpp
+    world/chunk.hpp
 )
 
 set(RESOURCES resources/resources.qrc)
@@ -30,5 +33,5 @@ find_package(Qt5 REQUIRED COMPONENTS Widgets Core Gui OpenGL)
 find_package(OpenGL REQUIRED)
 
 add_executable(${PROJECT_NAME} ${SRC} ${RESOURCES})
-target_link_libraries(${PROJECT_NAME} Qt5::Widgets Qt5::Core Qt5::Gui Qt5::OpenGL OpenGL::GL)
+target_link_libraries(${PROJECT_NAME} Qt5::Widgets Qt5::Core Qt5::Gui Qt5::OpenGL OpenGL::GL OpenGL::GLU)
 target_include_directories(${PROJECT_NAME} PRIVATE ${QT_INCLUDE}/QtWidgets ${QT_INCLUDE}/QtCore ${QT_INCLUDE}/QtGui ${QT_INCLUDE}/QtOpenGL)

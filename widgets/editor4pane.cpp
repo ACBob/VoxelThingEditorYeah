@@ -13,6 +13,8 @@
 #include "renderwidget.hpp"
 #include "gridwidget.hpp"
 
+#include "../world/chunk.hpp"
+
 #include <math.h>
 
 
@@ -38,14 +40,22 @@ Editor4Pane::Editor4Pane(QWidget *parent) : QDockWidget(parent)
 	// TODO: Synchronize the splitter sizes
 
     // Top-left is the viewport
-    RenderWidget *viewPort = new RenderWidget(leftUpDownSplitter);
+    m_viewport = new RenderWidget(leftUpDownSplitter);
 
     // Then we have grid views
-    GridWidget *gridXY = new GridWidget(leftUpDownSplitter);
-    GridWidget *gridXZ = new GridWidget(rightUpDownSplitter);
-    GridWidget *gridYZ = new GridWidget(rightUpDownSplitter);
+    m_gridXY = new GridWidget(leftUpDownSplitter);
+    m_gridXZ = new GridWidget(rightUpDownSplitter);
+    m_gridYZ = new GridWidget(rightUpDownSplitter);
 
     // Disable all features
     // UITODO: At some point, this will be floatable, closable, etc.
     this->setFeatures(QDockWidget::NoDockWidgetFeatures);
+}
+
+void Editor4Pane::setChunk(CChunk *chunk)
+{
+    m_viewport->setChunk(chunk);
+    // m_gridXY->setChunk(chunk);
+    // m_gridXZ->setChunk(chunk);
+    // m_gridYZ->setChunk(chunk);
 }
