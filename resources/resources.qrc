@@ -4,6 +4,7 @@
         <!-- Icons -->
         <file>img/tool.png</file>
         <file>img/tool_hand.png</file>
+        <file>img/tool_wrench.png</file>
         <!-- Textures -->
         <file>img/devoxel.png</file>
     </qresource>

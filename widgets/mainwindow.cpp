@@ -37,6 +37,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 	handAction->setActionGroup(toolGroup);
 	this->m_tools.push_back(handTool);
 
+	CTool *wrenchTool = new CWrenchTool(this);
+	QAction *wrenchAction = toolsBar->addAction( QIcon(":/img/tool_wrench.png"), wrenchTool->getName() );
+	wrenchAction->setCheckable(true);
+	wrenchAction->setActionGroup(toolGroup);
+	this->m_tools.push_back(wrenchTool);
+
 	connect( toolGroup, SIGNAL(triggered(QAction*)), this, SLOT(toolChanged(QAction*)) );
 
 	// To the right side of the screen we have a list of chunks

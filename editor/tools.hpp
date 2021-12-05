@@ -59,3 +59,29 @@ class CHandTool final : public CTool
         QVector3D m_selectedBlockPos;
         QVector3D m_selectedBlockNormal;
 };
+
+// Editing the properties of a given block.
+class CWrenchTool final : public CTool
+{
+    Q_OBJECT
+
+    public:
+        CWrenchTool(QObject* parent = 0);
+        ~CWrenchTool();
+
+        QString getName() {
+            return "Wrench";
+        };
+
+        void mousePressEvent(QMouseEvent *event, QVector3D pos, QVector3D dir, RenderWidget* view);
+        void mouseMoveEvent(QMouseEvent *event, QVector3D pos, QVector3D dir, RenderWidget* view);
+        void draw(RenderWidget* view);
+
+        void mouseReleaseEvent(QMouseEvent *event, QVector3D pos, QVector3D dir, RenderWidget* view) {};
+        void keyPressEvent(QKeyEvent *event, QVector3D pos, QVector3D dir, RenderWidget* view) {};
+        void keyReleaseEvent(QKeyEvent *event, QVector3D pos, QVector3D dir, RenderWidget* view) {};
+
+    private:
+        QVector3D m_selectedBlockPos;
+        QVector3D m_selectedBlockNormal;
+};

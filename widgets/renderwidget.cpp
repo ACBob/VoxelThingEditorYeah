@@ -35,7 +35,9 @@ RenderWidget::RenderWidget(QWidget *parent) : QGLWidget(parent)
     m_raycast = new CRaycast(this);
     m_currentTool = nullptr;
 
-    m_zoom = 1.0f;
+    m_zoom = 12.0f;
+    offset_x = -8.0f;
+    offset_y = -8.0f;
 
     m_viewDropdown = new QMenu(this);
     m_viewDropdown->addAction("3D");
@@ -51,9 +53,6 @@ RenderWidget::RenderWidget(QWidget *parent) : QGLWidget(parent)
     memset( m_modelview, 0, sizeof(m_modelview) );
     memset( m_projection, 0, sizeof(m_projection) );
     memset( m_viewport, 0, sizeof(m_viewport) );
-
-    offset_x = 0;
-    offset_y = 0;
 
     setMinimumSize(320, 240);
 }
