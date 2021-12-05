@@ -31,13 +31,13 @@ std::pair<QVector3D, QVector3D> CRaycast::cast(CChunk *chunk)
         ray = m_start + m_direction * i;
         i += step;
 
-        int x = floorf(ray.x());
-        int y = floorf(ray.y());
-        int z = floorf(ray.z());
+        int x = floor(ray.x());
+        int y = floor(ray.y());
+        int z = floor(ray.z());
 
         if (chunk->getID(x, y, z) > 0)
         {
-            QVector3D normal = ray - QVector3D(x, y, z);
+            QVector3D normal = QVector3D( floor(oRay.x()), floor(oRay.y()), floor(oRay.z())) - QVector3D(x, y, z);
             normal.normalize();
             return {ray, normal};
         }
