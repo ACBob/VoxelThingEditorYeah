@@ -13,9 +13,16 @@ CChunk::CChunk(int x, int y, int z, int sizeX, int sizeY, int sizeZ)
     m_sizeZ = sizeZ;
 
     m_voxels = new uint32_t[m_sizeX * m_sizeY * m_sizeZ];
-    for (int i = 0; i < m_sizeX * m_sizeY * m_sizeZ; i++)
+    memset(m_voxels, 0, m_sizeX * m_sizeY * m_sizeZ * sizeof(uint32_t));
+    for ( int y = 7; y >= 0; y-- )
     {
-        m_voxels[i] = rand() % 2;
+        for ( int x = 0; x < m_sizeX; x++ )
+        {
+            for ( int z = 0; z < m_sizeZ; z++ )
+            {
+                m_voxels[x + y * m_sizeX + z * m_sizeX * m_sizeY] = 1;
+            }
+        }
     }
 }
 
