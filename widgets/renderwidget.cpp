@@ -520,6 +520,13 @@ void RenderWidget::mouseMoveEvent(QMouseEvent *event)
         QCursor::setPos(mapToGlobal(QPoint(width() / 2, height() / 2)));
         m_lastMousePos = QPoint(width() / 2, height() / 2);
     }
+
+    GLdouble x, y, z;
+    gluUnProject(event->x(), height() - event->y(), 0.0f, m_modelview, m_projection, m_viewport, &x, &y, &z);
+    QVector3D ray_direction = QVector3D(x, y, z) - m_camera;
+    ray_direction.normalize();
+
+    m_currentTool->mouseMoveEvent(event, QVector3D(x, y, z), ray_direction, this);
 }
 
 void RenderWidget::mousePressEvent(QMouseEvent *event)

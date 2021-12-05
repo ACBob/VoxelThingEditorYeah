@@ -47,10 +47,10 @@ class CHandTool final : public CTool
         };
 
         void mousePressEvent(QMouseEvent *event, QVector3D pos, QVector3D dir, RenderWidget* view);
+        void mouseMoveEvent(QMouseEvent *event, QVector3D pos, QVector3D dir, RenderWidget* view);
         void draw(RenderWidget* view);
 
 
-        void mouseMoveEvent(QMouseEvent *event, QVector3D pos, QVector3D dir, RenderWidget* view) {};
         void mouseReleaseEvent(QMouseEvent *event, QVector3D pos, QVector3D dir, RenderWidget* view) {};
         void keyPressEvent(QKeyEvent *event, QVector3D pos, QVector3D dir, RenderWidget* view) {};
         void keyReleaseEvent(QKeyEvent *event, QVector3D pos, QVector3D dir, RenderWidget* view) {};

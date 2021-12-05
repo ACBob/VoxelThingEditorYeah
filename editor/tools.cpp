@@ -60,6 +60,46 @@ void CHandTool::mousePressEvent(QMouseEvent *event, QVector3D pos, QVector3D dir
     view->update();
 }
 
+void CHandTool::mouseMoveEvent(QMouseEvent *event, QVector3D pos, QVector3D dir, RenderWidget* view)
+{
+    // qDebug () << "Hand tool moved @" << pos;
+    
+    CRaycast caster;
+    std::pair<QVector3D, QVector3D> cast = caster.cast( view->m_chunk, pos, dir, 100.0f);
+
+    m_selectedBlockPos = cast.first;
+    m_selectedBlockNormal = cast.second;
+
+    view->update();
+}
+
+const static QVector3D cubeLinesVertices[32] = {
+    // Bottom
+    QVector3D(0.0f, 0.0f, 0.0f), QVector3D(1.0f, 0.0f, 0.0f),
+    QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 0.0f, 1.0f),
+    QVector3D(1.0f, 0.0f, 0.0f), QVector3D(1.0f, 0.0f, 1.0f),
+    QVector3D(0.0f, 0.0f, 1.0f), QVector3D(1.0f, 0.0f, 1.0f),
+
+    // Top
+    QVector3D(0.0f, 1.0f, 0.0f), QVector3D(1.0f, 1.0f, 0.0f),
+    QVector3D(0.0f, 1.0f, 0.0f), QVector3D(0.0f, 1.0f, 1.0f),
+    QVector3D(1.0f, 1.0f, 0.0f), QVector3D(1.0f, 1.0f, 1.0f),
+    QVector3D(0.0f, 1.0f, 1.0f), QVector3D(1.0f, 1.0f, 1.0f),
+
+    // Sides
+    QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 1.0f, 0.0f),
+    QVector3D(1.0f, 0.0f, 0.0f), QVector3D(1.0f, 1.0f, 0.0f),
+
+    QVector3D(0.0f, 0.0f, 1.0f), QVector3D(0.0f, 1.0f, 1.0f),
+    QVector3D(1.0f, 0.0f, 1.0f), QVector3D(1.0f, 1.0f, 1.0f),
+
+    QVector3D(0.0f, 0.0f, 0.0f), QVector3D(0.0f, 0.0f, 1.0f),
+    QVector3D(1.0f, 0.0f, 0.0f), QVector3D(1.0f, 0.0f, 1.0f),
+
+    QVector3D(0.0f, 1.0f, 0.0f), QVector3D(0.0f, 1.0f, 1.0f),
+    QVector3D(1.0f, 1.0f, 0.0f), QVector3D(1.0f, 1.0f, 1.0f),
+};
+
 void CHandTool::draw(RenderWidget* view)
 {
     // qDebug () << "Hand tool draw";
@@ -67,16 +107,17 @@ void CHandTool::draw(RenderWidget* view)
     if (m_selectedBlockPos != QVector3D(0, 0, 0))
     {
         glBegin(GL_LINES);
-        glColor4f(1.0f, 0.0f, 0.0f, 1.0f);
-        
-        glVertex3f(m_selectedBlockPos.x(), m_selectedBlockPos.y(), m_selectedBlockPos.z());
-        glVertex3f(m_selectedBlockPos.x() + 1, m_selectedBlockPos.y(), m_selectedBlockPos.z());
+        glLineWidth(15.0f);
+        glColor4f(0.0f, 0.0f, 1.0f, 0.5f);
 
-        glVertex3f(m_selectedBlockPos.x(), m_selectedBlockPos.y(), m_selectedBlockPos.z());
-        glVertex3f(m_selectedBlockPos.x(), m_selectedBlockPos.y() + 1, m_selectedBlockPos.z());
+        for (int i = 0; i < 32; i += 2)
+        {
+            QVector3D p1 = m_selectedBlockPos + cubeLinesVertices[i];
+            QVector3D p2 = m_selectedBlockPos + cubeLinesVertices[i + 1];
 
-        glVertex3f(m_selectedBlockPos.x(), m_selectedBlockPos.y(), m_selectedBlockPos.z());
-        glVertex3f(m_selectedBlockPos.x(), m_selectedBlockPos.y(), m_selectedBlockPos.z() + 1);
+            glVertex3f(p1.x(), p1.y(), p1.z());
+            glVertex3f(p2.x(), p2.y(), p2.z());
+        }
 
         glEnd();
     }
