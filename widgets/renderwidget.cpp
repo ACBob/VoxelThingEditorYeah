@@ -418,6 +418,24 @@ void RenderWidget::paintGL()
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
+    // If capture mouse, display a crosshair
+    if (m_captureMouse)
+    {
+        glColor3f(1.0f, 1.0f, 1.0f);
+        glBegin(GL_LINES);
+
+        float x = width() / 2.0f;
+        float y = height() / 2.0f;
+
+        glVertex2f(x - 10.0f, y);
+        glVertex2f(x + 10.0f, y);
+
+        glVertex2f(x, y - 10.0f);
+        glVertex2f(x, y + 10.0f);
+
+        glEnd();
+    }
+
     // draw a small box
     glColor3f(0.0f, 0.0f, 0.0f);
     glBegin(GL_QUADS);
