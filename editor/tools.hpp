@@ -4,9 +4,7 @@
 // Handling of the tool is basically;
 // There's a base class tool, and then they derive from it.
 // Tools are given the world coordinates of the mouse click,
-// And the display mode of the viewport.
-// They can then do whatever they want with that information.
-// They have access to the current chunk.
+// A pointer to the calling viewport, and a direction for a raycast.
 
 #include <QObject>
 #include <QVector3D>
@@ -25,14 +23,12 @@ class CTool : public QObject
 
         virtual QString getName() = 0;
 
-        virtual void mousePressEvent(QMouseEvent *event, QVector3D pos, RenderWidget* view) = 0; // Called when the mouse is pressed
-        virtual void mouseMoveEvent(QMouseEvent *event, QVector3D pos, RenderWidget* view) = 0; // Called when the mouse is moved
-        virtual void mouseReleaseEvent(QMouseEvent *event, QVector3D pos, RenderWidget* view) = 0; // Called when the mouse is released
-        virtual void mouseDoubleClickEvent(QMouseEvent *event, QVector3D pos, RenderWidget* view) = 0; // Called when the mouse is double clicked
-        virtual void wheelEvent(QMouseEvent *event, QVector3D pos, RenderWidget* view) = 0; // Called when the mouse wheel is used
+        virtual void mousePressEvent(QMouseEvent *event, QVector3D pos, QVector3D dir, RenderWidget* view) = 0; // Called when the mouse is pressed
+        virtual void mouseMoveEvent(QMouseEvent *event, QVector3D pos, QVector3D dir, RenderWidget* view) = 0; // Called when the mouse is moved
+        virtual void mouseReleaseEvent(QMouseEvent *event, QVector3D pos, QVector3D dir, RenderWidget* view) = 0; // Called when the mouse is released
 
-        virtual void keyPressEvent(QKeyEvent* event, QVector3D pos, RenderWidget* view) = 0; // Called when a key is pressed
-        virtual void keyReleaseEvent(QKeyEvent* event, QVector3D pos, RenderWidget* view) = 0; // Called when a key is released
+        virtual void keyPressEvent(QKeyEvent* event, QVector3D pos, QVector3D dir, RenderWidget* view) = 0; // Called when a key is pressed
+        virtual void keyReleaseEvent(QKeyEvent* event, QVector3D pos, QVector3D dir, RenderWidget* view) = 0; // Called when a key is released
 
         virtual void draw(RenderWidget* view) = 0; // This is called during the RenderWidget's OpenGL paint event.
 };
@@ -50,16 +46,14 @@ class CHandTool final : public CTool
             return "Hand";
         };
 
-        void mousePressEvent(QMouseEvent *event, QVector3D pos, RenderWidget* view);
+        void mousePressEvent(QMouseEvent *event, QVector3D pos, QVector3D dir, RenderWidget* view);
         void draw(RenderWidget* view);
 
 
-        void mouseMoveEvent(QMouseEvent *event, QVector3D pos, RenderWidget* view) {};
-        void mouseReleaseEvent(QMouseEvent *event, QVector3D pos, RenderWidget* view) {};
-        void mouseDoubleClickEvent(QMouseEvent *event, QVector3D pos, RenderWidget* view) {};
-        void wheelEvent(QMouseEvent *event, QVector3D pos, RenderWidget* view) {};
-        void keyPressEvent(QKeyEvent* event, QVector3D pos, RenderWidget* view) {};
-        void keyReleaseEvent(QKeyEvent* event, QVector3D pos, RenderWidget* view) {};
+        void mouseMoveEvent(QMouseEvent *event, QVector3D pos, QVector3D dir, RenderWidget* view) {};
+        void mouseReleaseEvent(QMouseEvent *event, QVector3D pos, QVector3D dir, RenderWidget* view) {};
+        void keyPressEvent(QKeyEvent *event, QVector3D pos, QVector3D dir, RenderWidget* view) {};
+        void keyReleaseEvent(QKeyEvent *event, QVector3D pos, QVector3D dir, RenderWidget* view) {};
 
     private:
         QVector3D m_selectedBlockPos;

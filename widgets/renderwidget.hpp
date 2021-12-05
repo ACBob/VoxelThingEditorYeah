@@ -40,16 +40,16 @@ class RenderWidget : public QGLWidget
         void setDispMode(DispMode mode);
         void setTool(CTool *tool);
 
-    public slots:
-        void setView(QAction* action);
-
-    private:
         CChunk *m_chunk;
 
         QVector3D m_camera;
         QVector3D m_camera_forward;
         QVector3D m_camera_right;
 
+    public slots:
+        void setView(QAction* action);
+
+    private:
         QMenu *m_viewDropdown;
 
         float m_camera_pitch;

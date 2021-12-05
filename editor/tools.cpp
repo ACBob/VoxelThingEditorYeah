@@ -2,6 +2,8 @@
 
 #include "../widgets/renderwidget.hpp"
 
+#include "../world/raycast.hpp"
+
 #include <QDebug>
 
 #include <QOpenGLFunctions>
@@ -26,10 +28,19 @@ CHandTool::~CHandTool()
 
 }
 
-void CHandTool::mousePressEvent(QMouseEvent *event, QVector3D pos, RenderWidget* view)
+void CHandTool::mousePressEvent(QMouseEvent *event, QVector3D pos, QVector3D dir, RenderWidget* view)
 {
-    // qDebug () << "Hand tool pressed @" << pos;
-    m_selectedBlockPos = pos;
+    qDebug () << "Hand tool pressed @" << pos;
+    // m_selectedBlockPos = pos;
+    // view->update();
+
+    CRaycast cast;
+    QVector3D p = cast.cast( view->m_chunk, pos, dir, 100.0f);
+
+    qDebug () << "Hand tool cast @" << p << " looking at " << dir;
+
+    m_selectedBlockPos = p;
+
     view->update();
 }
 

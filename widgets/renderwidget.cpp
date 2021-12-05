@@ -10,6 +10,7 @@
 #include <QKeyEvent>
 #include <QMatrix4x4>
 #include <QMenu>
+#include <QDebug>
 
 #include <math.h>
 
@@ -487,9 +488,6 @@ void RenderWidget::mouseMoveEvent(QMouseEvent *event)
         QCursor::setPos(mapToGlobal(QPoint(width() / 2, height() / 2)));
         m_lastMousePos = QPoint(width() / 2, height() / 2);
     }
-
-    if (m_currentTool != nullptr)
-        m_currentTool->mouseMoveEvent(event, m_raycast->cast(m_chunk, m_camera, m_camera_forward, 16.0f), this);
 }
 
 void RenderWidget::mousePressEvent(QMouseEvent *event)
@@ -513,8 +511,40 @@ void RenderWidget::mousePressEvent(QMouseEvent *event)
         }
     }
 
-    if (m_currentTool != nullptr)
-            m_currentTool->mousePressEvent(event, m_raycast->cast(m_chunk, m_camera, m_camera_forward, 16.0f), this);
+    if (m_currentTool != nullptr) {
+        if (!m_captureMouse)
+        {
+            // Unproject the mouse position to get the world position
+            // gluUnproject is used
+            glMatrixMode(GL_PROJECTION);
+            glLoadIdentity();
+            gluPerspective(70.0f, (float)width() / (float)height(), 0.1f, 100.0f);
+            glMatrixMode(GL_MODELVIEW);
+            glLoadIdentity();
+            QVector3D target = m_camera + m_camera_forward;
+            gluLookAt(m_camera.x(), m_camera.y(), m_camera.z(), target.x(), target.y(), target.z(), 0.0f, 1.0f, 0.0f);
+
+            GLdouble model[16];
+            glGetDoublev(GL_MODELVIEW_MATRIX, model);
+            GLdouble proj[16];
+            glGetDoublev(GL_PROJECTION_MATRIX, proj);
+            GLint view[4];
+            glGetIntegerv(GL_VIEWPORT, view);
+
+            GLdouble x, y, z;
+            gluUnProject(event->x(), height() - event->y(), 0.0f, model, proj, view, &x, &y, &z);
+
+            // we then need to figure out the direction of the ray
+            QVector3D ray_direction = QVector3D(x, y, z) - m_camera;
+            ray_direction.normalize();
+
+            m_currentTool->mousePressEvent(event, QVector3D(x, y, z), ray_direction, this);
+        }
+        else
+        {
+            m_currentTool->mousePressEvent( event, m_camera, m_camera_forward, this);
+        }
+    }
 }
 
 void RenderWidget::setDispMode(DispMode mode)
