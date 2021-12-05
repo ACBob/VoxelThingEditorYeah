@@ -323,16 +323,44 @@ void RenderWidget::paintGL()
                     if (m_chunk->getID(x, y, z) != 0)
                     {
                         glBegin(GL_QUADS);
+
+                        // Top face (brightest)
                         glColor3f(1.0f, 1.0f, 1.0f);
 
                         glTexCoord2f(0.0f, 0.0f);
-                        glVertex3f(x, y, z);
-                        glTexCoord2f(1.0f, 0.0f);
-                        glVertex3f(x + 1, y, z);
-                        glTexCoord2f(1.0f, 1.0f);
-                        glVertex3f(x + 1, y + 1, z);
-                        glTexCoord2f(0.0f, 1.0f);
                         glVertex3f(x, y + 1, z);
+                        glTexCoord2f(1.0f, 0.0f);
+                        glVertex3f(x + 1, y + 1, z);
+                        glTexCoord2f(1.0f, 1.0f);
+                        glVertex3f(x + 1, y + 1, z + 1);
+                        glTexCoord2f(0.0f, 1.0f);
+                        glVertex3f(x, y + 1, z + 1);
+
+                        // East face (dimmest)
+                        glColor3f( 0.25f, 0.25f, 0.25f );
+
+                        glTexCoord2f(0.0f, 0.0f);
+                        glVertex3f(x + 1, y, z);
+                        glTexCoord2f(1.0f, 0.0f);
+                        glVertex3f(x + 1, y, z + 1);
+                        glTexCoord2f(1.0f, 1.0f);
+                        glVertex3f(x + 1, y + 1, z + 1);
+                        glTexCoord2f(0.0f, 1.0f);
+                        glVertex3f(x + 1, y + 1, z);
+
+                        // North face (dimmer)
+                        glColor3f( 0.5f, 0.5f, 0.5f );
+
+                        glTexCoord2f(0.0f, 0.0f);
+                        glVertex3f(x, y, z + 1);
+                        glTexCoord2f(1.0f, 0.0f);
+                        glVertex3f(x + 1, y, z + 1);
+                        glTexCoord2f(1.0f, 1.0f);
+                        glVertex3f(x + 1, y + 1, z + 1);
+                        glTexCoord2f(0.0f, 1.0f);
+                        glVertex3f(x, y + 1, z + 1);
+
+
                         glEnd();
                     }
                 }
