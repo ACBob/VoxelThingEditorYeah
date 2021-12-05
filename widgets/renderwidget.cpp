@@ -202,10 +202,9 @@ void RenderWidget::paintGL()
             // draw the blocks
             m_texture->bind();
 
-            for ( int z = 0; z < m_chunk->getSizeZ(); z++ )
+            for ( int z = m_chunk->getSizeZ() - 1; z > 0; z -- )
             {
-                float color = (float)z / (float)m_chunk->getSizeZ();
-                color = 1.0f - color;
+                float color = (float)(z + 1) / (float)m_chunk->getSizeZ();
                 glColor3f(color, color, color);
                 for (int x = 0; x < m_chunk->getSizeX(); x++)
                 {
@@ -251,10 +250,9 @@ void RenderWidget::paintGL()
             // draw the blocks
             m_texture->bind();
 
-            for (int x = 0; x < m_chunk->getSizeX(); x++)
+            for (int x = m_chunk->getSizeX() - 1; x > 0; x --)
             {
-                float color = (float)x / (float)m_chunk->getSizeX();
-                color = 1.0f - color;
+                float color = (float)(x + 1) / (float)m_chunk->getSizeX();
                 glColor3f(color, color, color);
                 for (int z = 0; z < m_chunk->getSizeZ(); z++)
                 {
@@ -300,10 +298,9 @@ void RenderWidget::paintGL()
             // draw the blocks
             m_texture->bind();
 
-            for ( int y = 0; y < m_chunk->getSizeY(); y++ )
+            for ( int y = m_chunk->getSizeY() - 1; y > 0; y-- )
             {
-                float color = (float)y / (float)m_chunk->getSizeY();
-                color = 1.0f - color;
+                float color = (float)(y + 1) / (float)m_chunk->getSizeY();
                 glColor3f(color, color, color);
                 for (int x = 0; x < m_chunk->getSizeX(); x++)
                 {
