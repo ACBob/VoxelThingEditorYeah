@@ -4,9 +4,11 @@
 #include <QGLWidget>
 #include <QVector3D>
 #include <QOpenGLTexture>
+#include <QMenu>
 
 class CChunk; // forward declaration
 class CRaycast; // forward declaration
+class CTool; // forward declaration
 
 class RenderWidget : public QGLWidget
 {
@@ -36,6 +38,10 @@ class RenderWidget : public QGLWidget
         };
 
         void setDispMode(DispMode mode);
+        void setTool(CTool *tool);
+
+    public slots:
+        void setView(QAction* action);
 
     private:
         CChunk *m_chunk;
@@ -43,6 +49,8 @@ class RenderWidget : public QGLWidget
         QVector3D m_camera;
         QVector3D m_camera_forward;
         QVector3D m_camera_right;
+
+        QMenu *m_viewDropdown;
 
         float m_camera_pitch;
         float m_camera_yaw;
@@ -58,4 +66,6 @@ class RenderWidget : public QGLWidget
         QOpenGLTexture *m_texture;
 
         CRaycast *m_raycast;
+
+        CTool *m_currentTool;
 };

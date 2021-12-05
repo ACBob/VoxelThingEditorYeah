@@ -11,6 +11,7 @@
 #include "editor4pane.hpp"
 
 #include "../world/chunk.hpp"
+#include "../editor/tools.hpp"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
@@ -28,11 +29,14 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 	QActionGroup *toolGroup = new QActionGroup(this);
 	toolGroup->setExclusive(true);
 
-	QAction *handTool = new QAction(QIcon(":/img/tool_hand.png"), tr("Hand"), this);
-	handTool->setCheckable(true);
-	handTool->setChecked(true);
-	handTool->setActionGroup(toolGroup);
-	toolsBar->addAction(handTool);
+	CTool *handTool = new CHandTool(this);
+	QAction *handAction = toolsBar->addAction( QIcon(":/img/tool_hand.png"), handTool->getName() );
+	handAction->setCheckable(true);
+	handAction->setChecked(true);
+	handAction->setActionGroup(toolGroup);
+	this->m_tools.push_back(handTool);
+
+	connect( toolGroup, SIGNAL(triggered(QAction*)), this, SLOT(toolChanged(QAction*)) );
 
 	// To the right side of the screen we have a list of chunks
 	QDockWidget *thingsDock = new QDockWidget(tr("Chunks"), this);
@@ -75,6 +79,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 	// Editor 4-pane
 	m_editor = new Editor4Pane(this);
 	this->setCentralWidget(m_editor);
+
+	m_editor->setTool(handTool);
 }
 
 MainWindow::~MainWindow()
@@ -90,4 +96,17 @@ void MainWindow::onChunkSelected(int index)
 	// update the editor
 	CChunk *chunk = m_chunks[index];
 	m_editor->setChunk(chunk);
+}
+
+void MainWindow::toolChanged(QAction *action)
+{
+	// find the tool that was selected
+	for (CTool *tool : m_tools)
+	{
+		if (tool->getName() == action->text())
+		{
+			m_editor->setTool(tool);
+			return;
+		}
+	}
 }

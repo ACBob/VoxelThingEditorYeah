@@ -6,6 +6,7 @@
 
 class RenderWidget; // forward declaration
 class CChunk; // forward declaration
+class CTool; // forward declaration
 
 class Editor4Pane : public QDockWidget
 {
@@ -15,6 +16,7 @@ class Editor4Pane : public QDockWidget
         Editor4Pane(QWidget *parent);
 
         void setChunk(CChunk *chunk);
+        void setTool(CTool *tool);
 
     private:
         CChunk *chunk;

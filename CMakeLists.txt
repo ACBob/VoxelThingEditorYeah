@@ -22,6 +22,9 @@ set(SRC
     world/chunk.hpp
     world/raycast.cpp
     world/raycast.hpp
+
+    editor/tools.cpp
+    editor/tools.hpp
 )
 
 set(RESOURCES resources/resources.qrc)

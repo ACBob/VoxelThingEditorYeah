@@ -60,3 +60,11 @@ void Editor4Pane::setChunk(CChunk *chunk)
     m_bottomLeftView->setChunk(chunk);
     m_bottomRightView->setChunk(chunk);
 }
+
+void Editor4Pane::setTool(CTool *tool)
+{
+    m_topLeftView->setTool(tool);
+    m_topRightView->setTool(tool);
+    m_bottomLeftView->setTool(tool);
+    m_bottomRightView->setTool(tool);
+}

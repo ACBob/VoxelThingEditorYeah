@@ -4,10 +4,12 @@
 
 #include "../world/chunk.hpp"
 #include "../world/raycast.hpp"
+#include "../editor/tools.hpp"
 
 #include <QVector3D>
 #include <QKeyEvent>
 #include <QMatrix4x4>
+#include <QMenu>
 
 #include <math.h>
 
@@ -26,8 +28,20 @@ RenderWidget::RenderWidget(QWidget *parent) : QGLWidget(parent)
     m_captureMouse = false;
 
     m_raycast = new CRaycast(this);
+    m_currentTool = nullptr;
 
     m_zoom = 1.0f;
+
+    m_viewDropdown = new QMenu(this);
+    m_viewDropdown->addAction("3D");
+    m_viewDropdown->addAction("XY");
+    m_viewDropdown->addAction("XZ");
+    m_viewDropdown->addAction("YZ");
+    m_viewDropdown->addAction("Isometric");
+
+    m_viewDropdown->setActiveAction(m_viewDropdown->actions().at(0));
+
+    connect(m_viewDropdown, SIGNAL(triggered(QAction*)), this, SLOT(setView(QAction*)));
 
     setMinimumSize(320, 240);
 }
@@ -328,6 +342,12 @@ void RenderWidget::paintGL()
         m_texture->release();
     }
 
+    // Draw the tool last
+    if (m_currentTool != nullptr)
+    {
+        m_currentTool->draw(this);
+    }
+
     glDisable(GL_DEPTH_TEST);
 
     // Up in the corner display the mode
@@ -439,6 +459,9 @@ void RenderWidget::mouseMoveEvent(QMouseEvent *event)
         QCursor::setPos(mapToGlobal(QPoint(width() / 2, height() / 2)));
         m_lastMousePos = QPoint(width() / 2, height() / 2);
     }
+
+    if (m_currentTool != nullptr)
+        m_currentTool->mouseMoveEvent(event, m_raycast->cast(m_chunk, m_camera, m_camera_forward, 16.0f), this);
 }
 
 void RenderWidget::mousePressEvent(QMouseEvent *event)
@@ -448,20 +471,32 @@ void RenderWidget::mousePressEvent(QMouseEvent *event)
         // test if it's within the little mode marker
         if (event->x() < 100 && event->y() < 20)
         {
-            int mode = (int)m_displayMode;
-            mode++;
-            if (mode > (int)DispMode::DISP_ISOMETRIC)
-                mode = (int)DispMode::DISP_3D;
-            m_displayMode = (DispMode)mode;
-        }
+            // int mode = (int)m_displayMode;
+            // mode++;
+            // if (mode > (int)DispMode::DISP_ISOMETRIC)
+            //     mode = (int)DispMode::DISP_3D;
+            // m_displayMode = (DispMode)mode;
 
-        update();
+            // If it is, display a dropdown menu
+            m_viewDropdown->move(event->globalPos());
+            m_viewDropdown->show();
+            update();
+            return;
+        }
     }
+
+    if (m_currentTool != nullptr)
+            m_currentTool->mousePressEvent(event, m_raycast->cast(m_chunk, m_camera, m_camera_forward, 16.0f), this);
 }
 
 void RenderWidget::setDispMode(DispMode mode)
 {
     m_displayMode = mode;
+    update();
+}
+void RenderWidget::setTool(CTool *tool)
+{
+    m_currentTool = tool;
     update();
 }
 
@@ -470,4 +505,20 @@ void RenderWidget::wheelEvent(QWheelEvent *event)
     m_zoom += event->delta() * 0.001f;
     m_zoom = qBound(0.1f, m_zoom, 20.0f);
     update();
+}
+
+void RenderWidget::setView(QAction *action)
+{
+    if (action->text() == "3D")
+        m_displayMode = DispMode::DISP_3D;
+    else if (action->text() == "Isometric")
+        m_displayMode = DispMode::DISP_ISOMETRIC;
+    else if (action->text() == "XY")
+        m_displayMode = DispMode::DISP_GRID_XY;
+    else if (action->text() == "XZ")
+        m_displayMode = DispMode::DISP_GRID_XZ;
+    else if (action->text() == "YZ")
+        m_displayMode = DispMode::DISP_GRID_ZY;
+
+    m_viewDropdown->setActiveAction(action);
 }

@@ -2,6 +2,7 @@
 
 class Editor4Pane; // forward declaration
 class CChunk; // forward declaration
+class CTool; // forward declaration
 
 class MainWindow : public QMainWindow
 {
@@ -23,9 +24,11 @@ class MainWindow : public QMainWindow
         // void closeAllFilesButThis();
 
         void onChunkSelected(int);
+        void toolChanged(QAction*);
 
     private:
         Editor4Pane *m_editor;
 
         std::vector<CChunk *> m_chunks;
+        std::vector<CTool *> m_tools;
 };
