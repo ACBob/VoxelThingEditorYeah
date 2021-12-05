@@ -4,6 +4,7 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
+#include <QFormLayout>
 #include <QTabWidget>
 #include <QWidget>
 
@@ -39,23 +40,24 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     tabWidget->addTab(tabGeneral, tr("General"));
 
     // General
-    QVBoxLayout *generalLayout = new QVBoxLayout(tabGeneral);
+    QFormLayout *generalLayout = new QFormLayout(tabGeneral);
     tabGeneral->setLayout(generalLayout);
 
     QLabel *label = new QLabel(tr("Grid Color:"), tabGeneral);
-    generalLayout->addWidget(label);
+    
 
     m_gridColorPicker = new ColorPicker(tabGeneral);
     m_gridColorPicker->enableAlpha();
     m_gridColorPicker->setColor(settings.value("gridColor", QColor(Qt::gray)).value<QColor>());
-    generalLayout->addWidget(m_gridColorPicker);
+    
+    generalLayout->addRow(label, m_gridColorPicker);
 
     QLabel *label2 = new QLabel(tr("Void Color:"), tabGeneral);
-    generalLayout->addWidget(label2);
 
     m_voidColorPicker = new ColorPicker(tabGeneral);
     m_voidColorPicker->setColor(settings.value("voidColor", QColor(Qt::black)).value<QColor>());
-    generalLayout->addWidget(m_voidColorPicker);
+    
+    generalLayout->addRow(label2, m_voidColorPicker);
 }
 
 void SettingsDialog::accept()
