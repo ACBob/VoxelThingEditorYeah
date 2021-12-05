@@ -68,4 +68,9 @@ class RenderWidget : public QGLWidget
         CRaycast *m_raycast;
 
         CTool *m_currentTool;
+
+        // stores the GL stuff
+        double m_modelview[16];
+        double m_projection[16];
+        int m_viewport[4];
 };

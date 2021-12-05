@@ -44,6 +44,10 @@ RenderWidget::RenderWidget(QWidget *parent) : QGLWidget(parent)
 
     connect(m_viewDropdown, SIGNAL(triggered(QAction*)), this, SLOT(setView(QAction*)));
 
+    memset( m_modelview, 0, sizeof(m_modelview) );
+    memset( m_projection, 0, sizeof(m_projection) );
+    memset( m_viewport, 0, sizeof(m_viewport) );
+
     setMinimumSize(320, 240);
 }
 
@@ -145,7 +149,7 @@ void RenderWidget::paintGL()
                         glVertex3f(x + 1, y + 1, z + 1);
                         glTexCoord2f(0.0f, 1.0f);
                         glVertex3f(x, y + 1, z + 1);
-                        
+
                         glEnd();
                     }
                 }
@@ -398,6 +402,10 @@ void RenderWidget::paintGL()
         m_texture->release();
     }
 
+    glGetDoublev(GL_MODELVIEW_MATRIX, m_modelview);
+    glGetDoublev(GL_PROJECTION_MATRIX, m_projection);
+    glGetIntegerv(GL_VIEWPORT, m_viewport);
+
     // Draw the tool last
     if (m_currentTool != nullptr)
     {
@@ -543,23 +551,8 @@ void RenderWidget::mousePressEvent(QMouseEvent *event)
         {
             // Unproject the mouse position to get the world position
             // gluUnproject is used
-            glMatrixMode(GL_PROJECTION);
-            glLoadIdentity();
-            gluPerspective(70.0f, (float)width() / (float)height(), 0.1f, 100.0f);
-            glMatrixMode(GL_MODELVIEW);
-            glLoadIdentity();
-            QVector3D target = m_camera + m_camera_forward;
-            gluLookAt(m_camera.x(), m_camera.y(), m_camera.z(), target.x(), target.y(), target.z(), 0.0f, 1.0f, 0.0f);
-
-            GLdouble model[16];
-            glGetDoublev(GL_MODELVIEW_MATRIX, model);
-            GLdouble proj[16];
-            glGetDoublev(GL_PROJECTION_MATRIX, proj);
-            GLint view[4];
-            glGetIntegerv(GL_VIEWPORT, view);
-
             GLdouble x, y, z;
-            gluUnProject(event->x(), height() - event->y(), 0.0f, model, proj, view, &x, &y, &z);
+            gluUnProject(event->x(), height() - event->y(), 0.0f, m_modelview, m_projection, m_viewport, &x, &y, &z);
 
             // we then need to figure out the direction of the ray
             QVector3D ray_direction = QVector3D(x, y, z) - m_camera;
