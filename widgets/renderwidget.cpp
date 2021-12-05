@@ -27,6 +27,8 @@ RenderWidget::RenderWidget(QWidget *parent) : QGLWidget(parent)
 
     m_raycast = new CRaycast(this);
 
+    m_zoom = 1.0f;
+
     setMinimumSize(320, 240);
 }
 
@@ -281,6 +283,52 @@ void RenderWidget::paintGL()
             m_texture->release();
         }
     }
+    else if (m_chunk != nullptr && m_displayMode == DispMode::DISP_ISOMETRIC)
+    {
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        
+        glOrtho( -m_zoom, m_zoom, -m_zoom, m_zoom, -100.0f, 100.0f );
+
+        float d = sqrt( 1 / 3.0f );
+        gluLookAt(d, d, d, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+        
+
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+
+        // same as DISP_3D now
+        m_texture->bind();
+
+        for (int x = 0; x < m_chunk->getSizeX(); x++)
+        {
+            for (int y = 0; y < m_chunk->getSizeX(); y++)
+            {
+                for (int z = 0; z < m_chunk->getSizeX(); z++)
+                {
+                    if (m_chunk->getID(x, y, z) != 0)
+                    {
+                        glBegin(GL_QUADS);
+                        glColor3f(1.0f, 1.0f, 1.0f);
+
+                        glTexCoord2f(0.0f, 0.0f);
+                        glVertex3f(x, y, z);
+                        glTexCoord2f(1.0f, 0.0f);
+                        glVertex3f(x + 1, y, z);
+                        glTexCoord2f(1.0f, 1.0f);
+                        glVertex3f(x + 1, y + 1, z);
+                        glTexCoord2f(0.0f, 1.0f);
+                        glVertex3f(x, y + 1, z);
+                        glEnd();
+                    }
+                }
+            }
+        }
+
+        m_texture->release();
+    }
+
+    glDisable(GL_DEPTH_TEST);
 
     // Up in the corner display the mode
     glMatrixMode(GL_PROJECTION);
@@ -313,9 +361,14 @@ void RenderWidget::paintGL()
         case DispMode::DISP_GRID_ZY:
             mode = "YZ";
             break;
+        case DispMode::DISP_ISOMETRIC:
+            mode = "Isometric";
+            break;
     }
     glColor3f(1.0f, 1.0f, 1.0f);
     renderText(10, 15, mode);
+
+    glEnable(GL_DEPTH_TEST);
 }
 
 void RenderWidget::setChunk(CChunk *chunk)
@@ -397,7 +450,7 @@ void RenderWidget::mousePressEvent(QMouseEvent *event)
         {
             int mode = (int)m_displayMode;
             mode++;
-            if (mode > (int)DispMode::DISP_GRID_ZY)
+            if (mode > (int)DispMode::DISP_ISOMETRIC)
                 mode = (int)DispMode::DISP_3D;
             m_displayMode = (DispMode)mode;
         }
@@ -409,5 +462,12 @@ void RenderWidget::mousePressEvent(QMouseEvent *event)
 void RenderWidget::setDispMode(DispMode mode)
 {
     m_displayMode = mode;
+    update();
+}
+
+void RenderWidget::wheelEvent(QWheelEvent *event)
+{
+    m_zoom += event->delta() * 0.001f;
+    m_zoom = qBound(0.1f, m_zoom, 20.0f);
     update();
 }

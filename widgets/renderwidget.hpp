@@ -24,6 +24,7 @@ class RenderWidget : public QGLWidget
         void keyPressEvent(QKeyEvent *event);
         void mouseMoveEvent(QMouseEvent *event);
         void mousePressEvent(QMouseEvent *event);
+        void wheelEvent(QWheelEvent *event);
 
 
         enum class DispMode : int {
@@ -31,6 +32,7 @@ class RenderWidget : public QGLWidget
             DISP_GRID_XY = 1, // Draws a grid in the XY plane
             DISP_GRID_XZ = 2, // Draws a grid in the XZ plane
             DISP_GRID_ZY = 3, // Draws a grid in the ZY plane
+            DISP_ISOMETRIC = 4, // Draws an isometric view
         };
 
         void setDispMode(DispMode mode);
@@ -44,6 +46,8 @@ class RenderWidget : public QGLWidget
 
         float m_camera_pitch;
         float m_camera_yaw;
+
+        float m_zoom; // Used for grid & isometric
 
         QPoint m_lastMousePos;
 
