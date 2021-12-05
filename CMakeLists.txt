@@ -17,6 +17,10 @@ set(SRC
     widgets/editor4pane.hpp
     widgets/renderwidget.cpp
     widgets/renderwidget.hpp
+    widgets/settingsdialog.cpp
+    widgets/settingsdialog.hpp
+    widgets/colorpicker.cpp
+    widgets/colorpicker.hpp
 
     world/chunk.cpp
     world/chunk.hpp

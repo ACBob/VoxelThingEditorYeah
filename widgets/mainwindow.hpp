@@ -26,6 +26,8 @@ class MainWindow : public QMainWindow
         void onChunkSelected(int);
         void toolChanged(QAction*);
 
+        void editPreferences();
+
     private:
         Editor4Pane *m_editor;
 

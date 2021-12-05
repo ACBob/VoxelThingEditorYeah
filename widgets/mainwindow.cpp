@@ -9,6 +9,7 @@
 #include <QListWidget>
 
 #include "editor4pane.hpp"
+#include "settingsdialog.hpp"
 
 #include "../world/chunk.hpp"
 #include "../editor/tools.hpp"
@@ -69,6 +70,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
 	// Edit menu
 	QMenu *editMenu = menuBar->addMenu(tr("&Edit"));
+	editMenu->addAction(tr("&Preferences"), this, SLOT(editPreferences()), QKeySequence::Preferences);
 
 	// View menu
 	QMenu *viewMenu = menuBar->addMenu(tr("&View"));
@@ -109,4 +111,11 @@ void MainWindow::toolChanged(QAction *action)
 			return;
 		}
 	}
+}
+
+void MainWindow::editPreferences()
+{
+	// Show the preferences dialog
+	SettingsDialog *dialog = new SettingsDialog(this);
+	dialog->exec();
 }
