@@ -30,7 +30,7 @@ class RenderWidget : public QGLWidget
             DISP_3D = 0, // Displays in 3D
             DISP_GRID_XY = 1, // Draws a grid in the XY plane
             DISP_GRID_XZ = 2, // Draws a grid in the XZ plane
-            DISP_GRID_YZ = 3, // Draws a grid in the YZ plane
+            DISP_GRID_ZY = 3, // Draws a grid in the ZY plane
         };
 
         void setDispMode(DispMode mode);

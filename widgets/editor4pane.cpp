@@ -39,16 +39,14 @@ Editor4Pane::Editor4Pane(QWidget *parent) : QDockWidget(parent)
     // default to 50%
     rightUpDownSplitter->setSizes(QList<int>() << 50 << 50);
 
-    // Top-left is the viewport
-    m_viewport = new RenderWidget(leftUpDownSplitter);
-
-    // Then we have grid views
-    m_gridXY = new RenderWidget(leftUpDownSplitter);
-    m_gridXY->setDispMode(RenderWidget::DispMode::DISP_GRID_XY);
-    m_gridXZ = new RenderWidget(rightUpDownSplitter);
-    m_gridXZ->setDispMode(RenderWidget::DispMode::DISP_GRID_XZ);
-    m_gridYZ = new RenderWidget(rightUpDownSplitter);
-    m_gridYZ->setDispMode(RenderWidget::DispMode::DISP_GRID_YZ);
+    m_topLeftView = new RenderWidget(leftUpDownSplitter);
+    m_topLeftView->setDispMode(RenderWidget::DispMode::DISP_3D);
+    m_topRightView = new RenderWidget(rightUpDownSplitter);
+    m_topRightView->setDispMode(RenderWidget::DispMode::DISP_GRID_XZ);
+    m_bottomLeftView = new RenderWidget(leftUpDownSplitter);
+    m_bottomLeftView->setDispMode(RenderWidget::DispMode::DISP_GRID_XY);
+    m_bottomRightView = new RenderWidget(rightUpDownSplitter);
+    m_bottomRightView->setDispMode(RenderWidget::DispMode::DISP_GRID_ZY);
 
     // Disable all features
     // UITODO: At some point, this will be floatable, closable, etc.
@@ -57,8 +55,8 @@ Editor4Pane::Editor4Pane(QWidget *parent) : QDockWidget(parent)
 
 void Editor4Pane::setChunk(CChunk *chunk)
 {
-    m_viewport->setChunk(chunk);
-    m_gridXY->setChunk(chunk);
-    m_gridXZ->setChunk(chunk);
-    m_gridYZ->setChunk(chunk);
+    m_topLeftView->setChunk(chunk);
+    m_topRightView->setChunk(chunk);
+    m_bottomLeftView->setChunk(chunk);
+    m_bottomRightView->setChunk(chunk);
 }

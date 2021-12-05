@@ -5,7 +5,6 @@
 #include <QDockWidget>
 
 class RenderWidget; // forward declaration
-class GridWidget; // forward declaration
 class CChunk; // forward declaration
 
 class Editor4Pane : public QDockWidget
@@ -20,8 +19,8 @@ class Editor4Pane : public QDockWidget
     private:
         CChunk *chunk;
 
-        RenderWidget *m_viewport;
-        RenderWidget *m_gridXY;
-        RenderWidget *m_gridXZ;
-        RenderWidget *m_gridYZ;
+        RenderWidget *m_topLeftView;
+        RenderWidget *m_bottomLeftView;
+        RenderWidget *m_topRightView;
+        RenderWidget *m_bottomRightView;
 };

@@ -110,7 +110,7 @@ void RenderWidget::paintGL()
 
         m_texture->release();
     }
-    else if (m_chunk != nullptr && m_displayMode >= DispMode::DISP_GRID_XY && m_displayMode <= DispMode::DISP_GRID_YZ)
+    else if (m_chunk != nullptr && m_displayMode >= DispMode::DISP_GRID_XY && m_displayMode <= DispMode::DISP_GRID_ZY)
     {
         // orthographic camera
         glMatrixMode(GL_PROJECTION);
@@ -120,7 +120,7 @@ void RenderWidget::paintGL()
         {
             glOrtho( 0.0f, m_chunk->getSizeX(), 0.0f, m_chunk->getSizeY(), 0.0f, 100.0f);
         }
-        else if (m_displayMode == DispMode::DISP_GRID_YZ)
+        else if (m_displayMode == DispMode::DISP_GRID_ZY)
         {
             glOrtho( 0.0f, m_chunk->getSizeX(), 0.0f, m_chunk->getSizeZ(), 0.0f, 100.0f);
         }
@@ -182,21 +182,21 @@ void RenderWidget::paintGL()
 
             m_texture->release();
         }
-        else if (m_displayMode == DispMode::DISP_GRID_YZ)
+        else if (m_displayMode == DispMode::DISP_GRID_ZY)
         {
             // draw the grid
             glBegin(GL_LINES);
             glLineWidth(1.0f);
             glColor3f(0.5f, 0.5f, 0.5f);
-            for (int y = 0; y <= m_chunk->getSizeY(); y++)
-            {
-                glVertex2f(y, 0.0f);
-                glVertex2f(y, m_chunk->getSizeZ());
-            }
             for (int z = 0; z <= m_chunk->getSizeZ(); z++)
             {
-                glVertex2f(0.0f, z);
-                glVertex2f(m_chunk->getSizeY(), z);
+                glVertex2f(z, 0.0f);
+                glVertex2f(z, m_chunk->getSizeY());
+            }
+            for (int y = 0; y <= m_chunk->getSizeY(); y++)
+            {
+                glVertex2f(0.0f, y);
+                glVertex2f(m_chunk->getSizeZ(), y);
             }
             glEnd();
 
@@ -208,21 +208,21 @@ void RenderWidget::paintGL()
                 float color = (float)x / (float)m_chunk->getSizeX();
                 color = 1.0f - color;
                 glColor3f(color, color, color);
-                for (int y = 0; y < m_chunk->getSizeY(); y++)
+                for (int z = 0; z < m_chunk->getSizeZ(); z++)
                 {
-                    for (int z = 0; z < m_chunk->getSizeZ(); z++)
+                    for (int y = 0; y < m_chunk->getSizeY(); y++)
                     {
                         if (m_chunk->getID(x, y, z) != 0)
                         {
                             glBegin(GL_QUADS);
                             glTexCoord2f(0.0f, 0.0f);
-                            glVertex2f(y, z);
+                            glVertex2f(z, y);
                             glTexCoord2f(1.0f, 0.0f);
-                            glVertex2f(y + 1, z);
+                            glVertex2f(z + 1, y);
                             glTexCoord2f(1.0f, 1.0f);
-                            glVertex2f(y + 1, z + 1);
+                            glVertex2f(z + 1, y + 1);
                             glTexCoord2f(0.0f, 1.0f);
-                            glVertex2f(y, z + 1);
+                            glVertex2f(z, y + 1);
                             glEnd();
                         }
                     }
@@ -310,7 +310,7 @@ void RenderWidget::paintGL()
         case DispMode::DISP_GRID_XZ:
             mode = "XZ";
             break;
-        case DispMode::DISP_GRID_YZ:
+        case DispMode::DISP_GRID_ZY:
             mode = "YZ";
             break;
     }
@@ -397,7 +397,7 @@ void RenderWidget::mousePressEvent(QMouseEvent *event)
         {
             int mode = (int)m_displayMode;
             mode++;
-            if (mode > (int)DispMode::DISP_GRID_YZ)
+            if (mode > (int)DispMode::DISP_GRID_ZY)
                 mode = (int)DispMode::DISP_3D;
             m_displayMode = (DispMode)mode;
         }
