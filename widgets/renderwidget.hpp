@@ -23,13 +23,14 @@ class RenderWidget : public QGLWidget
 
         void keyPressEvent(QKeyEvent *event);
         void mouseMoveEvent(QMouseEvent *event);
+        void mousePressEvent(QMouseEvent *event);
 
 
-        enum DispMode {
-            DISP_3D, // Displays in 3D
-            DISP_GRID_XY, // Draws a grid in the XY plane
-            DISP_GRID_XZ, // Draws a grid in the XZ plane
-            DISP_GRID_YZ, // Draws a grid in the YZ plane
+        enum class DispMode : int {
+            DISP_3D = 0, // Displays in 3D
+            DISP_GRID_XY = 1, // Draws a grid in the XY plane
+            DISP_GRID_XZ = 2, // Draws a grid in the XZ plane
+            DISP_GRID_YZ = 3, // Draws a grid in the YZ plane
         };
 
         void setDispMode(DispMode mode);

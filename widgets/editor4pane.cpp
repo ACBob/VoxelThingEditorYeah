@@ -33,18 +33,22 @@ Editor4Pane::Editor4Pane(QWidget *parent) : QDockWidget(parent)
 
 	// Split the left/right into top/bottom
 	QSplitter *leftUpDownSplitter = new QSplitter(Qt::Vertical, leftRightSplitter);
+    // default to 50%
+    leftUpDownSplitter->setSizes(QList<int>() << 50 << 50);
 	QSplitter *rightUpDownSplitter = new QSplitter(Qt::Vertical, leftRightSplitter);
+    // default to 50%
+    rightUpDownSplitter->setSizes(QList<int>() << 50 << 50);
 
     // Top-left is the viewport
     m_viewport = new RenderWidget(leftUpDownSplitter);
 
     // Then we have grid views
     m_gridXY = new RenderWidget(leftUpDownSplitter);
-    m_gridXY->setDispMode(RenderWidget::DISP_GRID_XY);
+    m_gridXY->setDispMode(RenderWidget::DispMode::DISP_GRID_XY);
     m_gridXZ = new RenderWidget(rightUpDownSplitter);
-    m_gridXZ->setDispMode(RenderWidget::DISP_GRID_XZ);
+    m_gridXZ->setDispMode(RenderWidget::DispMode::DISP_GRID_XZ);
     m_gridYZ = new RenderWidget(rightUpDownSplitter);
-    m_gridYZ->setDispMode(RenderWidget::DISP_GRID_YZ);
+    m_gridYZ->setDispMode(RenderWidget::DispMode::DISP_GRID_YZ);
 
     // Disable all features
     // UITODO: At some point, this will be floatable, closable, etc.
