@@ -14,6 +14,9 @@
 #define DEF_CHUNK_SIZE_Y 16
 #define DEF_CHUNK_SIZE_Z 16
 
+class Model; // Forward declaration
+class QGLContext; // Forward declaration
+
 class CChunk : public QObject
 {
     Q_OBJECT;
@@ -49,6 +52,10 @@ class CChunk : public QObject
         void get(int x, int y, int z, uint16_t& id, uint16_t& meta);
         void get(int x, int y, int z, uint32_t& voxel);
 
+        void rebuildModel();
+
+        void render(QGLContext *context);
+
     private:
         uint32_t *m_voxels;
 
@@ -59,4 +66,6 @@ class CChunk : public QObject
         int m_sizeX;
         int m_sizeY;
         int m_sizeZ;
+
+        Model *m_model;
 };

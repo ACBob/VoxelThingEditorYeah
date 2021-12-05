@@ -25,6 +25,9 @@ set(SRC
 
     editor/tools.cpp
     editor/tools.hpp
+
+    render/model.cpp
+    render/model.hpp
 )
 
 set(RESOURCES resources/resources.qrc)

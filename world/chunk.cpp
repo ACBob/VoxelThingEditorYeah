@@ -2,6 +2,10 @@
 
 #include <random>
 
+#include "../render/model.hpp"
+
+#include <QGLContext>
+
 CChunk::CChunk(int x, int y, int z, int sizeX, int sizeY, int sizeZ)
 {
     m_x = x;
@@ -24,6 +28,9 @@ CChunk::CChunk(int x, int y, int z, int sizeX, int sizeY, int sizeZ)
             }
         }
     }
+
+    m_model = new Model();
+    rebuildModel();
 }
 
 CChunk::~CChunk()
@@ -118,4 +125,114 @@ void CChunk::get(int x, int y, int z, uint16_t &id, uint16_t &meta)
     }
     id = getID(x, y, z);
     meta = getMeta(x, y, z);
+}
+
+const int cubeVertices[8][3] = {
+	// NORTH +Z
+	{ 1, 1, 1 },
+	{ 0, 1, 1 },
+	{ 0, 0, 1 },
+	{ 1, 0, 1 },
+	// SOUTH -Z
+	{ 0, 1, 0 },
+	{ 1, 1, 0 },
+	{ 1, 0, 0 },
+	{ 0, 0, 0 },
+};
+
+const int cubeTriangles[6][4]  = {
+	{ 0, 1, 2, 3 }, // N
+	{ 5, 0, 3, 6 }, // E
+	{ 4, 5, 6, 7 }, // S
+	{ 1, 4, 7, 2 }, // W
+
+	{ 5, 4, 1, 0 }, // UP
+	{ 3, 2, 7, 6 }	// DN
+};
+
+const int dir[6][3] = {
+    { 0, 0, 1 },
+    { 1, 0, 0 },
+    { 0, 0, -1 },
+    { -1, 0, 0 },
+    { 0, 1, 0 },
+    { 0, -1, 0 }
+};
+
+void CChunk::rebuildModel()
+{
+    m_model->m_vertices.clear();
+    m_model->m_faces.clear();
+
+    for (int z = 0; z < m_sizeZ; z++)
+    {
+        for (int y = 0; y < m_sizeY; y++)
+        {
+            for (int x = 0; x < m_sizeX; x++)
+            {
+                if (getID(x, y, z) == 0)
+                {
+                    continue;
+                }
+
+                for (int face = 0; face < 6; face++)
+                {
+                    // test if face is visible, by checking if there's a block in the direction of the face
+                    int dx = x + dir[face][0];
+                    int dy = y + dir[face][1];
+                    int dz = z + dir[face][2];
+
+                    if (getID(dx, dy, dz) != 0)
+                    {
+                        continue;
+                    }
+
+                    // construct the face
+                    for (int i = 0; i < 4; i++)
+                    {
+                        Model::Vertex v;
+                        v.x = x + cubeVertices[cubeTriangles[face][i]][0];
+                        v.y = y + cubeVertices[cubeTriangles[face][i]][1];
+                        v.z = z + cubeVertices[cubeTriangles[face][i]][2];
+
+                        switch (i)
+                        {
+                            case 0:
+                                v.u = 0.0f;
+                                v.v = 0.0f;
+                                break;
+                            case 1:
+                                v.u = 1.0f;
+                                v.v = 0.0f;
+                                break;
+                            case 2:
+                                v.u = 1.0f;
+                                v.v = 1.0f;
+                                break;
+                            case 3:
+                                v.u = 0.0f;
+                                v.v = 1.0f;
+                                break;
+                        }
+
+                        v.nx = dir[face][0];
+                        v.ny = dir[face][1];
+                        v.nz = dir[face][2];
+
+                        m_model->m_vertices.push_back(v);
+                    }
+
+                    m_model->m_faces.push_back(Model::Face{ m_model->m_vertices.size() - 4, m_model->m_vertices.size() - 3, m_model->m_vertices.size() - 2 });
+                    m_model->m_faces.push_back(Model::Face{ m_model->m_vertices.size() - 4, m_model->m_vertices.size() - 2, m_model->m_vertices.size() - 1 });
+                }
+            }
+        }
+    }
+
+    m_model->update();
+}
+
+void CChunk::render(QGLContext *context)
+{
+    m_model->render(context);
 }

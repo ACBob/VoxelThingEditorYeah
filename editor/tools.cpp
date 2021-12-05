@@ -57,6 +57,8 @@ void CHandTool::mousePressEvent(QMouseEvent *event, QVector3D pos, QVector3D dir
         }
     }
 
+    view->m_chunk->rebuildModel();
+    
     view->update();
 }
 
