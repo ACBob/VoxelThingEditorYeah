@@ -3,6 +3,7 @@
 #include "../widgets/renderwidget.hpp"
 
 #include "../world/raycast.hpp"
+#include "../world/chunk.hpp"
 
 #include <QDebug>
 
@@ -34,12 +35,27 @@ void CHandTool::mousePressEvent(QMouseEvent *event, QVector3D pos, QVector3D dir
     // m_selectedBlockPos = pos;
     // view->update();
 
-    CRaycast cast;
-    QVector3D p = cast.cast( view->m_chunk, pos, dir, 100.0f);
+    CRaycast caster;
+    std::pair<QVector3D, QVector3D> cast = caster.cast( view->m_chunk, pos, dir, 100.0f);
 
-    qDebug () << "Hand tool cast @" << p << " looking at " << dir;
+    m_selectedBlockPos = cast.first;
+    m_selectedBlockNormal = cast.second;
 
-    m_selectedBlockPos = p;
+    if (m_selectedBlockNormal.length() > 0.0f)
+    {
+        if (event->button() == Qt::LeftButton)
+        {
+            QVector3D p = m_selectedBlockPos;
+            view->m_chunk->setID(p.x(), p.y(), p.z(), 0);
+            view->m_chunk->setMeta(p.x(), p.y(), p.z(), 0);
+        }
+        else if ( event->button() == Qt::RightButton)
+        {
+            QVector3D p = m_selectedBlockPos + m_selectedBlockNormal;
+            view->m_chunk->setID(p.x(), p.y(), p.z(), 1);
+            view->m_chunk->setMeta(p.x(), p.y(), p.z(), 0);
+        }
+    }
 
     view->update();
 }

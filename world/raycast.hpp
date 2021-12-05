@@ -21,8 +21,8 @@ class CRaycast : public QObject
         float m_fLength;
         QVector3D m_direction;
 
-        QVector3D cast(CChunk *chunk);
-        QVector3D cast(CChunk *chunk, QVector3D start, QVector3D direction, float length);
+        std::pair<QVector3D, QVector3D> cast(CChunk *chunk);
+        std::pair<QVector3D, QVector3D> cast(CChunk *chunk, QVector3D start, QVector3D direction, float length);
         // QVector3D cast(CWorld *world);
         // QVector3D cast(CWorld *world, QVector3D start, QVector3D direction, float length);
 };

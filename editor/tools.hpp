@@ -57,4 +57,5 @@ class CHandTool final : public CTool
 
     private:
         QVector3D m_selectedBlockPos;
+        QVector3D m_selectedBlockNormal;
 };
