@@ -57,6 +57,9 @@ class RenderWidget : public QGLWidget
 
         float m_zoom; // Used for grid & isometric
 
+        float offset_x; // Used for grid & isometric
+        float offset_y; // Used for grid & isometric
+
         QPoint m_lastMousePos;
 
         bool m_captureMouse;

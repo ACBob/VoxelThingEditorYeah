@@ -14,6 +14,8 @@
 #include <QMenu>
 #include <QDebug>
 
+#include <QSettings>
+
 #include <math.h>
 
 RenderWidget::RenderWidget(QWidget *parent) : QGLWidget(parent)
@@ -50,6 +52,9 @@ RenderWidget::RenderWidget(QWidget *parent) : QGLWidget(parent)
     memset( m_projection, 0, sizeof(m_projection) );
     memset( m_viewport, 0, sizeof(m_viewport) );
 
+    offset_x = 0;
+    offset_y = 0;
+
     setMinimumSize(320, 240);
 }
 
@@ -74,11 +79,13 @@ void RenderWidget::resizeGL(int w, int h)
 
 void RenderWidget::paintGL()
 {
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    QSettings settings;
+
+    QColor voidColor = settings.value("voidColor", QColor(Qt::black)).value<QColor>();
+    QColor gridColor = settings.value("gridColor", QColor(Qt::gray)).value<QColor>();
+
+    glClearColor(voidColor.redF(), voidColor.greenF(), voidColor.blueF(), 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    
-    // glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
-    // glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     if (m_chunk != nullptr && m_displayMode == DispMode::DISP_3D)
     {
@@ -118,167 +125,85 @@ void RenderWidget::paintGL()
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
 
-        if (m_displayMode == DispMode::DISP_GRID_XY)
-        {
-            glOrtho( 0.0f, m_chunk->getSizeX(), 0.0f, m_chunk->getSizeY(), 0.0f, 100.0f);
-        }
-        else if (m_displayMode == DispMode::DISP_GRID_ZY)
-        {
-            glOrtho( 0.0f, m_chunk->getSizeX(), 0.0f, m_chunk->getSizeZ(), 0.0f, 100.0f);
-        }
-        else if (m_displayMode == DispMode::DISP_GRID_XZ)
-        {
-            glOrtho( 0.0f, m_chunk->getSizeY(), 0.0f, m_chunk->getSizeZ(), 0.0f, 100.0f);
-        }
+        glOrtho(-m_zoom, m_zoom, -m_zoom, m_zoom, -100.0f, 100.0f);
 
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
 
+        if ( m_displayMode == DispMode::DISP_GRID_XY )
+        {
+            // Looking towards negative Z
+            gluLookAt(0.0f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+            glTranslatef(offset_x, offset_y, 0.0f);
+        }
+        else if ( m_displayMode == DispMode::DISP_GRID_XZ )
+        {
+            // Looking towards negative Y
+            gluLookAt(0.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
+            glTranslatef(offset_x, 0.0f, offset_y);
+        }
+        else
+        {
+            // Looking towards negative X
+            gluLookAt(-1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+            glTranslatef(0.0f, offset_x, offset_y);
+        }
+
         // After that is setup, draw!
-        if (m_displayMode == DispMode::DISP_GRID_XY)
+        m_texture->bind();
+
+        m_chunk->render(context());
+
+        m_texture->release();
+
+        // draw a 3d grid
+        // Wasteful, but I can't be bothered to do it properly
+        glDisable(GL_DEPTH_TEST);
+        glBegin(GL_LINES);
+        glLineWidth(1.0f);
+        glColor3f(gridColor.redF(), gridColor.greenF(), gridColor.blueF());
+
+        // XZ
+
+        for (int i = 0; i <= m_chunk->getSizeX(); i++)
         {
-            // draw the grid
-            glBegin(GL_LINES);
-            glLineWidth(1.0f);
-            glColor3f(0.5f, 0.5f, 0.5f);
-            for (int x = 0; x <= m_chunk->getSizeX(); x++)
-            {
-                glVertex2f(x, 0.0f);
-                glVertex2f(x, m_chunk->getSizeY());
-            }
-            for (int y = 0; y <= m_chunk->getSizeY(); y++)
-            {
-                glVertex2f(0.0f, y);
-                glVertex2f(m_chunk->getSizeX(), y);
-            }
-            glEnd();
-
-            // draw the blocks
-            m_texture->bind();
-
-            for ( int z = m_chunk->getSizeZ() - 1; z > 0; z -- )
-            {
-                float color = (float)(z + 1) / (float)m_chunk->getSizeZ();
-                glColor3f(color, color, color);
-                for (int x = 0; x < m_chunk->getSizeX(); x++)
-                {
-                    for (int y = 0; y < m_chunk->getSizeZ(); y++)
-                    {
-                        if (m_chunk->getID(x, y, z) != 0)
-                        {
-                            glBegin(GL_QUADS);
-                            glTexCoord2f(0.0f, 0.0f);
-                            glVertex2f(x, y);
-                            glTexCoord2f(1.0f, 0.0f);
-                            glVertex2f(x + 1, y);
-                            glTexCoord2f(1.0f, 1.0f);
-                            glVertex2f(x + 1, y + 1);
-                            glTexCoord2f(0.0f, 1.0f);
-                            glVertex2f(x, y + 1);
-                            glEnd();
-                        }
-                    }
-                }
-            }
-
-            m_texture->release();
+            glVertex3f(i, 0.0f, 0.0f);
+            glVertex3f(i, m_chunk->getSizeY(), 0.0f);
         }
-        else if (m_displayMode == DispMode::DISP_GRID_ZY)
+        for (int i = 0; i <= m_chunk->getSizeY(); i++)
         {
-            // draw the grid
-            glBegin(GL_LINES);
-            glLineWidth(1.0f);
-            glColor3f(0.5f, 0.5f, 0.5f);
-            for (int z = 0; z <= m_chunk->getSizeZ(); z++)
-            {
-                glVertex2f(z, 0.0f);
-                glVertex2f(z, m_chunk->getSizeY());
-            }
-            for (int y = 0; y <= m_chunk->getSizeY(); y++)
-            {
-                glVertex2f(0.0f, y);
-                glVertex2f(m_chunk->getSizeZ(), y);
-            }
-            glEnd();
-
-            // draw the blocks
-            m_texture->bind();
-
-            for (int x = m_chunk->getSizeX() - 1; x > 0; x --)
-            {
-                float color = (float)(x + 1) / (float)m_chunk->getSizeX();
-                glColor3f(color, color, color);
-                for (int z = 0; z < m_chunk->getSizeZ(); z++)
-                {
-                    for (int y = 0; y < m_chunk->getSizeY(); y++)
-                    {
-                        if (m_chunk->getID(x, y, z) != 0)
-                        {
-                            glBegin(GL_QUADS);
-                            glTexCoord2f(0.0f, 0.0f);
-                            glVertex2f(z, y);
-                            glTexCoord2f(1.0f, 0.0f);
-                            glVertex2f(z + 1, y);
-                            glTexCoord2f(1.0f, 1.0f);
-                            glVertex2f(z + 1, y + 1);
-                            glTexCoord2f(0.0f, 1.0f);
-                            glVertex2f(z, y + 1);
-                            glEnd();
-                        }
-                    }
-                }
-            }
-            
-            m_texture->release();
+            glVertex3f(0.0f, i, 0.0f);
+            glVertex3f(m_chunk->getSizeX(), i, 0.0f);
         }
-        else if (m_displayMode == DispMode::DISP_GRID_XZ)
+
+        // XY
+
+        for (int i = 0; i <= m_chunk->getSizeX(); i++)
         {
-            // draw the grid
-            glBegin(GL_LINES);
-            glLineWidth(1.0f);
-            glColor3f(0.5f, 0.5f, 0.5f);
-            for (int x = 0; x <= m_chunk->getSizeY(); x++)
-            {
-                glVertex2f(x, 0.0f);
-                glVertex2f(x, m_chunk->getSizeZ());
-            }
-            for (int y = 0; y <= m_chunk->getSizeZ(); y++)
-            {
-                glVertex2f(0.0f, y);
-                glVertex2f(m_chunk->getSizeY(), y);
-            }
-            glEnd();
-
-            // draw the blocks
-            m_texture->bind();
-
-            for ( int y = m_chunk->getSizeY() - 1; y > 0; y-- )
-            {
-                float color = (float)(y + 1) / (float)m_chunk->getSizeY();
-                glColor3f(color, color, color);
-                for (int x = 0; x < m_chunk->getSizeX(); x++)
-                {
-                    for (int z = 0; z < m_chunk->getSizeZ(); z++)
-                    {
-                        if (m_chunk->getID(x, y, z) != 0)
-                        {
-                            glBegin(GL_QUADS);
-                            glTexCoord2f(0.0f, 0.0f);
-                            glVertex2f(x, z);
-                            glTexCoord2f(1.0f, 0.0f);
-                            glVertex2f(x + 1, z);
-                            glTexCoord2f(1.0f, 1.0f);
-                            glVertex2f(x + 1, z + 1);
-                            glTexCoord2f(0.0f, 1.0f);
-                            glVertex2f(x, z + 1);
-                            glEnd();
-                        }
-                    }
-                }
-            }
-
-            m_texture->release();
+            glVertex3f(i, 0.0f, 0.0f);
+            glVertex3f(i, 0.0f, m_chunk->getSizeZ());
         }
+        for (int i = 0; i <= m_chunk->getSizeZ(); i++)
+        {
+            glVertex3f(0.0f, 0.0f, i);
+            glVertex3f(m_chunk->getSizeX(), 0.0f, i);
+        }
+
+        // YZ
+        for (int i = 0; i <= m_chunk->getSizeY(); i++)
+        {
+            glVertex3f(0.0f, i, 0.0f);
+            glVertex3f(0.0f, i, m_chunk->getSizeZ());
+        }
+        for (int i = 0; i <= m_chunk->getSizeZ(); i++)
+        {
+            glVertex3f(0.0f, 0.0f, i);
+            glVertex3f(0.0f, m_chunk->getSizeY(), i);
+        }
+
+        glEnd();
+
+        glEnable(GL_DEPTH_TEST);
     }
     else if (m_chunk != nullptr && m_displayMode == DispMode::DISP_ISOMETRIC)
     {
@@ -286,13 +211,18 @@ void RenderWidget::paintGL()
         glLoadIdentity();
         
         glOrtho( -m_zoom, m_zoom, -m_zoom, m_zoom, -100.0f, 100.0f );
+        
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
 
         float d = sqrt( 1 / 3.0f );
         gluLookAt(d, d, d, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
-        
 
-        glMatrixMode(GL_MODELVIEW);
-        glLoadIdentity();
+        // we want offset_x and offset_y to be diagonal
+        float realOffsetX = offset_x * sqrt(3.0f);
+        float realOffsetY = offset_y * sqrt(3.0f);
+
+        glTranslatef(realOffsetX, realOffsetY, 0.0f);
 
         // same as DISP_3D now
         m_texture->bind();
@@ -415,7 +345,7 @@ void RenderWidget::keyPressEvent(QKeyEvent *event)
 
 void RenderWidget::mouseMoveEvent(QMouseEvent *event)
 {
-    if (event->buttons() & Qt::MidButton || m_captureMouse)
+    if (m_captureMouse)
     {
         // camera_forward is -1.0f on Z, rotated by the pitch and yaw
         m_camera_yaw += (event->x() - m_lastMousePos.x()) * 0.1f;
@@ -432,8 +362,28 @@ void RenderWidget::mouseMoveEvent(QMouseEvent *event)
 
         update();
     }
-    
-    m_lastMousePos = event->pos();
+
+    if ( m_displayMode >= DispMode::DISP_GRID_XY && m_displayMode <= DispMode::DISP_ISOMETRIC && event->buttons() & Qt::MiddleButton)
+    {
+        offset_x += (event->x() - m_lastMousePos.x()) * 0.01f;
+        offset_y -= (event->y() - m_lastMousePos.y()) * 0.01f;
+        update();
+
+        // Move mouse back to where it was
+        QCursor::setPos(mapToGlobal(m_lastMousePos));
+        m_lastMousePos = mapFromGlobal(QCursor::pos());
+
+        // make the cursor look like it's dragging
+        setCursor(Qt::ClosedHandCursor);
+        
+
+        // qDebug() << "offset_x: " << offset_x << " offset_y: " << offset_y;
+    }
+    else
+    {
+        m_lastMousePos = event->pos();
+        unsetCursor();
+    }
 
     // If mouse is captured, we want to reset the cursor position
     if (m_captureMouse)

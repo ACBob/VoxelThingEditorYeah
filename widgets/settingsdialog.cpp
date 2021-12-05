@@ -7,11 +7,14 @@
 #include <QTabWidget>
 #include <QWidget>
 
+#include <QSettings>
+
 #include "colorpicker.hpp"
 
 SettingsDialog::SettingsDialog(QWidget *parent) :
     QDialog(parent)
 {
+    QSettings settings;
     setWindowTitle(tr("Settings"));
 
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
@@ -36,17 +39,29 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
     tabWidget->addTab(tabGeneral, tr("General"));
 
     // General
-    QVBoxLayout *layoutGeneral = new QVBoxLayout(tabGeneral);
-    tabGeneral->setLayout(layoutGeneral);
-    QLabel *labelGeneral = new QLabel(tr("General"), tabGeneral);
-    layoutGeneral->addWidget(labelGeneral);
-    QPushButton *buttonGeneral = new QPushButton(tr("OK"), tabGeneral);
-    layoutGeneral->addWidget(buttonGeneral);
+    QVBoxLayout *generalLayout = new QVBoxLayout(tabGeneral);
+    tabGeneral->setLayout(generalLayout);
 
-    ColorPicker *colorPicker = new ColorPicker(this);
-    layoutGeneral->addWidget(colorPicker);
+    QLabel *label = new QLabel(tr("Grid Color:"), tabGeneral);
+    generalLayout->addWidget(label);
 
-    ColorPicker *colorPicker2 = new ColorPicker(this);
-    colorPicker2->enableAlpha();
-    layoutGeneral->addWidget(colorPicker2);
+    m_gridColorPicker = new ColorPicker(tabGeneral);
+    m_gridColorPicker->enableAlpha();
+    m_gridColorPicker->setColor(settings.value("gridColor", QColor(Qt::gray)).value<QColor>());
+    generalLayout->addWidget(m_gridColorPicker);
+
+    QLabel *label2 = new QLabel(tr("Void Color:"), tabGeneral);
+    generalLayout->addWidget(label2);
+
+    m_voidColorPicker = new ColorPicker(tabGeneral);
+    m_voidColorPicker->setColor(settings.value("voidColor", QColor(Qt::black)).value<QColor>());
+    generalLayout->addWidget(m_voidColorPicker);
+}
+
+void SettingsDialog::accept()
+{
+    QSettings settings;
+    settings.setValue("gridColor", m_gridColorPicker->getColor());
+    settings.setValue("voidColor", m_voidColorPicker->getColor());
+    QDialog::accept();
 }
