@@ -11,6 +11,8 @@
 
 #include <QVector>
 
+#include "../world/vector.hpp"
+
 class Model : public QObject
 {
 	Q_OBJECT
@@ -40,4 +42,6 @@ class Model : public QObject
 
 	QVector<Vertex> m_vertices;
 	QVector<Face> m_faces;
+
+	Vector3f m_position;
 };

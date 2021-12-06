@@ -19,6 +19,8 @@ class QGLContext; // Forward declaration
 
 #include "../editor/blockdefs.hpp"
 
+#include "vector.hpp"
+
 class CChunk : public QObject
 {
 	Q_OBJECT;
@@ -59,18 +61,16 @@ class CChunk : public QObject
 
 	void render( QGLContext *context );
 
+	Vector3i getPosition() { return m_pos; }
+	Vector3i getSize() { return m_size; }
+
 	BlockDefs *m_blockDefs;
 
   private:
 	uint32_t *m_voxels;
 
-	int m_x;
-	int m_y;
-	int m_z;
-
-	int m_sizeX;
-	int m_sizeY;
-	int m_sizeZ;
+	Vector3i m_pos;
+	Vector3i m_size;
 
 	Model *m_model;
 };

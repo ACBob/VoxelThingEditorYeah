@@ -8,23 +8,23 @@
 
 CChunk::CChunk( int x, int y, int z, int sizeX, int sizeY, int sizeZ )
 {
-	m_x = x;
-	m_y = y;
-	m_z = z;
+	m_pos.x = x;
+	m_pos.y = y;
+	m_pos.z = z;
 
-	m_sizeX = sizeX;
-	m_sizeY = sizeY;
-	m_sizeZ = sizeZ;
+	m_size.x = sizeX;
+	m_size.y = sizeY;
+	m_size.z = sizeZ;
 
-	m_voxels = new uint32_t[m_sizeX * m_sizeY * m_sizeZ];
-	memset( m_voxels, 0, m_sizeX * m_sizeY * m_sizeZ * sizeof( uint32_t ) );
+	m_voxels = new uint32_t[m_size.x * m_size.y * m_size.z];
+	memset( m_voxels, 0, m_size.x * m_size.y * m_size.z * sizeof( uint32_t ) );
 	for ( int y = 7; y >= 0; y-- )
 	{
-		for ( int x = 0; x < m_sizeX; x++ )
+		for ( int x = 0; x < m_size.x; x++ )
 		{
-			for ( int z = 0; z < m_sizeZ; z++ )
+			for ( int z = 0; z < m_size.z; z++ )
 			{
-				m_voxels[x + y * m_sizeX + z * m_sizeX * m_sizeY] = 1;
+				m_voxels[x + y * m_size.x + z * m_size.x * m_size.y] = 1;
 			}
 		}
 	}
@@ -35,35 +35,35 @@ CChunk::CChunk( int x, int y, int z, int sizeX, int sizeY, int sizeZ )
 
 CChunk::~CChunk() { delete[] m_voxels; }
 
-int CChunk::getX() { return m_x; }
-void CChunk::setX( int x ) { m_x = x; }
-int CChunk::getY() { return m_y; }
-void CChunk::setY( int y ) { m_y = y; }
-int CChunk::getZ() { return m_z; }
-void CChunk::setZ( int z ) { m_z = z; }
+int CChunk::getX() { return m_pos.x; }
+void CChunk::setX( int x ) { m_pos.x = x; }
+int CChunk::getY() { return m_pos.y; }
+void CChunk::setY( int y ) { m_pos.y = y; }
+int CChunk::getZ() { return m_pos.z; }
+void CChunk::setZ( int z ) { m_pos.z = z; }
 
-int CChunk::getSizeX() { return m_sizeX; }
-void CChunk::setSizeX( int sizeX ) { m_sizeX = sizeX; }
-int CChunk::getSizeY() { return m_sizeY; }
-void CChunk::setSizeY( int sizeY ) { m_sizeY = sizeY; }
-int CChunk::getSizeZ() { return m_sizeZ; }
-void CChunk::setSizeZ( int sizeZ ) { m_sizeZ = sizeZ; }
+int CChunk::getSizeX() { return m_size.x; }
+void CChunk::setSizeX( int sizeX ) { m_size.x = sizeX; }
+int CChunk::getSizeY() { return m_size.y; }
+void CChunk::setSizeY( int sizeY ) { m_size.y = sizeY; }
+int CChunk::getSizeZ() { return m_size.z; }
+void CChunk::setSizeZ( int sizeZ ) { m_size.z = sizeZ; }
 
 uint16_t CChunk::getID( int x, int y, int z )
 {
-	if ( x < 0 || x >= m_sizeX || y < 0 || y >= m_sizeY || z < 0 || z >= m_sizeZ )
+	if ( x < 0 || x >= m_size.x || y < 0 || y >= m_size.y || z < 0 || z >= m_size.z )
 	{
 		return 0;
 	}
-	return m_voxels[x + y * m_sizeX + z * m_sizeX * m_sizeY];
+	return m_voxels[x + y * m_size.x + z * m_size.x * m_size.y];
 }
 uint16_t CChunk::getMeta( int x, int y, int z )
 {
-	if ( x < 0 || x >= m_sizeX || y < 0 || y >= m_sizeY || z < 0 || z >= m_sizeZ )
+	if ( x < 0 || x >= m_size.x || y < 0 || y >= m_size.y || z < 0 || z >= m_size.z )
 	{
 		return 0;
 	}
-	return m_voxels[x + y * m_sizeX + z * m_sizeX * m_sizeY] >> 16;
+	return m_voxels[x + y * m_size.x + z * m_size.x * m_size.y] >> 16;
 }
 
 void CChunk::setID( int x, int y, int z, uint16_t id ) { set( x, y, z, id, getMeta( x, y, z ) ); }
@@ -72,43 +72,43 @@ void CChunk::setMeta( int x, int y, int z, uint16_t meta ) { set( x, y, z, getID
 
 void CChunk::set( int x, int y, int z, uint16_t id, uint16_t meta )
 {
-	if ( x < 0 || x >= m_sizeX || y < 0 || y >= m_sizeY || z < 0 || z >= m_sizeZ )
+	if ( x < 0 || x >= m_size.x || y < 0 || y >= m_size.y || z < 0 || z >= m_size.z )
 	{
 		return;
 	}
-	m_voxels[x + y * m_sizeX + z * m_sizeX * m_sizeY] = id | ( meta << 16 );
+	m_voxels[x + y * m_size.x + z * m_size.x * m_size.y] = id | ( meta << 16 );
 }
 
 void CChunk::set( int x, int y, int z, uint32_t voxel )
 {
-	if ( x < 0 || x >= m_sizeX || y < 0 || y >= m_sizeY || z < 0 || z >= m_sizeZ )
+	if ( x < 0 || x >= m_size.x || y < 0 || y >= m_size.y || z < 0 || z >= m_size.z )
 	{
 		return;
 	}
-	m_voxels[x + y * m_sizeX + z * m_sizeX * m_sizeY] = voxel;
+	m_voxels[x + y * m_size.x + z * m_size.x * m_size.y] = voxel;
 }
 
 uint32_t CChunk::get( int x, int y, int z )
 {
-	if ( x < 0 || x >= m_sizeX || y < 0 || y >= m_sizeY || z < 0 || z >= m_sizeZ )
+	if ( x < 0 || x >= m_size.x || y < 0 || y >= m_size.y || z < 0 || z >= m_size.z )
 	{
 		return 0;
 	}
-	return m_voxels[x + y * m_sizeX + z * m_sizeX * m_sizeY];
+	return m_voxels[x + y * m_size.x + z * m_size.x * m_size.y];
 }
 
 void CChunk::get( int x, int y, int z, uint32_t &voxel )
 {
-	if ( x < 0 || x >= m_sizeX || y < 0 || y >= m_sizeY || z < 0 || z >= m_sizeZ )
+	if ( x < 0 || x >= m_size.x || y < 0 || y >= m_size.y || z < 0 || z >= m_size.z )
 	{
 		return;
 	}
-	voxel = m_voxels[x + y * m_sizeX + z * m_sizeX * m_sizeY];
+	voxel = m_voxels[x + y * m_size.x + z * m_size.x * m_size.y];
 }
 
 void CChunk::get( int x, int y, int z, uint16_t &id, uint16_t &meta )
 {
-	if ( x < 0 || x >= m_sizeX || y < 0 || y >= m_sizeY || z < 0 || z >= m_sizeZ )
+	if ( x < 0 || x >= m_size.x || y < 0 || y >= m_size.y || z < 0 || z >= m_size.z )
 	{
 		id	 = 0;
 		meta = 0;
@@ -148,11 +148,11 @@ void CChunk::rebuildModel()
 	m_model->m_vertices.clear();
 	m_model->m_faces.clear();
 
-	for ( int z = 0; z < m_sizeZ; z++ )
+	for ( int z = 0; z < m_size.z; z++ )
 	{
-		for ( int y = 0; y < m_sizeY; y++ )
+		for ( int y = 0; y < m_size.y; y++ )
 		{
-			for ( int x = 0; x < m_sizeX; x++ )
+			for ( int x = 0; x < m_size.x; x++ )
 			{
 				if ( getID( x, y, z ) == 0 )
 				{
@@ -218,6 +218,7 @@ void CChunk::rebuildModel()
 	}
 
 	m_model->update();
+	m_model->m_position = m_pos * m_size;
 }
 
 void CChunk::render( QGLContext *context ) { m_model->render( context ); }

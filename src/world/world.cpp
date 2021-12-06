@@ -37,9 +37,9 @@ CChunk *CWorld::createChunk(const Vector3i &pos) {
     
     m_chunks.insert(pos, c);
 
-    qDebug() << "Created chunk at " << pos;
-    qDebug() << "Chunk count: " << m_chunks.size();
-    qDebug() << "Chunk ptr value: " << c;
+    // qDebug() << "Created chunk at " << pos;
+    // qDebug() << "Chunk count: " << m_chunks.size();
+    // qDebug() << "Chunk ptr value: " << c;
 
     return c;
 }

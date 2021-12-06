@@ -14,6 +14,8 @@ void Model::render( QGLContext *context )
 {
 	context->makeCurrent();
 
+	glTranslatef( m_position.x, m_position.y, m_position.z );
+
 	glVertexPointer( 3, GL_FLOAT, sizeof( Model::Vertex ), m_vertices.data() );
 	glTexCoordPointer( 2, GL_FLOAT, sizeof( Model::Vertex ), &m_vertices.data()[0].u );
 

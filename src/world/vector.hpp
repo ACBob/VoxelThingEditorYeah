@@ -189,7 +189,7 @@ template <typename T> class Vector3
 	bool operator==( const Vector3<T> &v ) const { return x == v.x && y == v.y && z == v.z; }
 	bool operator!=( const Vector3<T> &v ) const { return x != v.x || y != v.y || z != v.z; }
 	bool operator>( const Vector3<T> &v ) const { return x > v.x && y > v.y && z > v.z; }
-	bool operator<( const Vector3<T> &v ) const { return x < v.x && y < v.y && z < v.z; }
+	bool operator<( const Vector3<T> &v ) const { return x < v.x || y < v.y || z < v.z; }
 	bool operator>=( const Vector3<T> &v ) const { return x >= v.x && y >= v.y && z >= v.z; }
 	bool operator<=( const Vector3<T> &v ) const { return x <= v.x && y <= v.y && z <= v.z; }
 
@@ -324,7 +324,7 @@ template <typename T> class Vector4
 	bool operator==( const Vector4<T> &v ) const { return x == v.x && y == v.y && z == v.z && w == v.w; }
 	bool operator!=( const Vector4<T> &v ) const { return x != v.x || y != v.y || z != v.z || w != v.w; }
 	bool operator>( const Vector4<T> &v ) const { return x > v.x && y > v.y && z > v.z && w > v.w; }
-	bool operator<( const Vector4<T> &v ) const { return x < v.x && y < v.y && z < v.z && w < v.w; }
+	bool operator<( const Vector4<T> &v ) const { return x < v.x || y < v.y || z < v.z || w < v.w; }
 	bool operator>=( const Vector4<T> &v ) const { return x >= v.x && y >= v.y && z >= v.z && w >= v.w; }
 	bool operator<=( const Vector4<T> &v ) const { return x <= v.x && y <= v.y && z <= v.z && w <= v.w; }
 
