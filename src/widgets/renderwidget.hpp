@@ -4,7 +4,7 @@
 #include <QGLWidget>
 #include <QMenu>
 #include <QOpenGLTexture>
-#include <QVector3D>
+#include "../world/vector.hpp"
 
 class CChunk;	// forward declaration
 class CRaycast; // forward declaration
@@ -44,9 +44,9 @@ class RenderWidget : public QGLWidget
 	CChunk *m_chunk;
 	CWorld *m_world;
 
-	QVector3D m_camera;
-	QVector3D m_camera_forward;
-	QVector3D m_camera_right;
+	Vector3f m_camera;
+	Vector3f m_camera_forward;
+	Vector3f m_camera_right;
 
   public slots:
 	void setView( QAction *action );

@@ -13,7 +13,7 @@
 #include <QKeyEvent>
 #include <QMatrix4x4>
 #include <QMenu>
-#include <QVector3D>
+#include "../world/vector.hpp"
 
 #include <QSettings>
 
@@ -27,9 +27,9 @@ RenderWidget::RenderWidget( QWidget *parent ) : QGLWidget( parent )
 	m_chunk			 = nullptr;
 	m_camera_pitch	 = 0.0f;
 	m_camera_yaw	 = 0.0f;
-	m_camera_forward = QVector3D( 0.0f, 0.0f, -1.0f );
-	m_camera_right	 = QVector3D( 1.0f, 0.0f, 0.0f );
-	m_camera		 = QVector3D( 0.0f, 0.0f, 0.0f );
+	m_camera_forward = Vector3f( 0.0f, 0.0f, -1.0f );
+	m_camera_right	 = Vector3f( 1.0f, 0.0f, 0.0f );
+	m_camera		 = Vector3f( 0.0f, 0.0f, 0.0f );
 
 	m_captureMouse = false;
 
@@ -99,8 +99,8 @@ void RenderWidget::paintGL()
 		gluPerspective( 70.0f, (float)width() / (float)height(), 0.1f, 100.0f );
 		glMatrixMode( GL_MODELVIEW );
 		glLoadIdentity();
-		QVector3D target = m_camera + m_camera_forward;
-		gluLookAt( m_camera.x(), m_camera.y(), m_camera.z(), target.x(), target.y(), target.z(), 0.0f, 1.0f, 0.0f );
+		Vector3f target = m_camera + m_camera_forward;
+		gluLookAt( m_camera.x, m_camera.y, m_camera.z, target.x, target.y, target.z, 0.0f, 1.0f, 0.0f );
 
 		// Draw an axis helper
 		glBegin( GL_LINES );
@@ -339,10 +339,10 @@ void RenderWidget::keyPressEvent( QKeyEvent *event )
 			m_camera += m_camera_right;
 			break;
 		case Qt::Key_Q:
-			m_camera -= QVector3D( 0.0f, 1.0f, 0.0f );
+			m_camera -= Vector3f( 0.0f, 1.0f, 0.0f );
 			break;
 		case Qt::Key_E:
-			m_camera += QVector3D( 0.0f, 1.0f, 0.0f );
+			m_camera += Vector3f( 0.0f, 1.0f, 0.0f );
 			break;
 		case Qt::Key_Z:
 			m_captureMouse = !m_captureMouse && m_displayMode == DispMode::DISP_3D;
@@ -365,13 +365,10 @@ void RenderWidget::mouseMoveEvent( QMouseEvent *event )
 		m_camera_pitch += ( event->y() - m_lastMousePos.y() ) * 0.1f;
 		m_camera_pitch = qBound( -89.0f, m_camera_pitch, 89.0f );
 
-		m_camera_forward = QVector3D( 0.0f, 0.0f, 1.0f );
-		QMatrix4x4 rotation;
-		rotation.rotate( -m_camera_yaw, 0.0f, 1.0f, 0.0f );
-		rotation.rotate( m_camera_pitch, 1.0f, 0.0f, 0.0f );
-		m_camera_forward = rotation * m_camera_forward;
+		m_camera_forward = Vector3f( 0.0f, 0.0f, 1.0f ).Rotate( Vector3f( m_camera_pitch, -m_camera_yaw, 0.0f ) ).Normal();
+		m_camera_right = Vector3f( 1.0f, 0.0f, 0.0f ).Rotate( Vector3f( m_camera_pitch, -m_camera_yaw, 0.0f ) ).Normal();
 
-		m_camera_right = QVector3D::crossProduct( m_camera_forward, QVector3D( 0.0f, 1.0f, 0.0f ) );
+		m_camera_right = m_camera_forward.Cross( Vector3f( 0.0f, 1.0f, 0.0f ) );
 
 		update();
 	}
@@ -407,10 +404,10 @@ void RenderWidget::mouseMoveEvent( QMouseEvent *event )
 
 	GLdouble x, y, z;
 	gluUnProject( event->x(), height() - event->y(), 0.0f, m_modelview, m_projection, m_viewport, &x, &y, &z );
-	QVector3D ray_direction = QVector3D( x, y, z ) - m_camera;
-	ray_direction.normalize();
+	Vector3f ray_direction = Vector3f( x, y, z ) - m_camera;
+	ray_direction.Normal();
 
-	m_currentTool->mouseMoveEvent( event, QVector3D( x, y, z ), ray_direction, this );
+	m_currentTool->mouseMoveEvent( event, Vector3f( x, y, z ), ray_direction, this );
 }
 
 void RenderWidget::mousePressEvent( QMouseEvent *event )
@@ -444,10 +441,10 @@ void RenderWidget::mousePressEvent( QMouseEvent *event )
 			gluUnProject( event->x(), height() - event->y(), 0.0f, m_modelview, m_projection, m_viewport, &x, &y, &z );
 
 			// we then need to figure out the direction of the ray
-			QVector3D ray_direction = QVector3D( x, y, z ) - m_camera;
-			ray_direction.normalize();
+			Vector3f ray_direction = Vector3f( x, y, z ) - m_camera;
+			ray_direction.Normal();
 
-			m_currentTool->mousePressEvent( event, QVector3D( x, y, z ), ray_direction, this );
+			m_currentTool->mousePressEvent( event, Vector3f( x, y, z ), ray_direction, this );
 		}
 		else
 		{

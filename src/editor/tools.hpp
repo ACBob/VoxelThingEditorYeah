@@ -9,7 +9,7 @@
 #include <QKeyEvent>
 #include <QMouseEvent>
 #include <QObject>
-#include <QVector3D>
+#include "../world/vector.hpp"
 
 #include "blockdefs.hpp"
 
@@ -25,16 +25,16 @@ class CTool : public QObject
 
 	virtual QString getName() = 0;
 
-	virtual void mousePressEvent( QMouseEvent *event, QVector3D pos, QVector3D dir,
+	virtual void mousePressEvent( QMouseEvent *event, Vector3f pos, Vector3f dir,
 								  RenderWidget *view )	 = 0; // Called when the mouse is pressed
-	virtual void mouseMoveEvent( QMouseEvent *event, QVector3D pos, QVector3D dir,
+	virtual void mouseMoveEvent( QMouseEvent *event, Vector3f pos, Vector3f dir,
 								 RenderWidget *view )	 = 0; // Called when the mouse is moved
-	virtual void mouseReleaseEvent( QMouseEvent *event, QVector3D pos, QVector3D dir,
+	virtual void mouseReleaseEvent( QMouseEvent *event, Vector3f pos, Vector3f dir,
 									RenderWidget *view ) = 0; // Called when the mouse is released
 
-	virtual void keyPressEvent( QKeyEvent *event, QVector3D pos, QVector3D dir,
+	virtual void keyPressEvent( QKeyEvent *event, Vector3f pos, Vector3f dir,
 								RenderWidget *view )   = 0; // Called when a key is pressed
-	virtual void keyReleaseEvent( QKeyEvent *event, QVector3D pos, QVector3D dir,
+	virtual void keyReleaseEvent( QKeyEvent *event, Vector3f pos, Vector3f dir,
 								  RenderWidget *view ) = 0; // Called when a key is released
 
 	virtual void draw( RenderWidget *view ) = 0; // This is called during the RenderWidget's OpenGL paint event.
@@ -56,17 +56,17 @@ class CHandTool final : public CTool
 
 	QString getName() { return "Hand"; };
 
-	void mousePressEvent( QMouseEvent *event, QVector3D pos, QVector3D dir, RenderWidget *view );
-	void mouseMoveEvent( QMouseEvent *event, QVector3D pos, QVector3D dir, RenderWidget *view );
+	void mousePressEvent( QMouseEvent *event, Vector3f pos, Vector3f dir, RenderWidget *view );
+	void mouseMoveEvent( QMouseEvent *event, Vector3f pos, Vector3f dir, RenderWidget *view );
 	void draw( RenderWidget *view );
 
-	void mouseReleaseEvent( QMouseEvent *event, QVector3D pos, QVector3D dir, RenderWidget *view ){};
-	void keyPressEvent( QKeyEvent *event, QVector3D pos, QVector3D dir, RenderWidget *view ){};
-	void keyReleaseEvent( QKeyEvent *event, QVector3D pos, QVector3D dir, RenderWidget *view ){};
+	void mouseReleaseEvent( QMouseEvent *event, Vector3f pos, Vector3f dir, RenderWidget *view ){};
+	void keyPressEvent( QKeyEvent *event, Vector3f pos, Vector3f dir, RenderWidget *view ){};
+	void keyReleaseEvent( QKeyEvent *event, Vector3f pos, Vector3f dir, RenderWidget *view ){};
 
   private:
-	QVector3D m_selectedBlockPos;
-	QVector3D m_selectedBlockNormal;
+	Vector3f m_selectedBlockPos;
+	Vector3f m_selectedBlockNormal;
 };
 
 // Editing the properties of a given block.
@@ -80,15 +80,15 @@ class CWrenchTool final : public CTool
 
 	QString getName() { return "Wrench"; };
 
-	void mousePressEvent( QMouseEvent *event, QVector3D pos, QVector3D dir, RenderWidget *view );
-	void mouseMoveEvent( QMouseEvent *event, QVector3D pos, QVector3D dir, RenderWidget *view );
+	void mousePressEvent( QMouseEvent *event, Vector3f pos, Vector3f dir, RenderWidget *view );
+	void mouseMoveEvent( QMouseEvent *event, Vector3f pos, Vector3f dir, RenderWidget *view );
 	void draw( RenderWidget *view );
 
-	void mouseReleaseEvent( QMouseEvent *event, QVector3D pos, QVector3D dir, RenderWidget *view ){};
-	void keyPressEvent( QKeyEvent *event, QVector3D pos, QVector3D dir, RenderWidget *view ){};
-	void keyReleaseEvent( QKeyEvent *event, QVector3D pos, QVector3D dir, RenderWidget *view ){};
+	void mouseReleaseEvent( QMouseEvent *event, Vector3f pos, Vector3f dir, RenderWidget *view ){};
+	void keyPressEvent( QKeyEvent *event, Vector3f pos, Vector3f dir, RenderWidget *view ){};
+	void keyReleaseEvent( QKeyEvent *event, Vector3f pos, Vector3f dir, RenderWidget *view ){};
 
   private:
-	QVector3D m_selectedBlockPos;
-	QVector3D m_selectedBlockNormal;
+	Vector3f m_selectedBlockPos;
+	Vector3f m_selectedBlockNormal;
 };

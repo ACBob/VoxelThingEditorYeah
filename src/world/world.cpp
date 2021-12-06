@@ -1,7 +1,7 @@
 #include "world.hpp"
 
 #include <QMap>
-#include <QVector3D>
+#include "vector.hpp"
 
 #include "chunk.hpp"
 
@@ -9,31 +9,31 @@
 
 CWorld::CWorld(QObject *parent) : QObject(parent)
 {
-    m_chunkSize = QVector3D(DEF_CHUNK_SIZE_X, DEF_CHUNK_SIZE_Y, DEF_CHUNK_SIZE_Z);
+    m_chunkSize = Vector3f(DEF_CHUNK_SIZE_X, DEF_CHUNK_SIZE_Y, DEF_CHUNK_SIZE_Z);
 }
 
 CWorld::~CWorld() {
-    for (QVector3D p : m_chunks.keys())
+    for (Vector3f p : m_chunks.keys())
         delete m_chunks.value(p);
 }
 
 CChunk *CWorld::getChunk(int x, int y, int z) {
-    return getChunk(QVector3D(x,y,z));
+    return getChunk(Vector3f(x,y,z));
 }
 
-CChunk *CWorld::getChunk(const QVector3D &pos) {
+CChunk *CWorld::getChunk(const Vector3i &pos) {
     return m_chunks.value(pos, nullptr); // QMaps rule
 }
 
 CChunk *CWorld::createChunk(int x, int y, int z) {
-    return createChunk(QVector3D(x, y, z));
+    return createChunk(Vector3f(x, y, z));
 }
 
-CChunk *CWorld::createChunk(const QVector3D &pos) {
-    if (getChunk(pos) != nullptr)
+CChunk *CWorld::createChunk(const Vector3i &pos) {
+    if (m_chunks.contains(pos))
         return nullptr; // Couldn't create it
 
-    CChunk *c = new CChunk(pos.x(), pos.y(), pos.z(), m_chunkSize.x(), m_chunkSize.y(), m_chunkSize.z());
+    CChunk *c = new CChunk(pos.x, pos.y, pos.z, m_chunkSize.x, m_chunkSize.y, m_chunkSize.z);
     
     m_chunks.insert(pos, c);
 
@@ -45,48 +45,48 @@ CChunk *CWorld::createChunk(const QVector3D &pos) {
 }
 
 CChunk *CWorld::getOrCreateChunk(int x, int y, int z) {
-    return getOrCreateChunk(QVector3D(x, y, z));
+    return getOrCreateChunk(Vector3f(x, y, z));
 }
 
-CChunk *CWorld::getOrCreateChunk(const QVector3D &pos) {
+CChunk *CWorld::getOrCreateChunk(const Vector3i &pos) {
     CChunk *c = getChunk(pos);
     return c != nullptr ? c : createChunk(pos);
 }
 
 CChunk *CWorld::getChunkWorldPos( int x, int y, int z ) {
-    return getChunkWorldPos(QVector3D(x, y, z));
+    return getChunkWorldPos(Vector3f(x, y, z));
 }
 
-CChunk *CWorld::getChunkWorldPos(const QVector3D &pos) {
-    int x = pos.x();
-    int y = pos.y();
-    int z = pos.z();
+CChunk *CWorld::getChunkWorldPos(const Vector3i &pos) {
+    int x = pos.x;
+    int y = pos.y;
+    int z = pos.z;
 
     worldPosToChunkPos(x, y, z);
 
     return getChunk(x, y, z);
 }
 
-QVector3D CWorld::chunkPosToWorldPos(const QVector3D &pos) {
+Vector3f CWorld::chunkPosToWorldPos(const Vector3f &pos) {
     return pos * m_chunkSize;
 }
 
-QVector3D CWorld::worldPosToChunkPos(const QVector3D &pos) {
+Vector3f CWorld::worldPosToChunkPos(const Vector3f &pos) {
     return pos / m_chunkSize;
 }
 
 void CWorld::chunkPosToWorldPos(int &x, int &y, int &z) {
-    QVector3D pos = chunkPosToWorldPos(QVector3D(x, y, z));
-    x = pos.x();
-    y = pos.y();
-    z = pos.z();
+    Vector3f pos = chunkPosToWorldPos(Vector3f(x, y, z));
+    x = pos.x;
+    y = pos.y;
+    z = pos.z;
 }
 
 void CWorld::worldPosToChunkPos(int &x, int &y, int &z) {
-    QVector3D pos = worldPosToChunkPos(QVector3D(x, y, z));
-    x = pos.x();
-    y = pos.y();
-    z = pos.z();
+    Vector3f pos = worldPosToChunkPos(Vector3f(x, y, z));
+    x = pos.x;
+    y = pos.y;
+    z = pos.z;
 }
 
 
@@ -104,9 +104,9 @@ uint16_t CWorld::getID( int x, int y, int z ) {
     int cz = z;
     worldPosToChunkPos(cx, cy, cz);
 
-    x -= cx * m_chunkSize.x();
-    y -= cy * m_chunkSize.y();
-    z -= cz * m_chunkSize.z();
+    x -= cx * m_chunkSize.x;
+    y -= cy * m_chunkSize.y;
+    z -= cz * m_chunkSize.z;
 
     CChunk *c = getChunk(cx, cy, cz);
     if (c == nullptr)
@@ -122,9 +122,9 @@ void CWorld::setID( int x, int y, int z, uint16_t id ) {
     int cz = z;
     worldPosToChunkPos(cx, cy, cz);
 
-    x -= cx * m_chunkSize.x();
-    y -= cy * m_chunkSize.y();
-    z -= cz * m_chunkSize.z();
+    x -= cx * m_chunkSize.x;
+    y -= cy * m_chunkSize.y;
+    z -= cz * m_chunkSize.z;
 
     CChunk *c = getChunk(cx, cy, cz);
     if (c == nullptr)
@@ -140,9 +140,9 @@ uint16_t CWorld::getMeta( int x, int y, int z ) {
     int cz = z;
     worldPosToChunkPos(cx, cy, cz);
 
-    x -= cx * m_chunkSize.x();
-    y -= cy * m_chunkSize.y();
-    z -= cz * m_chunkSize.z();
+    x -= cx * m_chunkSize.x;
+    y -= cy * m_chunkSize.y;
+    z -= cz * m_chunkSize.z;
 
     CChunk *c = getChunk(cx, cy, cz);
     if (c == nullptr)
@@ -158,9 +158,9 @@ void CWorld::setMeta( int x, int y, int z, uint16_t meta ) {
     int cz = z;
     worldPosToChunkPos(cx, cy, cz);
 
-    x -= cx * m_chunkSize.x();
-    y -= cy * m_chunkSize.y();
-    z -= cz * m_chunkSize.z();
+    x -= cx * m_chunkSize.x;
+    y -= cy * m_chunkSize.y;
+    z -= cz * m_chunkSize.z;
 
     CChunk *c = getChunk(cx, cy, cz);
     if (c == nullptr)
@@ -176,9 +176,9 @@ void CWorld::get( int x, int y, int z, uint16_t &id, uint16_t &meta ) {
     int cz = z;
     worldPosToChunkPos(cx, cy, cz);
 
-    x -= cx * m_chunkSize.x();
-    y -= cy * m_chunkSize.y();
-    z -= cz * m_chunkSize.z();
+    x -= cx * m_chunkSize.x;
+    y -= cy * m_chunkSize.y;
+    z -= cz * m_chunkSize.z;
 
     CChunk *c = getChunk(cx, cy, cz);
     if (c == nullptr) {
@@ -197,9 +197,9 @@ void CWorld::set( int x, int y, int z, uint16_t id, uint16_t meta ) {
     int cz = z;
     worldPosToChunkPos(cx, cy, cz);
 
-    x -= cx * m_chunkSize.x();
-    y -= cy * m_chunkSize.y();
-    z -= cz * m_chunkSize.z();
+    x -= cx * m_chunkSize.x;
+    y -= cy * m_chunkSize.y;
+    z -= cz * m_chunkSize.z;
 
     CChunk *c = getChunk(cx, cy, cz);
     if (c == nullptr)
