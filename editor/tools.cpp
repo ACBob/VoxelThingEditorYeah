@@ -1,6 +1,7 @@
 #include "tools.hpp"
 
 #include "../widgets/renderwidget.hpp"
+#include "../widgets/blockproperties.hpp"
 
 #include "../world/raycast.hpp"
 #include "../world/chunk.hpp"
@@ -163,32 +164,17 @@ void CWrenchTool::mousePressEvent(QMouseEvent *event, QVector3D pos, QVector3D d
             if (m_selectedBlockNormal != QVector3D(0, 0, 0))
             {
                 // Display configure dialog
-                QDialog* dlg = new QDialog(view);
-                int id = view->m_chunk->getID(m_selectedBlockPos.x(), m_selectedBlockPos.y(), m_selectedBlockPos.z());
-                dlg->setWindowTitle(view->m_chunk->m_blockDefs->value(id).name);
-                
-                QFormLayout* layout = new QFormLayout(dlg);
-                QLineEdit* idInp = new QLineEdit(dlg);
-                idInp->setText(QString::number(view->m_chunk->getID(m_selectedBlockPos.x(), m_selectedBlockPos.y(), m_selectedBlockPos.z())));
-                QLineEdit* metaInp = new QLineEdit(dlg);
-                metaInp->setText(QString::number(view->m_chunk->getMeta(m_selectedBlockPos.x(), m_selectedBlockPos.y(), m_selectedBlockPos.z())));
-                
-                layout->addRow("ID", idInp);
-                layout->addRow("Meta", metaInp);
+                uint16_t id, meta;
+                view->m_chunk->get( m_selectedBlockPos.x(), m_selectedBlockPos.y(), m_selectedBlockPos.z(), id, meta);
+                BlockPropertyDialog *dlg = new BlockPropertyDialog(view->m_chunk->m_blockDefs, id, meta);
 
-                QDialogButtonBox* buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, dlg);
-                layout->addRow(buttons);
-
-                connect(buttons, SIGNAL(accepted()), dlg, SLOT(accept()));
-                connect(buttons, SIGNAL(rejected()), dlg, SLOT(reject()));
 
                 if (dlg->exec() == QDialog::Accepted)
                 {
-                    int id = idInp->text().toInt();
-                    int meta = metaInp->text().toInt();
+                    id = dlg->getChosenId();
+                    meta = dlg->getChosenMeta();
 
-                    view->m_chunk->setID(m_selectedBlockPos.x(), m_selectedBlockPos.y(), m_selectedBlockPos.z(), id);
-                    view->m_chunk->setMeta(m_selectedBlockPos.x(), m_selectedBlockPos.y(), m_selectedBlockPos.z(), meta);
+                    view->m_chunk->set( m_selectedBlockPos.x(), m_selectedBlockPos.y(), m_selectedBlockPos.z(), id, meta );
                     view->m_chunk->rebuildModel();
                     view->update();
                 }

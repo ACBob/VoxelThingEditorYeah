@@ -24,6 +24,8 @@ set(SRC
     widgets/settingsdialog.hpp
     widgets/colorpicker.cpp
     widgets/colorpicker.hpp
+    widgets/blockproperties.cpp
+    widgets/blockproperties.hpp
 
     world/chunk.cpp
     world/chunk.hpp
