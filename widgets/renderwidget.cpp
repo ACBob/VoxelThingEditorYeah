@@ -69,6 +69,10 @@ void RenderWidget::initializeGL()
     m_texture->setMinificationFilter(QOpenGLTexture::LinearMipMapLinear);
     m_texture->setMagnificationFilter(QOpenGLTexture::Linear);
     m_texture->setWrapMode(QOpenGLTexture::Repeat);
+
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    glEnableClientState(GL_NORMAL_ARRAY);
 }
 
 void RenderWidget::resizeGL(int w, int h)

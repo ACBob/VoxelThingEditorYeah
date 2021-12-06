@@ -18,27 +18,24 @@ void Model::render(QGLContext *context)
 {
     context->makeCurrent();
 
-    glBegin(GL_TRIANGLES);
+    glVertexPointer( 3,
+                    GL_FLOAT,
+                    sizeof(Model::Vertex),
+                    m_vertices.data());
+    glTexCoordPointer( 2,
+                        GL_FLOAT,
+                        sizeof(Model::Vertex),
+                        &m_vertices.data()[0].u );
+    
+    glNormalPointer( GL_FLOAT,
+                    sizeof(Model::Vertex),
+                    &m_vertices.data()[0].nx );
+
     glColor3f(1.0f, 1.0f, 1.0f);
-    for (int i = 0; i < m_faces.size(); i++) {
-        Face &face = m_faces[i];
-        Vertex &v1 = m_vertices[face.v1];
-        Vertex &v2 = m_vertices[face.v2];
-        Vertex &v3 = m_vertices[face.v3];
+    
+    glDrawElements(GL_TRIANGLES, m_faces.size() * 3, GL_UNSIGNED_INT, m_faces.data());
 
-        glNormal3f(v1.nx, v1.ny, v1.nz);
-        glTexCoord2f(v1.u, v1.v);
-        glVertex3f(v1.x, v1.y, v1.z);
-
-        glNormal3f(v2.nx, v2.ny, v2.nz);
-        glTexCoord2f(v2.u, v2.v);
-        glVertex3f(v2.x, v2.y, v2.z);
-
-        glNormal3f(v3.nx, v3.ny, v3.nz);
-        glTexCoord2f(v3.u, v3.v);
-        glVertex3f(v3.x, v3.y, v3.z);
-    }
-    glEnd();
+    // glDrawArrays(GL_POINTS, 0, m_vertices.size());
 }
 void Model::loadFromObj(const QString &fileName)
 {
