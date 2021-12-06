@@ -3,40 +3,39 @@
 #include "../editor/blockdefs.hpp"
 
 class Editor4Pane; // forward declaration
-class CChunk; // forward declaration
-class CTool; // forward declaration
+class CChunk;	   // forward declaration
+class CTool;	   // forward declaration
 
 class MainWindow : public QMainWindow
 {
-    Q_OBJECT;
+	Q_OBJECT;
 
-    public:
+  public:
+	MainWindow( QWidget *parent );
+	~MainWindow();
 
-        MainWindow(QWidget *parent);
-        ~MainWindow();
+  private slots:
 
-    private slots:
+	// void newFile();
+	// void openFile();
+	// void saveFile();
+	// void saveAsFile();
+	// void closeFile();
+	// void closeAllFiles();
+	// void closeAllFilesButThis();
 
-        // void newFile();
-        // void openFile();
-        // void saveFile();
-        // void saveAsFile();
-        // void closeFile();
-        // void closeAllFiles();
-        // void closeAllFilesButThis();
+	void onChunkSelected( int );
+	void toolChanged( QAction * );
 
-        void onChunkSelected(int);
-        void toolChanged(QAction*);
+	void editPreferences();
 
-        void editPreferences();
+	void showAbout();
 
-        void showAbout();
+  private:
+	Editor4Pane *m_editor;
 
-    private:
-        Editor4Pane *m_editor;
+	std::vector<CChunk *> m_chunks;
+	std::vector<CTool *> m_tools;
 
-        std::vector<CChunk *> m_chunks;
-        std::vector<CTool *> m_tools;
-
-        BlockDefs m_blockDefs;
+	BlockDefs m_blockDefs;
 };

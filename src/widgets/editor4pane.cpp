@@ -1,14 +1,14 @@
 #include "editor4pane.hpp"
 
-#include <QSplitter>
-#include <QPushButton>
-#include <QVBoxLayout>
 #include <QGLWidget>
+#include <QPushButton>
+#include <QSplitter>
+#include <QVBoxLayout>
 
 // OpenGL
 #include <QGLFormat>
-#include <QGLWidget>
 #include <QGLFunctions>
+#include <QGLWidget>
 
 #include "renderwidget.hpp"
 
@@ -16,54 +16,53 @@
 
 #include <math.h>
 
-
-Editor4Pane::Editor4Pane(QWidget *parent) : QDockWidget(parent)
+Editor4Pane::Editor4Pane( QWidget *parent ) : QDockWidget( parent )
 {
-    this->setWindowTitle("Editor4Pane");
+	this->setWindowTitle( "Editor4Pane" );
 
-    QWidget *centralWidget = new QWidget(this);
-    this->setWidget(centralWidget);
+	QWidget *centralWidget = new QWidget( this );
+	this->setWidget( centralWidget );
 
-    QVBoxLayout *layout = new QVBoxLayout(centralWidget);
-    centralWidget->setLayout(layout);
+	QVBoxLayout *layout = new QVBoxLayout( centralWidget );
+	centralWidget->setLayout( layout );
 
 	// Split the central widget into left/right
-	QSplitter *leftRightSplitter = new QSplitter(Qt::Horizontal, centralWidget);
-    layout->addWidget(leftRightSplitter);
+	QSplitter *leftRightSplitter = new QSplitter( Qt::Horizontal, centralWidget );
+	layout->addWidget( leftRightSplitter );
 
 	// Split the left/right into top/bottom
-	QSplitter *leftUpDownSplitter = new QSplitter(Qt::Vertical, leftRightSplitter);
-    // default to 50%
-    leftUpDownSplitter->setSizes(QList<int>() << 50 << 50);
-	QSplitter *rightUpDownSplitter = new QSplitter(Qt::Vertical, leftRightSplitter);
-    // default to 50%
-    rightUpDownSplitter->setSizes(QList<int>() << 50 << 50);
+	QSplitter *leftUpDownSplitter = new QSplitter( Qt::Vertical, leftRightSplitter );
+	// default to 50%
+	leftUpDownSplitter->setSizes( QList<int>() << 50 << 50 );
+	QSplitter *rightUpDownSplitter = new QSplitter( Qt::Vertical, leftRightSplitter );
+	// default to 50%
+	rightUpDownSplitter->setSizes( QList<int>() << 50 << 50 );
 
-    m_topLeftView = new RenderWidget(leftUpDownSplitter);
-    m_topLeftView->setDispMode(RenderWidget::DispMode::DISP_3D);
-    m_topRightView = new RenderWidget(rightUpDownSplitter);
-    m_topRightView->setDispMode(RenderWidget::DispMode::DISP_GRID_XZ);
-    m_bottomLeftView = new RenderWidget(leftUpDownSplitter);
-    m_bottomLeftView->setDispMode(RenderWidget::DispMode::DISP_GRID_XY);
-    m_bottomRightView = new RenderWidget(rightUpDownSplitter);
-    m_bottomRightView->setDispMode(RenderWidget::DispMode::DISP_GRID_ZY);
+	m_topLeftView = new RenderWidget( leftUpDownSplitter );
+	m_topLeftView->setDispMode( RenderWidget::DispMode::DISP_3D );
+	m_topRightView = new RenderWidget( rightUpDownSplitter );
+	m_topRightView->setDispMode( RenderWidget::DispMode::DISP_GRID_XZ );
+	m_bottomLeftView = new RenderWidget( leftUpDownSplitter );
+	m_bottomLeftView->setDispMode( RenderWidget::DispMode::DISP_GRID_XY );
+	m_bottomRightView = new RenderWidget( rightUpDownSplitter );
+	m_bottomRightView->setDispMode( RenderWidget::DispMode::DISP_GRID_ZY );
 
-    // // Disable all features
-    // this->setFeatures(QDockWidget::NoDockWidgetFeatures);
+	// // Disable all features
+	// this->setFeatures(QDockWidget::NoDockWidgetFeatures);
 }
 
-void Editor4Pane::setChunk(CChunk *chunk)
+void Editor4Pane::setChunk( CChunk *chunk )
 {
-    m_topLeftView->setChunk(chunk);
-    m_topRightView->setChunk(chunk);
-    m_bottomLeftView->setChunk(chunk);
-    m_bottomRightView->setChunk(chunk);
+	m_topLeftView->setChunk( chunk );
+	m_topRightView->setChunk( chunk );
+	m_bottomLeftView->setChunk( chunk );
+	m_bottomRightView->setChunk( chunk );
 }
 
-void Editor4Pane::setTool(CTool *tool)
+void Editor4Pane::setTool( CTool *tool )
 {
-    m_topLeftView->setTool(tool);
-    m_topRightView->setTool(tool);
-    m_bottomLeftView->setTool(tool);
-    m_bottomRightView->setTool(tool);
+	m_topLeftView->setTool( tool );
+	m_topRightView->setTool( tool );
+	m_bottomLeftView->setTool( tool );
+	m_bottomRightView->setTool( tool );
 }

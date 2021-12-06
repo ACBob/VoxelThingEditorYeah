@@ -5,23 +5,23 @@
 
 class ColorPicker : public QWidget
 {
-    Q_OBJECT
+	Q_OBJECT
 
-    public:
-        ColorPicker(QWidget *parent = 0);
-        ~ColorPicker();
+  public:
+	ColorPicker( QWidget *parent = 0 );
+	~ColorPicker();
 
-        void setColor(const QColor &color);
-        QColor getColor();
+	void setColor( const QColor &color );
+	QColor getColor();
 
-        void enableAlpha();
-        void disableAlpha();
+	void enableAlpha();
+	void disableAlpha();
 
-    protected:
-        void paintEvent(QPaintEvent *event);
-        void mousePressEvent(QMouseEvent *event);
+  protected:
+	void paintEvent( QPaintEvent *event );
+	void mousePressEvent( QMouseEvent *event );
 
-    private:
-        QColor m_color;
-        bool m_allowAlpha;
+  private:
+	QColor m_color;
+	bool m_allowAlpha;
 };

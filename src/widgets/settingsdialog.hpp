@@ -7,15 +7,15 @@ class ColorPicker;
 
 class SettingsDialog : public QDialog
 {
-    Q_OBJECT
+	Q_OBJECT
 
-    public:
-        SettingsDialog(QWidget *parent = 0);
+  public:
+	SettingsDialog( QWidget *parent = 0 );
 
-    public slots:
-        void accept();
-    
-    private:
-        ColorPicker *m_gridColorPicker;
-        ColorPicker *m_voidColorPicker;
+  public slots:
+	void accept();
+
+  private:
+	ColorPicker *m_gridColorPicker;
+	ColorPicker *m_voidColorPicker;
 };

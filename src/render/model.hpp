@@ -13,30 +13,31 @@
 
 class Model : public QObject
 {
-    Q_OBJECT
+	Q_OBJECT
 
-    public:
-    
-        struct Vertex {
-            float x, y, z;
-            float nx, ny, nz;
-            float u, v;
-        };
+  public:
+	struct Vertex
+	{
+		float x, y, z;
+		float nx, ny, nz;
+		float u, v;
+	};
 
-        struct Face {
-            int v1, v2, v3;
-        };
+	struct Face
+	{
+		int v1, v2, v3;
+	};
 
-        Model(QObject *parent = 0);
-        ~Model();
+	Model( QObject *parent = 0 );
+	~Model();
 
-        void loadFromObj(const QString &filename);
-        bool saveToObj(const QString &filename);
+	void loadFromObj( const QString &filename );
+	bool saveToObj( const QString &filename );
 
-        void render(QGLContext *context);
+	void render( QGLContext *context );
 
-        void update(); // Refreshes the buffers.
+	void update(); // Refreshes the buffers.
 
-        QVector<Vertex> m_vertices;
-        QVector<Face> m_faces;
+	QVector<Vertex> m_vertices;
+	QVector<Face> m_faces;
 };

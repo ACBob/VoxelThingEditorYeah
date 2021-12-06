@@ -4,13 +4,13 @@
 
 int main( int argc, char *argv[] )
 {
-    QApplication app( argc, argv );
+	QApplication app( argc, argv );
 
-    QCoreApplication::setOrganizationName( "ActuatingLemons" );
-    QCoreApplication::setApplicationName( "VoxelThingEditorYeah" );
+	QCoreApplication::setOrganizationName( "ActuatingLemons" );
+	QCoreApplication::setApplicationName( "VoxelThingEditorYeah" );
 
-    auto pEditor = new MainWindow( nullptr );
-    pEditor->show();
+	auto pEditor = new MainWindow( nullptr );
+	pEditor->show();
 
-    return app.exec();
+	return app.exec();
 }
