@@ -3,6 +3,7 @@
 // TODO: Setting
 
 #include "ui/widgets/colorpicker.hpp"
+#include "ui/widgets/betterslider.hpp"
 
 #include <QCheckBox>
 #include <QComboBox>
@@ -65,7 +66,7 @@ BlockPropertyDialog::BlockPropertyDialog( BlockDefs *defs, uint16_t id, uint16_t
 	m_metaDirectionVert->setMinimum( 0 );
 	m_metaDirectionVert->setMaximum( 4 );
 
-	m_metaLevel = new QSlider( this );
+	m_metaLevel = new BetterSlider( this );
 	m_metaLevel->setMinimum( 0 );
 	m_metaLevel->setMaximum( UINT16_MAX ); // lol
 	m_metaLevel->setOrientation( Qt::Horizontal );

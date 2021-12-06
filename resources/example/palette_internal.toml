@@ -55,7 +55,7 @@ texturePos = [7, 0]
 name = "Level_Test"
 metaUse = "Level"
 metaMin = 0
-# metaMax = 16
+metaMax = 16
 texturePos = [8, 0]
 
 [9]

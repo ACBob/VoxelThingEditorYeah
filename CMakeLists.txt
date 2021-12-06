@@ -24,6 +24,8 @@ set(SRC
     src/ui/widgets/renderwidget.hpp
     src/ui/widgets/colorpicker.cpp
     src/ui/widgets/colorpicker.hpp
+    src/ui/widgets/betterslider.cpp
+    src/ui/widgets/betterslider.hpp
 
     src/ui/dialogs/blockproperties.cpp
     src/ui/dialogs/blockproperties.hpp

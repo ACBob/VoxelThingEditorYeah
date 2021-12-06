@@ -8,6 +8,7 @@
 #include "editor/blockdefs.hpp"
 
 class ColorPicker;
+class BetterSlider;
 class QLineEdit;
 class QDial;
 class QCheckBox;
@@ -45,7 +46,7 @@ class BlockPropertyDialog : public QDialog
 	ColorPicker *m_metaColor;
 	QDial *m_metaDirectionHorz; // Used also for just direction
 	QDial *m_metaDirectionVert;
-	QSlider *m_metaLevel;
+	BetterSlider *m_metaLevel;
 	QCheckBox *m_metaToggle;
 
 	QWidget *m_metaBitField;
