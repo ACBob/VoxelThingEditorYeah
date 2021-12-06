@@ -8,6 +8,8 @@
 #include <QDockWidget>
 #include <QListWidget>
 
+#include <QMessageBox>
+
 #include "editor4pane.hpp"
 #include "settingsdialog.hpp"
 
@@ -26,7 +28,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 	// And the central widget is a 4-way split
 
 	// This toolbar holds the... well, tools
-	QToolBar *toolsBar = new QToolBar(this);
+	QToolBar *toolsBar = new QToolBar( "Tools Bar", this);
 	this->addToolBar(Qt::LeftToolBarArea, toolsBar);
 	toolsBar->setIconSize(QSize(64, 64));
 
@@ -92,9 +94,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 	// Toggle display of chunk list
 	viewMenu->addAction( thingsDock->toggleViewAction() );
 	viewMenu->addAction( m_editor->toggleViewAction() );
+	viewMenu->addAction( toolsBar->toggleViewAction() );
 
 	// Help menu
 	QMenu *helpMenu = menuBar->addMenu(tr("&Help"));
+	helpMenu->addAction( tr("&About"), this, SLOT(showAbout()) );
 
 }
 
@@ -131,4 +135,9 @@ void MainWindow::editPreferences()
 	// Show the preferences dialog
 	SettingsDialog *dialog = new SettingsDialog(this);
 	dialog->exec();
+}
+
+void MainWindow::showAbout()
+{
+	QMessageBox::about(this, "VoxelThingEditorYeah", "VoxelEditorThingYeah - The VoxelThingYeah Editor." );
 }

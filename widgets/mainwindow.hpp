@@ -15,7 +15,7 @@ class MainWindow : public QMainWindow
         MainWindow(QWidget *parent);
         ~MainWindow();
 
-    public slots:
+    private slots:
 
         // void newFile();
         // void openFile();
@@ -29,6 +29,8 @@ class MainWindow : public QMainWindow
         void toolChanged(QAction*);
 
         void editPreferences();
+
+        void showAbout();
 
     private:
         Editor4Pane *m_editor;
