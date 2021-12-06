@@ -4,6 +4,7 @@
 #include "../widgets/renderwidget.hpp"
 
 #include "../world/chunk.hpp"
+#include "../world/world.hpp"
 #include "../world/raycast.hpp"
 
 #include "blockdefs.hpp"
@@ -32,7 +33,7 @@ void CHandTool::mousePressEvent( QMouseEvent *event, QVector3D pos, QVector3D di
 	// view->update();
 
 	CRaycast caster;
-	std::pair<QVector3D, QVector3D> cast = caster.cast( view->m_chunk, pos, dir, 100.0f );
+	std::pair<QVector3D, QVector3D> cast = caster.cast( view->m_world, pos, dir, 100.0f );
 
 	m_selectedBlockPos	  = cast.first;
 	m_selectedBlockNormal = cast.second;
@@ -42,18 +43,22 @@ void CHandTool::mousePressEvent( QMouseEvent *event, QVector3D pos, QVector3D di
 		if ( event->button() == Qt::LeftButton )
 		{
 			QVector3D p = m_selectedBlockPos;
-			view->m_chunk->setID( p.x(), p.y(), p.z(), 0 );
-			view->m_chunk->setMeta( p.x(), p.y(), p.z(), 0 );
+			view->m_world->setID( p.x(), p.y(), p.z(), 0 );
+			view->m_world->setMeta( p.x(), p.y(), p.z(), 0 );
+			
+			// find chunk
+			CChunk *c = view->m_world->getChunkWorldPos( p );
+			c->rebuildModel();
 		}
 		else if ( event->button() == Qt::RightButton )
 		{
 			QVector3D p = m_selectedBlockPos + m_selectedBlockNormal;
-			view->m_chunk->setID( p.x(), p.y(), p.z(), 1 );
-			view->m_chunk->setMeta( p.x(), p.y(), p.z(), 0 );
+			view->m_world->setID( p.x(), p.y(), p.z(), 1 );
+			view->m_world->setMeta( p.x(), p.y(), p.z(), 0 );
+			CChunk *c = view->m_world->getChunkWorldPos( p );
+			c->rebuildModel();
 		}
 	}
-
-	view->m_chunk->rebuildModel();
 
 	view->update();
 }
@@ -63,7 +68,7 @@ void CHandTool::mouseMoveEvent( QMouseEvent *event, QVector3D pos, QVector3D dir
 	// qDebug () << "Hand tool moved @" << pos;
 
 	CRaycast caster;
-	std::pair<QVector3D, QVector3D> cast = caster.cast( view->m_chunk, pos, dir, 100.0f );
+	std::pair<QVector3D, QVector3D> cast = caster.cast( view->m_world, pos, dir, 100.0f );
 
 	m_selectedBlockPos	  = cast.first;
 	m_selectedBlockNormal = cast.second;
@@ -149,7 +154,7 @@ void CWrenchTool::mousePressEvent( QMouseEvent *event, QVector3D pos, QVector3D 
 	// view->update();
 
 	CRaycast caster;
-	std::pair<QVector3D, QVector3D> cast = caster.cast( view->m_chunk, pos, dir, 100.0f );
+	std::pair<QVector3D, QVector3D> cast = caster.cast( view->m_world, pos, dir, 100.0f );
 
 	m_selectedBlockPos	  = cast.first;
 	m_selectedBlockNormal = cast.second;
@@ -162,24 +167,22 @@ void CWrenchTool::mousePressEvent( QMouseEvent *event, QVector3D pos, QVector3D 
 			{
 				// Display configure dialog
 				uint16_t id, meta;
-				view->m_chunk->get( m_selectedBlockPos.x(), m_selectedBlockPos.y(), m_selectedBlockPos.z(), id, meta );
-				BlockPropertyDialog *dlg = new BlockPropertyDialog( view->m_chunk->m_blockDefs, id, meta );
+				view->m_world->get( m_selectedBlockPos.x(), m_selectedBlockPos.y(), m_selectedBlockPos.z(), id, meta );
+				BlockPropertyDialog *dlg = new BlockPropertyDialog( m_blockDefs, id, meta );
 
 				if ( dlg->exec() == QDialog::Accepted )
 				{
 					id	 = dlg->getChosenId();
 					meta = dlg->getChosenMeta();
 
-					view->m_chunk->set( m_selectedBlockPos.x(), m_selectedBlockPos.y(), m_selectedBlockPos.z(), id,
+					view->m_world->set( m_selectedBlockPos.x(), m_selectedBlockPos.y(), m_selectedBlockPos.z(), id,
 										meta );
-					view->m_chunk->rebuildModel();
+					view->m_world->getChunkWorldPos( m_selectedBlockPos )->rebuildModel();
 					view->update();
 				}
 			}
 		}
 	}
-
-	view->m_chunk->rebuildModel();
 
 	view->update();
 }
@@ -189,7 +192,7 @@ void CWrenchTool::mouseMoveEvent( QMouseEvent *event, QVector3D pos, QVector3D d
 	// qDebug () << "Wrench tool moved @" << pos;
 
 	CRaycast caster;
-	std::pair<QVector3D, QVector3D> cast = caster.cast( view->m_chunk, pos, dir, 100.0f );
+	std::pair<QVector3D, QVector3D> cast = caster.cast( view->m_world, pos, dir, 100.0f );
 
 	m_selectedBlockPos	  = cast.first;
 	m_selectedBlockNormal = cast.second;

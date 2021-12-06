@@ -6,8 +6,8 @@
 
 #include <QVector3D>
 
-class CChunk;
-// class CWorld;
+// class CChunk;
+class CWorld;
 
 class CRaycast : public QObject
 {
@@ -21,8 +21,8 @@ class CRaycast : public QObject
 	float m_fLength;
 	QVector3D m_direction;
 
-	std::pair<QVector3D, QVector3D> cast( CChunk *chunk );
-	std::pair<QVector3D, QVector3D> cast( CChunk *chunk, QVector3D start, QVector3D direction, float length );
-	// QVector3D cast(CWorld *world);
-	// QVector3D cast(CWorld *world, QVector3D start, QVector3D direction, float length);
+	// std::pair<QVector3D, QVector3D> cast( CChunk *chunk );
+	// std::pair<QVector3D, QVector3D> cast( CChunk *chunk, QVector3D start, QVector3D direction, float length );
+	std::pair<QVector3D, QVector3D> cast(CWorld *world);
+	std::pair<QVector3D, QVector3D> cast(CWorld *world, QVector3D start, QVector3D direction, float length);
 };

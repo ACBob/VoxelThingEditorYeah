@@ -49,13 +49,31 @@ class CWorld : public QObject {
         CChunk *getOrCreateChunk(int x, int y, int z);
         CChunk *getOrCreateChunk(const QVector3D &coord);
 
+        CChunk *getChunkWorldPos(int x, int y, int z);
+        CChunk *getChunkWorldPos(const QVector3D &coord);
+
         // Converts from Chunk grid coords to world pos
         QVector3D chunkPosToWorldPos(const QVector3D& pos);
 
         // Converts from world pos to Chunk grid coords
         QVector3D worldPosToChunkPos(const QVector3D& pos);
 
+        // Converts from Chunk grid coords to world pos
+        void chunkPosToWorldPos(int &x, int &y, int &z);
+
+        // Converts from world pos to Chunk grid coords
+        void worldPosToChunkPos(int &x, int &y, int &z);
+
         void render(QGLContext *ctx);
+
+        uint16_t getID(int x, int y, int z);
+        void setID(int x, int y, int z, uint16_t id);
+
+        uint16_t getMeta(int x, int y, int z);
+        void setMeta(int x, int y, int z, uint16_t meta);
+
+        void get(int x, int y, int z, uint16_t &id, uint16_t &meta);
+        void set(int x, int y, int z, uint16_t id, uint16_t meta);
 
     private:
         QMap<MIDVEC, CChunk*> m_chunks;

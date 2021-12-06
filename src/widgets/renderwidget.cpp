@@ -91,7 +91,7 @@ void RenderWidget::paintGL()
 	glClearColor( voidColor.redF(), voidColor.greenF(), voidColor.blueF(), 1.0f );
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
-	if ( m_chunk != nullptr && m_displayMode == DispMode::DISP_3D )
+	if ( m_world != nullptr && m_displayMode == DispMode::DISP_3D )
 	{
 		// first-person camera
 		glMatrixMode( GL_PROJECTION );
@@ -123,7 +123,7 @@ void RenderWidget::paintGL()
 
 		m_texture->release();
 	}
-	else if ( m_chunk != nullptr && m_displayMode >= DispMode::DISP_GRID_XY && m_displayMode <= DispMode::DISP_GRID_ZY )
+	else if ( m_world != nullptr && m_displayMode >= DispMode::DISP_GRID_XY && m_displayMode <= DispMode::DISP_GRID_ZY )
 	{
 		// orthographic camera
 		glMatrixMode( GL_PROJECTION );
@@ -156,7 +156,7 @@ void RenderWidget::paintGL()
 		// After that is setup, draw!
 		m_texture->bind();
 
-		m_chunk->render( context() );
+		m_world->render( context() );
 
 		m_texture->release();
 
@@ -169,47 +169,50 @@ void RenderWidget::paintGL()
 
 		// XZ
 
-		for ( int i = 0; i <= m_chunk->getSizeX(); i++ )
+		// Draw a grid independent of size
+		// with 1 GL unit per grid unit
+
+		for ( float i = -m_zoom; i <= m_zoom; i += 1.0f )
 		{
 			glVertex3f( i, 0.0f, 0.0f );
-			glVertex3f( i, m_chunk->getSizeY(), 0.0f );
+			glVertex3f( i, m_zoom, 0.0f );
 		}
-		for ( int i = 0; i <= m_chunk->getSizeY(); i++ )
+		for ( float i = -m_zoom; i <= m_zoom; i += 1.0f )
 		{
 			glVertex3f( 0.0f, i, 0.0f );
-			glVertex3f( m_chunk->getSizeX(), i, 0.0f );
+			glVertex3f( m_zoom, i, 0.0f );
 		}
 
 		// XY
 
-		for ( int i = 0; i <= m_chunk->getSizeX(); i++ )
+		for ( float i = -m_zoom; i <= m_zoom; i += 1.0f )
 		{
 			glVertex3f( i, 0.0f, 0.0f );
-			glVertex3f( i, 0.0f, m_chunk->getSizeZ() );
+			glVertex3f( i, 0.0f, m_zoom );
 		}
-		for ( int i = 0; i <= m_chunk->getSizeZ(); i++ )
+		for ( float i = -m_zoom; i <= m_zoom; i += 1.0f )
 		{
 			glVertex3f( 0.0f, 0.0f, i );
-			glVertex3f( m_chunk->getSizeX(), 0.0f, i );
+			glVertex3f( m_zoom, 0.0f, i );
 		}
 
 		// YZ
-		for ( int i = 0; i <= m_chunk->getSizeY(); i++ )
+		for ( float i = -m_zoom; i <= m_zoom; i += 1.0f )
 		{
 			glVertex3f( 0.0f, i, 0.0f );
-			glVertex3f( 0.0f, i, m_chunk->getSizeZ() );
+			glVertex3f( 0.0f, i, m_zoom );
 		}
-		for ( int i = 0; i <= m_chunk->getSizeZ(); i++ )
+		for ( float i = -m_zoom; i <= m_zoom; i += 1.0f )
 		{
 			glVertex3f( 0.0f, 0.0f, i );
-			glVertex3f( 0.0f, m_chunk->getSizeY(), i );
+			glVertex3f( 0.0f, m_zoom, i );
 		}
 
 		glEnd();
 
 		glEnable( GL_DEPTH_TEST );
 	}
-	else if ( m_chunk != nullptr && m_displayMode == DispMode::DISP_ISOMETRIC )
+	else if ( m_world != nullptr && m_displayMode == DispMode::DISP_ISOMETRIC )
 	{
 		glMatrixMode( GL_PROJECTION );
 		glLoadIdentity();

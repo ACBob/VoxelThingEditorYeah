@@ -11,6 +11,8 @@
 #include <QObject>
 #include <QVector3D>
 
+#include "blockdefs.hpp"
+
 class RenderWidget; // forward declaration
 
 class CTool : public QObject
@@ -36,6 +38,11 @@ class CTool : public QObject
 								  RenderWidget *view ) = 0; // Called when a key is released
 
 	virtual void draw( RenderWidget *view ) = 0; // This is called during the RenderWidget's OpenGL paint event.
+
+	virtual void setBlockDefs( BlockDefs *blockDefs ) { m_blockDefs = blockDefs; }
+
+	protected:
+		BlockDefs *m_blockDefs; // The block definitions we use
 };
 
 // Placing/Breaking like minecraft.
