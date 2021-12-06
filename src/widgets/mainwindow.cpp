@@ -64,8 +64,6 @@ MainWindow::MainWindow( QWidget *parent ) : QMainWindow( parent )
 	m_world.createChunk(0, 0, 0);
 	m_world.createChunk(1, 0, 0);
 	m_world.createChunk(-1, 0, 0);
-	m_world.createChunk(0, 1, 0);
-	m_world.createChunk(0, -1, 0);
 	m_world.createChunk(0, 0, 1);
 	m_world.createChunk(0, 0, -1);
 

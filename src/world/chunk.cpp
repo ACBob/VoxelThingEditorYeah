@@ -175,9 +175,9 @@ void CChunk::rebuildModel()
 					for ( int i = 0; i < 4; i++ )
 					{
 						Model::Vertex v;
-						v.x = x + cubeVertices[cubeTriangles[face][i]][0];
-						v.y = y + cubeVertices[cubeTriangles[face][i]][1];
-						v.z = z + cubeVertices[cubeTriangles[face][i]][2];
+						v.x = m_pos.x * m_size.x + x + cubeVertices[cubeTriangles[face][i]][0];
+						v.y = m_pos.y * m_size.y + y + cubeVertices[cubeTriangles[face][i]][1];
+						v.z = m_pos.z * m_size.z + z + cubeVertices[cubeTriangles[face][i]][2];
 
 						switch ( i )
 						{
@@ -218,7 +218,6 @@ void CChunk::rebuildModel()
 	}
 
 	m_model->update();
-	m_model->m_position = m_pos * m_size;
 }
 
 void CChunk::render( QGLContext *context ) { m_model->render( context ); }
