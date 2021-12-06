@@ -12,35 +12,35 @@ set( CMAKE_CXX_STANDARD 17 )
 set( CMAKE_CXX_STANDARD_REQUIRED ON )
 
 set(SRC
-    main.cpp
+    src/main.cpp
 
-    widgets/mainwindow.cpp
-    widgets/mainwindow.hpp
-    widgets/editor4pane.cpp
-    widgets/editor4pane.hpp
-    widgets/renderwidget.cpp
-    widgets/renderwidget.hpp
-    widgets/settingsdialog.cpp
-    widgets/settingsdialog.hpp
-    widgets/colorpicker.cpp
-    widgets/colorpicker.hpp
-    widgets/blockproperties.cpp
-    widgets/blockproperties.hpp
+    src/widgets/mainwindow.cpp
+    src/widgets/mainwindow.hpp
+    src/widgets/editor4pane.cpp
+    src/widgets/editor4pane.hpp
+    src/widgets/renderwidget.cpp
+    src/widgets/renderwidget.hpp
+    src/widgets/settingsdialog.cpp
+    src/widgets/settingsdialog.hpp
+    src/widgets/colorpicker.cpp
+    src/widgets/colorpicker.hpp
+    src/widgets/blockproperties.cpp
+    src/widgets/blockproperties.hpp
 
-    world/chunk.cpp
-    world/chunk.hpp
-    world/raycast.cpp
-    world/raycast.hpp
+    src/world/chunk.cpp
+    src/world/chunk.hpp
+    src/world/raycast.cpp
+    src/world/raycast.hpp
 
-    editor/tools.cpp
-    editor/tools.hpp
-    editor/toml.cpp
-    editor/toml.hpp
-    editor/blockdefs.cpp
-    editor/blockdefs.hpp
+    src/editor/tools.cpp
+    src/editor/tools.hpp
+    src/editor/toml.cpp
+    src/editor/toml.hpp
+    src/editor/blockdefs.cpp
+    src/editor/blockdefs.hpp
 
-    render/model.cpp
-    render/model.hpp
+    src/render/model.cpp
+    src/render/model.hpp
 )
 
 set(RESOURCES resources/resources.qrc)
