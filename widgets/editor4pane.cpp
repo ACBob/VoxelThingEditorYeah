@@ -48,9 +48,8 @@ Editor4Pane::Editor4Pane(QWidget *parent) : QDockWidget(parent)
     m_bottomRightView = new RenderWidget(rightUpDownSplitter);
     m_bottomRightView->setDispMode(RenderWidget::DispMode::DISP_GRID_ZY);
 
-    // Disable all features
-    // UITODO: At some point, this will be floatable, closable, etc.
-    this->setFeatures(QDockWidget::NoDockWidgetFeatures);
+    // // Disable all features
+    // this->setFeatures(QDockWidget::NoDockWidgetFeatures);
 }
 
 void Editor4Pane::setChunk(CChunk *chunk)

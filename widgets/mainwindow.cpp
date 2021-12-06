@@ -68,6 +68,11 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 	// when a different chunk is selected, we need to update the editor
 	connect(thingsList, SIGNAL(currentRowChanged(int)), this, SLOT(onChunkSelected(int)));
 
+	// Editor 4-pane
+	m_editor = new Editor4Pane(this);
+	this->setCentralWidget(m_editor);
+	m_editor->setTool(handTool);
+
 	// Menubar
 	QMenuBar *menuBar = new QMenuBar(this);
 	this->setMenuBar(menuBar);
@@ -84,15 +89,13 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 
 	// View menu
 	QMenu *viewMenu = menuBar->addMenu(tr("&View"));
+	// Toggle display of chunk list
+	viewMenu->addAction( thingsDock->toggleViewAction() );
+	viewMenu->addAction( m_editor->toggleViewAction() );
 
 	// Help menu
 	QMenu *helpMenu = menuBar->addMenu(tr("&Help"));
 
-	// Editor 4-pane
-	m_editor = new Editor4Pane(this);
-	this->setCentralWidget(m_editor);
-
-	m_editor->setTool(handTool);
 }
 
 MainWindow::~MainWindow()
