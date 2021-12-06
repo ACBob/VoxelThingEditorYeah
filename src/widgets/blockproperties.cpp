@@ -69,6 +69,7 @@ BlockPropertyDialog::BlockPropertyDialog( BlockDefs *defs, uint16_t id, uint16_t
 	m_metaLevel->setMinimum( 0 );
 	m_metaLevel->setMaximum( UINT16_MAX ); // lol
 	m_metaLevel->setOrientation( Qt::Horizontal );
+	m_metaLevel->setTickPosition( QSlider::TicksBothSides );
 
 	m_metaBitField		 = new QWidget( this );
 	m_metaBitFieldLayout = new QGridLayout( this );
@@ -147,6 +148,8 @@ void BlockPropertyDialog::showAppropriateMetaThingie()
 			m_metaLabel->setText( tr( "Level:" ) );
 			m_layout->addRow( m_metaLabel, m_metaLevel );
 			m_metaLevel->setVisible( true );
+			m_metaLevel->setMinimum( defs->value( id ).metaMin );
+			m_metaLevel->setMaximum( defs->value( id ).metaMax );
 			break;
 		case META_TOGGLE:
 			m_metaLabel->setText( tr( "On:" ) );

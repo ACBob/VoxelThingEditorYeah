@@ -24,6 +24,8 @@ struct BlockDef
 	BlockMetaType metaType;
 	QString name;
 	QPoint texturePos;
+	uint16_t metaMin;
+	uint16_t metaMax;
 };
 
 using BlockDefs = QMap<int, BlockDef>;

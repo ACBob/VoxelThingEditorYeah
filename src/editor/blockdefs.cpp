@@ -60,7 +60,11 @@ BlockDefs LoadBlockDefs( const QString &path )
 
 		// Get the meta type
 		BlockMetaType metaType = META_NONE;
-		QString meta		   = QString::fromStdString( blockdef->get( "metaUse" )->value_or<std::string>( "None" ) );
+		QString meta;
+		if ( blockdef->get("metaUse") )
+			meta = QString::fromStdString( blockdef->get( "metaUse" )->value_or<std::string>( "None" ) );
+		else
+			meta = "None";
 
 		// TODO: any better way than else ifs?
 		if ( meta == "None" )
@@ -105,6 +109,16 @@ BlockDefs LoadBlockDefs( const QString &path )
 		}
 
 		def.metaType = metaType;
+
+		// min/max
+		if ( blockdef->get("metaMin") )
+			def.metaMin = blockdef->get( "metaMin" )->value_or<int>( 0 );
+		else
+			def.metaMin = 0;
+		if ( blockdef->get("metaMax") )
+			def.metaMax = blockdef->get( "metaMax" )->value_or<int>( UINT16_MAX );
+		else
+			def.metaMax = UINT16_MAX;
 
 		defs[id] = def;
 	}
