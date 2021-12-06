@@ -7,6 +7,7 @@
 #include "../editor/tools.hpp"
 #include "../world/chunk.hpp"
 #include "../world/raycast.hpp"
+#include "../world/world.hpp"
 
 #include <QDebug>
 #include <QKeyEvent>
@@ -118,7 +119,7 @@ void RenderWidget::paintGL()
 
 		m_texture->bind();
 
-		m_chunk->render( context() );
+		m_world->render( context() );
 
 		m_texture->release();
 	}
@@ -230,7 +231,7 @@ void RenderWidget::paintGL()
 		// same as DISP_3D now
 		m_texture->bind();
 
-		m_chunk->render( context() );
+		m_world->render( context() );
 
 		m_texture->release();
 	}
@@ -309,6 +310,12 @@ void RenderWidget::paintGL()
 void RenderWidget::setChunk( CChunk *chunk )
 {
 	m_chunk = chunk;
+	update();
+}
+
+void RenderWidget::setWorld( CWorld *world )
+{
+	m_world = world;
 	update();
 }
 

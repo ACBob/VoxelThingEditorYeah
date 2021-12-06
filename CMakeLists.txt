@@ -31,6 +31,8 @@ set(SRC
     src/world/chunk.hpp
     src/world/raycast.cpp
     src/world/raycast.hpp
+    src/world/world.cpp
+    src/world/world.hpp
 
     src/editor/tools.cpp
     src/editor/tools.hpp

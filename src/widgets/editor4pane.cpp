@@ -13,6 +13,7 @@
 #include "renderwidget.hpp"
 
 #include "../world/chunk.hpp"
+#include "../world/world.hpp"
 
 #include <math.h>
 
@@ -57,6 +58,14 @@ void Editor4Pane::setChunk( CChunk *chunk )
 	m_topRightView->setChunk( chunk );
 	m_bottomLeftView->setChunk( chunk );
 	m_bottomRightView->setChunk( chunk );
+}
+
+void Editor4Pane::setWorld( CWorld *world )
+{
+	m_topLeftView->setWorld( world );
+	m_topRightView->setWorld( world );
+	m_bottomLeftView->setWorld( world );
+	m_bottomRightView->setWorld( world );
 }
 
 void Editor4Pane::setTool( CTool *tool )

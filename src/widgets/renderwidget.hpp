@@ -9,6 +9,7 @@
 class CChunk;	// forward declaration
 class CRaycast; // forward declaration
 class CTool;	// forward declaration
+class CWorld;
 
 class RenderWidget : public QGLWidget
 {
@@ -22,6 +23,7 @@ class RenderWidget : public QGLWidget
 	void resizeGL( int width, int height );
 
 	void setChunk( CChunk *chunk );
+	void setWorld( CWorld *world );
 
 	void keyPressEvent( QKeyEvent *event );
 	void mouseMoveEvent( QMouseEvent *event );
@@ -40,6 +42,7 @@ class RenderWidget : public QGLWidget
 	void setTool( CTool *tool );
 
 	CChunk *m_chunk;
+	CWorld *m_world;
 
 	QVector3D m_camera;
 	QVector3D m_camera_forward;

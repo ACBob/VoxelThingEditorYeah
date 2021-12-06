@@ -16,6 +16,7 @@
 #include "../editor/blockdefs.hpp"
 #include "../editor/tools.hpp"
 #include "../world/chunk.hpp"
+#include "../world/world.hpp"
 
 MainWindow::MainWindow( QWidget *parent ) : QMainWindow( parent )
 {
@@ -58,12 +59,13 @@ MainWindow::MainWindow( QWidget *parent ) : QMainWindow( parent )
 	QListWidget *thingsList = new QListWidget( thingsDock );
 	thingsDock->setWidget( thingsList );
 
-	for ( int i = 0; i < 5; i++ )
-	{
-		thingsList->addItem( tr( "Chunk %1" ).arg( i ) );
-		m_chunks.push_back( new CChunk( i, 0, 0 ) );
-		m_chunks.back()->m_blockDefs = &m_blockDefs;
-	}
+	m_world.createChunk(0, 0, 0);
+	m_world.createChunk(1, 0, 0);
+	m_world.createChunk(-1, 0, 0);
+	m_world.createChunk(0, 1, 0);
+	m_world.createChunk(0, -1, 0);
+	m_world.createChunk(0, 0, 1);
+	m_world.createChunk(0, 0, -1);
 
 	// when a different chunk is selected, we need to update the editor
 	connect( thingsList, SIGNAL( currentRowChanged( int ) ), this, SLOT( onChunkSelected( int ) ) );
@@ -72,6 +74,7 @@ MainWindow::MainWindow( QWidget *parent ) : QMainWindow( parent )
 	m_editor = new Editor4Pane( this );
 	this->setCentralWidget( m_editor );
 	m_editor->setTool( handTool );
+	m_editor->setWorld( &m_world );
 
 	// Menubar
 	QMenuBar *menuBar = new QMenuBar( this );
@@ -101,17 +104,13 @@ MainWindow::MainWindow( QWidget *parent ) : QMainWindow( parent )
 
 MainWindow::~MainWindow()
 {
-	for ( CChunk *chunk : m_chunks )
-	{
-		delete chunk;
-	}
 }
 
 void MainWindow::onChunkSelected( int index )
 {
 	// update the editor
-	CChunk *chunk = m_chunks[index];
-	m_editor->setChunk( chunk );
+	// CChunk *chunk = m_chunks[index];
+	// m_editor->setChunk( chunk );
 }
 
 void MainWindow::toolChanged( QAction *action )
