@@ -11,7 +11,7 @@
 
 #include <QVector>
 
-#include "../world/vector.hpp"
+#include "world/vector.hpp"
 
 class Model : public QObject
 {

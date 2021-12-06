@@ -2,7 +2,7 @@
 
 // TODO: Setting
 
-#include "colorpicker.hpp"
+#include "ui/widgets/colorpicker.hpp"
 
 #include <QCheckBox>
 #include <QComboBox>

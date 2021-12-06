@@ -4,16 +4,16 @@
 
 #include <QOpenGLFunctions_3_3_Core>
 
-#include "../editor/tools.hpp"
-#include "../world/chunk.hpp"
-#include "../world/raycast.hpp"
-#include "../world/world.hpp"
+#include "editor/tools.hpp"
+#include "world/chunk.hpp"
+#include "world/raycast.hpp"
+#include "world/world.hpp"
 
 #include <QDebug>
 #include <QKeyEvent>
 #include <QMatrix4x4>
 #include <QMenu>
-#include "../world/vector.hpp"
+#include "world/vector.hpp"
 
 #include <QSettings>
 

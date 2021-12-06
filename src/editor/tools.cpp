@@ -1,11 +1,11 @@
 #include "tools.hpp"
 
-#include "../widgets/blockproperties.hpp"
-#include "../widgets/renderwidget.hpp"
+#include "ui/dialogs/blockproperties.hpp"
+#include "ui/widgets/renderwidget.hpp"
 
-#include "../world/chunk.hpp"
-#include "../world/world.hpp"
-#include "../world/raycast.hpp"
+#include "world/chunk.hpp"
+#include "world/world.hpp"
+#include "world/raycast.hpp"
 
 #include "blockdefs.hpp"
 

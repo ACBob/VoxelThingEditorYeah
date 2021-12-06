@@ -10,7 +10,7 @@
 
 #include <QSettings>
 
-#include "colorpicker.hpp"
+#include "ui/widgets/colorpicker.hpp"
 
 SettingsDialog::SettingsDialog( QWidget *parent ) : QDialog( parent )
 {

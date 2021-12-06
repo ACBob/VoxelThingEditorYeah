@@ -1,9 +1,9 @@
 #include <QMainWindow>
 
-#include "../editor/blockdefs.hpp"
+#include "editor/blockdefs.hpp"
 
 #include <QVector>
-#include "../world/world.hpp"
+#include "world/world.hpp"
 
 class Editor4Pane; // forward declaration
 class CChunk;	   // forward declaration

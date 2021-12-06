@@ -2,7 +2,7 @@
 
 #include <random>
 
-#include "../render/model.hpp"
+#include "render/model.hpp"
 
 #include <QGLContext>
 

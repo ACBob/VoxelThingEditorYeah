@@ -9,7 +9,7 @@
 #include <QKeyEvent>
 #include <QMouseEvent>
 #include <QObject>
-#include "../world/vector.hpp"
+#include "world/vector.hpp"
 
 #include "blockdefs.hpp"
 

@@ -14,18 +14,21 @@ set( CMAKE_CXX_STANDARD_REQUIRED ON )
 set(SRC
     src/main.cpp
 
-    src/widgets/mainwindow.cpp
-    src/widgets/mainwindow.hpp
-    src/widgets/editor4pane.cpp
-    src/widgets/editor4pane.hpp
-    src/widgets/renderwidget.cpp
-    src/widgets/renderwidget.hpp
-    src/widgets/settingsdialog.cpp
-    src/widgets/settingsdialog.hpp
-    src/widgets/colorpicker.cpp
-    src/widgets/colorpicker.hpp
-    src/widgets/blockproperties.cpp
-    src/widgets/blockproperties.hpp
+    src/ui/mainwindow.cpp
+    src/ui/mainwindow.hpp
+
+    src/ui/docks/editor4pane.cpp
+    src/ui/docks/editor4pane.hpp
+
+    src/ui/widgets/renderwidget.cpp
+    src/ui/widgets/renderwidget.hpp
+    src/ui/widgets/colorpicker.cpp
+    src/ui/widgets/colorpicker.hpp
+
+    src/ui/dialogs/blockproperties.cpp
+    src/ui/dialogs/blockproperties.hpp
+    src/ui/dialogs/settingsdialog.cpp
+    src/ui/dialogs/settingsdialog.hpp
 
     src/world/chunk.cpp
     src/world/chunk.hpp
@@ -55,5 +58,5 @@ find_package(OpenGL REQUIRED)
 
 add_executable(${PROJECT_NAME} ${SRC} ${RESOURCES})
 target_link_libraries(${PROJECT_NAME} Qt5::Widgets Qt5::Core Qt5::Gui Qt5::OpenGL OpenGL::GL OpenGL::GLU)
-target_include_directories(${PROJECT_NAME} PRIVATE ${QT_INCLUDE}/QtWidgets ${QT_INCLUDE}/QtCore ${QT_INCLUDE}/QtGui ${QT_INCLUDE}/QtOpenGL)
+target_include_directories(${PROJECT_NAME} PRIVATE ${QT_INCLUDE}/QtWidgets ${QT_INCLUDE}/QtCore ${QT_INCLUDE}/QtGui ${QT_INCLUDE}/QtOpenGL src)
 target_compile_definitions(${PROJECT_NAME} PRIVATE TOML_HEADER_ONLY)

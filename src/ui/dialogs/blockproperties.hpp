@@ -5,7 +5,7 @@
 #include <QComboBox>
 #include <QDialog>
 
-#include "../editor/blockdefs.hpp"
+#include "editor/blockdefs.hpp"
 
 class ColorPicker;
 class QLineEdit;

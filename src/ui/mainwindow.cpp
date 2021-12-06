@@ -10,13 +10,13 @@
 
 #include <QMessageBox>
 
-#include "editor4pane.hpp"
-#include "settingsdialog.hpp"
+#include "ui/docks/editor4pane.hpp"
+#include "ui/dialogs/settingsdialog.hpp"
 
-#include "../editor/blockdefs.hpp"
-#include "../editor/tools.hpp"
-#include "../world/chunk.hpp"
-#include "../world/world.hpp"
+#include "editor/blockdefs.hpp"
+#include "editor/tools.hpp"
+#include "world/chunk.hpp"
+#include "world/world.hpp"
 
 MainWindow::MainWindow( QWidget *parent ) : QMainWindow( parent )
 {

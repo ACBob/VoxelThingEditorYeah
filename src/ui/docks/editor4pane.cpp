@@ -10,10 +10,10 @@
 #include <QGLFunctions>
 #include <QGLWidget>
 
-#include "renderwidget.hpp"
+#include "ui/widgets/renderwidget.hpp"
 
-#include "../world/chunk.hpp"
-#include "../world/world.hpp"
+#include "world/chunk.hpp"
+#include "world/world.hpp"
 
 #include <math.h>
 

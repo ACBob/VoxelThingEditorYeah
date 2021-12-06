@@ -17,7 +17,7 @@
 class Model;	  // Forward declaration
 class QGLContext; // Forward declaration
 
-#include "../editor/blockdefs.hpp"
+#include "editor/blockdefs.hpp"
 
 #include "vector.hpp"
 
