@@ -8,6 +8,9 @@ set(CMAKE_AUTORCC ON)
 
 set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin )
 
+set( CMAKE_CXX_STANDARD 17 )
+set( CMAKE_CXX_STANDARD_REQUIRED ON )
+
 set(SRC
     main.cpp
 
@@ -29,6 +32,10 @@ set(SRC
 
     editor/tools.cpp
     editor/tools.hpp
+    editor/toml.cpp
+    editor/toml.hpp
+    editor/blockdefs.cpp
+    editor/blockdefs.hpp
 
     render/model.cpp
     render/model.hpp
@@ -45,3 +52,4 @@ find_package(OpenGL REQUIRED)
 add_executable(${PROJECT_NAME} ${SRC} ${RESOURCES})
 target_link_libraries(${PROJECT_NAME} Qt5::Widgets Qt5::Core Qt5::Gui Qt5::OpenGL OpenGL::GL OpenGL::GLU)
 target_include_directories(${PROJECT_NAME} PRIVATE ${QT_INCLUDE}/QtWidgets ${QT_INCLUDE}/QtCore ${QT_INCLUDE}/QtGui ${QT_INCLUDE}/QtOpenGL)
+target_compile_definitions(${PROJECT_NAME} PRIVATE TOML_HEADER_ONLY)

@@ -13,11 +13,14 @@
 
 #include "../world/chunk.hpp"
 #include "../editor/tools.hpp"
+#include "../editor/blockdefs.hpp"
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 {
 	this->setWindowTitle(tr("VoxelThingEditorYeah"));
 	this->setMinimumSize(800, 600);
+
+	m_blockDefs = LoadBlockDefs(":/example/palette_internal.toml");
 
 	// Main window has toolbars to the left, right and top
 	// And the central widget is a 4-way split
@@ -59,6 +62,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 		m_chunks.push_back(
 			new CChunk(i, 0, 0)
 		);
+		m_chunks.back()->m_blockDefs = &m_blockDefs;
 	}
 
 	// when a different chunk is selected, we need to update the editor

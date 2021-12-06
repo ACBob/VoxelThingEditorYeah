@@ -5,6 +5,8 @@
 #include "../world/raycast.hpp"
 #include "../world/chunk.hpp"
 
+#include "blockdefs.hpp"
+
 #include <QDebug>
 
 #include <QDialog>
@@ -162,7 +164,8 @@ void CWrenchTool::mousePressEvent(QMouseEvent *event, QVector3D pos, QVector3D d
             {
                 // Display configure dialog
                 QDialog* dlg = new QDialog(view);
-                dlg->setWindowTitle("Configure block");
+                int id = view->m_chunk->getID(m_selectedBlockPos.x(), m_selectedBlockPos.y(), m_selectedBlockPos.z());
+                dlg->setWindowTitle(view->m_chunk->m_blockDefs->value(id).name);
                 
                 QFormLayout* layout = new QFormLayout(dlg);
                 QLineEdit* idInp = new QLineEdit(dlg);

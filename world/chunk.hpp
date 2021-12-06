@@ -17,6 +17,8 @@
 class Model; // Forward declaration
 class QGLContext; // Forward declaration
 
+#include "../editor/blockdefs.hpp"
+
 class CChunk : public QObject
 {
     Q_OBJECT;
@@ -55,6 +57,8 @@ class CChunk : public QObject
         void rebuildModel();
 
         void render(QGLContext *context);
+
+        BlockDefs *m_blockDefs;
 
     private:
         uint32_t *m_voxels;

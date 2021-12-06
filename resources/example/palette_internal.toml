@@ -1,0 +1,105 @@
+# Block Palette!
+# Defines ID, name, meta use, and texture position.
+
+# [ID]
+# name = "Block Name"
+# metaUse = One of "Color", "DirectionHoriz", "DirectionVert", "Direction", "Level", "Toggle", "BitField", "OtherBlock", "None"
+# texturePos = [x, y]
+
+# This is the internal file. It contains basic testing data.
+# Ideally each game provides their own file!
+
+[0]
+name = "Air"
+metaUse = "None"
+texturePos = [0, 0]
+
+[1]
+name = "Stone"
+metaUse = "None"
+texturePos = [1, 0]
+
+[2]
+name = "Grass"
+metaUse = "None"
+texturePos = [2, 0]
+
+[3]
+name = "Wool"
+metaUse = "Color"
+texturePos = [3, 0]
+
+[4]
+name = "BitField_Test"
+metaUse = "BitField"
+texturePos = [4, 0]
+
+[5]
+name = "Direction_Test"
+metaUse = "Direction"
+texturePos = [5, 0]
+
+[6]
+name = "DirectionHoriz_Test"
+metaUse = "DirectionHoriz"
+texturePos = [6, 0]
+
+[7]
+name = "DirectionVert_Test"
+metaUse = "DirectionVert"
+texturePos = [7, 0]
+
+[8]
+name = "Level_Test"
+metaUse = "Level"
+texturePos = [8, 0]
+
+[9]
+name = "Toggle_Test"
+metaUse = "Toggle"
+texturePos = [9, 0]
+
+[10]
+name = "OtherBlock_Test"
+metaUse = "OtherBlock"
+texturePos = [10, 0]
+
+
+# Entity Palette! (TO DO)
+# Defines ID, name, Editor Model, Editor Texture, and properties.
+# [ID]
+# name = "Entity Name"
+# model = "Model File"
+# texture = "Texture File"
+# [ID.properties]
+# propertyName = [
+#    Type (INT, FLOAT, STRING, BOOL, LIST),
+#    Description,
+#    If Integer; Min, Max, Default
+#    If Float; Min, Max, Default
+#    If String; Default
+#    If Boolean; Default
+#    If List; List of options, Default Index
+# ]
+
+# For example, the following is a test entity.
+# [player]
+# name = "Player"
+# model = "player.obj"
+# texture = "player.png"
+# [player.properties]
+# health = [
+#     "INT", 
+#     "The health of the player.",
+#     0,
+#     100,
+#     50
+# ]
+# gameMode = [
+#     "LIST",
+#     "The gamemode of the player.",
+#     ["Survival", "Creative", "Adventure"],
+#     0
+# ]
+
+

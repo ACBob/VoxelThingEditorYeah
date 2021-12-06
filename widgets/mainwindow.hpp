@@ -1,5 +1,7 @@
 #include <QMainWindow>
 
+#include "../editor/blockdefs.hpp"
+
 class Editor4Pane; // forward declaration
 class CChunk; // forward declaration
 class CTool; // forward declaration
@@ -33,4 +35,6 @@ class MainWindow : public QMainWindow
 
         std::vector<CChunk *> m_chunks;
         std::vector<CTool *> m_tools;
+
+        BlockDefs m_blockDefs;
 };
