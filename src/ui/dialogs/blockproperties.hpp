@@ -29,6 +29,14 @@ class BlockPropertyDialog : public QDialog
   private slots:
 	void onIdSelectionChange( int index );
 
+	void onMetaChangeLineEdit( const QString &text );
+	void onMetaChangeSlider( int value );
+	void onMetaChangeDial( int value );
+	void onMetaChangeCheckBox( bool checked );
+	void onMetaChangeComboBox( int index );
+	void onMetaChangeColorPicker( const QColor &color );
+	// TODO: bitfield
+
   private:
 	void showAppropriateMetaThingie();
 

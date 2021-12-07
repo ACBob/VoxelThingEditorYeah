@@ -11,11 +11,18 @@ class ColorPicker : public QWidget
 	ColorPicker( QWidget *parent = 0 );
 	~ColorPicker();
 
-	void setColor( const QColor &color );
-	QColor getColor();
-
 	void enableAlpha();
 	void disableAlpha();
+
+	public slots:
+	void setColor( const QColor &color );
+	void setColorFromVTY( uint16_t vty_color ); // converts VoxelThingYeah 16bit color to Qt color
+	QColor getColor();
+	uint16_t getVTYColor(); // converts Qt color to VoxelThingYeah 16bit color
+
+	signals:
+	void colorChanged( const QColor &color );
+
 
   protected:
 	void paintEvent( QPaintEvent *event );
