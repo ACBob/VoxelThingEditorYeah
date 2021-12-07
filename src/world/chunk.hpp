@@ -58,6 +58,15 @@ class CChunk : public QObject
 	void get( int x, int y, int z, uint32_t &voxel );
 
 	void set( int i, uint16_t id, uint16_t data );
+	void set( int i, uint32_t voxel );
+
+	uint32_t get( int i );
+	uint16_t getID( int i );
+	uint16_t getMeta( int i );
+	void getID( int i, uint16_t &id );
+	void getMeta( int i, uint16_t &meta );
+	void get( int i, uint16_t &id, uint16_t &data );
+	void get( int i, uint32_t &voxel );
 
 	void rebuildModel();
 

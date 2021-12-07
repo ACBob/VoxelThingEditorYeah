@@ -213,3 +213,35 @@ void CWorld::setChunkSize(int x, int y, int z) {
     m_chunkSize.y = y;
     m_chunkSize.z = z;
 }
+
+Vector3i CWorld::getChunkSize() {
+    return m_chunkSize;
+}
+
+QList<CChunk *> CWorld::getChunks() {
+    return m_chunks.values();
+}
+
+QString CWorld::getName() {
+    return m_name;
+}
+
+void CWorld::setName(QString name) {
+    m_name = name;
+}
+
+uint32_t CWorld::getSeed() {
+    return m_seed;
+}
+
+void CWorld::setSeed(uint32_t seed) {
+    m_seed = seed;
+}
+
+uint32_t CWorld::getTime() {
+    return m_time;
+}
+
+void CWorld::setTime(uint32_t time) {
+    m_time = time;
+}

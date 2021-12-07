@@ -56,6 +56,21 @@ class CWorld : public QObject {
         void set(int x, int y, int z, uint16_t id, uint16_t meta);
 
         void setChunkSize(int x, int y, int z);
+        void getChunkSize(int &x, int &y, int &z);
+
+        Vector3i getChunkSize();
+
+        QList<CChunk*> getChunks();
+
+        QString getName();
+        void setName(QString name);
+
+        uint32_t getSeed();
+        void setSeed(uint32_t seed);
+
+        uint32_t getTime();
+        void setTime(uint32_t time);
+
 
     private:
         QMap<Vector3i, CChunk*> m_chunks;
@@ -64,4 +79,8 @@ class CWorld : public QObject {
         // The first map format had it be per chunk, and that's silly.
         // Even luckier is that I rectified it *before* working on this and was able to avoid the headache that is.
         Vector3i m_chunkSize;
+
+        QString m_name;
+        uint32_t m_seed;
+        uint32_t m_time;
 };

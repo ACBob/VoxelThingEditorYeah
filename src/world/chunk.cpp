@@ -122,6 +122,23 @@ void CChunk::set( int i, uint16_t id, uint16_t meta ) {
 	m_voxels[i] = id | ( meta << 16 );
 }
 
+uint32_t CChunk::get( int i ) { return m_voxels[i]; }
+void CChunk::set( int i, uint32_t voxel ) { m_voxels[i] = voxel; }
+
+uint16_t CChunk::getID( int i ) { return m_voxels[i] & 0xFFFF; }
+uint16_t CChunk::getMeta( int i ) { return m_voxels[i] >> 16; }
+
+void CChunk::getID( int i, uint16_t &id ) { id = m_voxels[i] & 0xFFFF; }
+void CChunk::getMeta( int i, uint16_t &meta ) { meta = m_voxels[i] >> 16; }
+
+void CChunk::get( int i, uint16_t &id, uint16_t &meta )
+{
+	id = getID( i );
+	meta = getMeta( i );
+}
+
+void CChunk::get( int i, uint32_t &voxel ) { voxel = m_voxels[i]; }
+
 const int cubeVertices[8][3] = {
 	// NORTH +Z
 	{ 1, 1, 1 },
