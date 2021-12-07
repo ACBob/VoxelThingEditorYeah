@@ -207,3 +207,9 @@ void CWorld::set( int x, int y, int z, uint16_t id, uint16_t meta ) {
 
     c->set(x, y, z, id, meta);
 }
+
+void CWorld::setChunkSize(int x, int y, int z) {
+    m_chunkSize.x = x;
+    m_chunkSize.y = y;
+    m_chunkSize.z = z;
+}

@@ -57,6 +57,8 @@ class CChunk : public QObject
 	void get( int x, int y, int z, uint16_t &id, uint16_t &meta );
 	void get( int x, int y, int z, uint32_t &voxel );
 
+	void set( int i, uint16_t id, uint16_t data );
+
 	void rebuildModel();
 
 	void render( QGLContext *context );

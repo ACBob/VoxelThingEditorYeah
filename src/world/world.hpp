@@ -55,6 +55,8 @@ class CWorld : public QObject {
         void get(int x, int y, int z, uint16_t &id, uint16_t &meta);
         void set(int x, int y, int z, uint16_t id, uint16_t meta);
 
+        void setChunkSize(int x, int y, int z);
+
     private:
         QMap<Vector3i, CChunk*> m_chunks;
 

@@ -118,6 +118,10 @@ void CChunk::get( int x, int y, int z, uint16_t &id, uint16_t &meta )
 	meta = getMeta( x, y, z );
 }
 
+void CChunk::set( int i, uint16_t id, uint16_t meta ) {
+	m_voxels[i] = id | ( meta << 16 );
+}
+
 const int cubeVertices[8][3] = {
 	// NORTH +Z
 	{ 1, 1, 1 },

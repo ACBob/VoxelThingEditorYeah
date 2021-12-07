@@ -39,6 +39,9 @@ set(SRC
     src/world/world.cpp
     src/world/world.hpp
 
+    src/world/loading/worldformat.cpp
+    src/world/loading/worldformat.hpp
+
     src/editor/tools.cpp
     src/editor/tools.hpp
     src/editor/toml.cpp
