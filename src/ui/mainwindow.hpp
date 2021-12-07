@@ -20,8 +20,8 @@ class MainWindow : public QMainWindow
   private slots:
 
 	// void newFile();
-	// void openFile();
-	// void saveFile();
+	void openFile();
+	void saveFile();
 	// void saveAsFile();
 	// void closeFile();
 	// void closeAllFiles();

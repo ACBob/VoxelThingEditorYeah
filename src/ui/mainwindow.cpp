@@ -9,6 +9,7 @@
 #include <QVBoxLayout>
 
 #include <QMessageBox>
+#include <QFileDialog>
 
 #include "ui/docks/editor4pane.hpp"
 #include "ui/dialogs/settingsdialog.hpp"
@@ -17,6 +18,7 @@
 #include "editor/tools.hpp"
 #include "world/chunk.hpp"
 #include "world/world.hpp"
+#include "world/loading/worldformat.hpp"
 
 MainWindow::MainWindow( QWidget *parent ) : QMainWindow( parent )
 {
@@ -136,4 +138,56 @@ void MainWindow::editPreferences()
 void MainWindow::showAbout()
 {
 	QMessageBox::about( this, "VoxelThingEditorYeah", "VoxelEditorThingYeah - The VoxelThingYeah Editor." );
+}
+
+void MainWindow::openFile()
+{
+	// Display a dialog to select only one directory
+	QFileDialog dialog( this );
+	dialog.setFileMode( QFileDialog::Directory );
+	dialog.setOption( QFileDialog::ShowDirsOnly, true );
+	dialog.setOption( QFileDialog::DontUseNativeDialog, true );
+	dialog.setWindowTitle( tr( "Open Directory" ) );
+	dialog.setDirectory( QDir::homePath() );
+	dialog.setLabelText( QFileDialog::Accept, tr( "Open" ) );
+
+	if ( dialog.exec() == QDialog::Accepted )
+	{
+		QStringList files = dialog.selectedFiles();
+
+		QString path = files[0];
+
+		qDebug() << "Opening directory: " << path;
+
+		// TODO: multiple format support
+		VoxelFormatYeah *format = new VoxelFormatYeah();
+		format->Load( &m_world, path );
+		delete format;		
+	}
+}
+
+void MainWindow::saveFile()
+{
+	// Display a dialog to select only one directory
+	QFileDialog dialog( this );
+	dialog.setFileMode( QFileDialog::Directory );
+	dialog.setOption( QFileDialog::ShowDirsOnly, true );
+	dialog.setOption( QFileDialog::DontUseNativeDialog, true );
+	dialog.setWindowTitle( tr( "Save Directory" ) );
+	dialog.setDirectory( QDir::homePath() );
+	dialog.setLabelText( QFileDialog::Accept, tr( "Save" ) );
+
+	if ( dialog.exec() == QDialog::Accepted )
+	{
+		QStringList files = dialog.selectedFiles();
+
+		QString path = files[0];
+
+		qDebug() << "Saving directory: " << path;
+
+		// TODO: multiple format support
+		VoxelFormatYeah *format = new VoxelFormatYeah();
+		format->Save( &m_world, path );
+		delete format;
+	}
 }

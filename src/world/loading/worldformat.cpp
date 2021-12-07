@@ -237,12 +237,13 @@ bool VoxelFormatYeah::Save(CWorld *world, QString filename)
 
     // Create the root object.
     toml::table root = toml::table{{
-        {"name", world->getName().toStdString()},
-        {"seed", world->getSeed()},
-        {"game", "Meegreef"}, // TODO
-        {"version", VTYG_CURRENT_VERSION},
-        {"description", "A Minecraft world"},
-        {"chunk_size", toml::array{world->getChunkSize().x, world->getChunkSize().y, world->getChunkSize().z}},
+        {"meta", toml::table{{
+            {"name", world->getName().toStdString()},
+            {"seed", world->getSeed()},
+            {"game", "Meegreef"}, // TODO
+            {"version", VTYG_CURRENT_VERSION},
+            {"chunk_size", toml::array{world->getChunkSize().x, world->getChunkSize().y, world->getChunkSize().z}},
+        }}},
 
         // dimensions.overworld
         {"dimensions.overworld", toml::table{{
@@ -258,11 +259,15 @@ bool VoxelFormatYeah::Save(CWorld *world, QString filename)
         return false;
     }
 
-    QTextStream stream(&meta);
-    std::string s;
-    std::stringstream ss(s);
-    ss << root;
-    stream << s.c_str();
+    // toml wants a ostream
+    // so we write it to an ostream, then read back the buffer.
+    std::ostringstream oss;
+    oss << root;
+    QByteArray data = oss.str().c_str();
+    meta.write(data);
+    qDebug() << "VoxelFormatYeah: meta.toml:" << data;
+
+    // Create the chunks directory.
 
 
     // Create overworld directory.
@@ -327,4 +332,5 @@ bool VoxelFormatYeah::Save(CWorld *world, QString filename)
             // }
         }
     }
+    return true;
 }
