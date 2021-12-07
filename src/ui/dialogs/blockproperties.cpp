@@ -41,6 +41,8 @@ BlockPropertyDialog::BlockPropertyDialog( BlockDefs *defs, uint16_t id, uint16_t
 		m_metaOtherBlock->addItem( QString::number( blockId ) + ": " + def.name );
 	}
 
+	m_idPicker->setCurrentIndex( id );
+
 	m_layout->addRow( label, m_idPicker );
 
 	connect( m_idPicker, SIGNAL( currentIndexChanged( int ) ), this, SLOT( onIdSelectionChange( int ) ) );
@@ -110,7 +112,7 @@ BlockPropertyDialog::BlockPropertyDialog( BlockDefs *defs, uint16_t id, uint16_t
 }
 
 uint16_t BlockPropertyDialog::getChosenId() { return id; }
-uint16_t BlockPropertyDialog::getChosenMeta() { return id; }
+uint16_t BlockPropertyDialog::getChosenMeta() { return meta; }
 
 void BlockPropertyDialog::onIdSelectionChange( int index )
 {
