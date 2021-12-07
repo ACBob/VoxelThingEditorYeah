@@ -61,9 +61,10 @@ bool VoxelFormatYeah::Load(CWorld *world, QString filePath) {
 
     // Parse the toml file.
     toml::table root = toml::parse(data.toStdString());
+    toml::table *metaRoot = root["meta"].as_table();
 
     // World version.
-    auto *v = root.get("version");
+    auto *v = metaRoot->get("version");
     if (!v || !v->is_integer()) {
         qWarning() << "VoxelFormatYeah: Could not find version";
         return false;
@@ -77,7 +78,7 @@ bool VoxelFormatYeah::Load(CWorld *world, QString filePath) {
     }
 
     // World name.
-    auto *n = root.get("name");
+    auto *n = metaRoot->get("name");
     if (!n || !n->is<std::string>()) {
         qWarning() << "VoxelFormatYeah: Could not find name";
         return false;
@@ -86,7 +87,7 @@ bool VoxelFormatYeah::Load(CWorld *world, QString filePath) {
     QString name = QString::fromStdString(n->value_or<std::string>("VoxelWorld"));
 
     // Chunk sizes
-    auto *cs = root.get("chunk_sizes");
+    auto *cs = metaRoot->get("chunk_sizes");
     if (!cs || !cs->is_array()) {
         qWarning() << "VoxelFormatYeah: Could not find chunk_sizes";
         return false;
@@ -102,7 +103,7 @@ bool VoxelFormatYeah::Load(CWorld *world, QString filePath) {
     world->setName(name);
 
     // Load the game name
-    auto *g = root.get("game");
+    auto *g = metaRoot->get("game");
     if (!g || !g->is_string()) {
         qWarning() << "VoxelFormatYeah: Could not find game. Defaulting to Meegreef";
     }
@@ -110,7 +111,7 @@ bool VoxelFormatYeah::Load(CWorld *world, QString filePath) {
     QString game = QString::fromStdString(g->value_or<std::string>("Meegreef"));
 
     // Load the world seed
-    auto *s = root.get("seed");
+    auto *s = metaRoot->get("seed");
     if (!s || !s->is_integer()) {
         qWarning() << "VoxelFormatYeah: Could not find seed. Defaulting to 0";
     }
@@ -139,6 +140,8 @@ bool VoxelFormatYeah::Load(CWorld *world, QString filePath) {
     }
 
     QStringList chunkFiles = chunkDir.entryList(QDir::Files);
+
+    world->clearChunks();
 
     for ( QString chunkFile : chunkFiles ) {
         QFile f(chunkDir.absoluteFilePath(chunkFile));
@@ -200,9 +203,14 @@ bool VoxelFormatYeah::Load(CWorld *world, QString filePath) {
         // Otherwise, it's a regular chunk.
         CChunk *chunk = world->createChunk(x, y, z);
 
+        if (!chunk) {
+            qWarning() << "VoxelFormatYeah: Could not create chunk" << chunkFile;
+            continue;
+        }
+
         // chunk size is sizeX * sizeY * sizeZ
-        // chunk data is sizeX * sizeY * sizeZ * 4 bytes, and then another sizeX * sizeY * sizeZ * 4 bytes for the lighting.
-        if (data.size() < (chunkSizes.x * chunkSizes.y * chunkSizes.z * 4 + chunkSizes.x * chunkSizes.y * chunkSizes.z * 4)) {
+        // chunk data is sizeX * sizeY * sizeZ * 4 bytes, and then another sizeX * sizeY * sizeZ * 2 bytes for the lighting.
+        if (data.size() < (chunkSizes.x * chunkSizes.y * chunkSizes.z * 4)) { // TODO: lighting + chunkSizes.x * chunkSizes.y * chunkSizes.z * 2)) {
             qWarning() << "VoxelFormatYeah: Chunk file too small" << chunkFile;
             continue;
         }
@@ -212,6 +220,8 @@ bool VoxelFormatYeah::Load(CWorld *world, QString filePath) {
             uint32 voxel = *(uint32 *)(data.data() + 4 + i * 4);
             chunk->set(i, voxel);
         }
+
+        chunk->rebuildModel();
 
         // Read the chunk lighting.
         // for ( int i = 0; i < chunkSizes.x * chunkSizes.y * chunkSizes.z; i++ ) {
@@ -242,7 +252,7 @@ bool VoxelFormatYeah::Save(CWorld *world, QString filename)
             {"seed", world->getSeed()},
             {"game", "Meegreef"}, // TODO
             {"version", VTYG_CURRENT_VERSION},
-            {"chunk_size", toml::array{world->getChunkSize().x, world->getChunkSize().y, world->getChunkSize().z}},
+            {"chunk_sizes", toml::array{world->getChunkSize().x, world->getChunkSize().y, world->getChunkSize().z}},
         }}},
 
         // dimensions.overworld
@@ -266,9 +276,6 @@ bool VoxelFormatYeah::Save(CWorld *world, QString filename)
     QByteArray data = oss.str().c_str();
     meta.write(data);
     qDebug() << "VoxelFormatYeah: meta.toml:" << data;
-
-    // Create the chunks directory.
-
 
     // Create overworld directory.
     QDir dimensionDir = d.absoluteFilePath("overworld");

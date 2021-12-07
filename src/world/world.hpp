@@ -61,6 +61,7 @@ class CWorld : public QObject {
         Vector3i getChunkSize();
 
         QList<CChunk*> getChunks();
+        void clearChunks();
 
         QString getName();
         void setName(QString name);

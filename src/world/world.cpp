@@ -222,6 +222,12 @@ QList<CChunk *> CWorld::getChunks() {
     return m_chunks.values();
 }
 
+void CWorld::clearChunks() {
+    for (CChunk *c : m_chunks.values())
+        delete c;
+    m_chunks.clear();
+}
+
 QString CWorld::getName() {
     return m_name;
 }
