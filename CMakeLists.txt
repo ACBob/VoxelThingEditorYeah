@@ -51,6 +51,8 @@ set(SRC
 
     src/render/model.cpp
     src/render/model.hpp
+    src/render/texture.cpp
+    src/render/texture.hpp
 )
 
 set(RESOURCES resources/resources.qrc)

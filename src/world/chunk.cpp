@@ -3,6 +3,7 @@
 #include <random>
 
 #include "render/model.hpp"
+#include "render/texture.hpp"
 
 #include <QGLContext>
 
@@ -28,6 +29,8 @@ CChunk::CChunk( int x, int y, int z, int sizeX, int sizeY, int sizeZ )
 			}
 		}
 	}
+	
+	m_blockDefs = nullptr;
 
 	m_model = new Model();
 	rebuildModel();
@@ -200,23 +203,29 @@ void CChunk::rebuildModel()
 						v.y = m_pos.y * m_size.y + y + cubeVertices[cubeTriangles[face][i]][1];
 						v.z = m_pos.z * m_size.z + z + cubeVertices[cubeTriangles[face][i]][2];
 
+						Vector4f uv;
+						if (m_blockDefs != nullptr)
+							uv = render::getUV( m_blockDefs, getID( x, y, z ) );
+						else
+							uv = { 0, 0, 1, 1 };
+
 						switch ( i )
 						{
 							case 0:
-								v.u = 0.0f;
-								v.v = 0.0f;
+								v.u = uv.x;
+								v.v = uv.y;
 								break;
 							case 1:
-								v.u = 1.0f;
-								v.v = 0.0f;
+								v.u = uv.z;
+								v.v = uv.y;
 								break;
 							case 2:
-								v.u = 1.0f;
-								v.v = 1.0f;
+								v.u = uv.z;
+								v.v = uv.w;
 								break;
 							case 3:
-								v.u = 0.0f;
-								v.v = 1.0f;
+								v.u = uv.x;
+								v.v = uv.w;
 								break;
 						}
 
