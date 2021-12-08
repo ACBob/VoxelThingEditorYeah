@@ -10,7 +10,7 @@ class CWorld;
 class CTool;
 
 // TODO: any way to forward-declare a using statement?
-#include "blockdefs.hpp"
+#include "defs.hpp"
 
 class EditorState : public QObject
 {
@@ -28,6 +28,12 @@ class EditorState : public QObject
 
 	// Pointer to a QVector of block definitions.
 	BlockDefs *blockDefs;
+
+	// Pointer to the games we know about.
+	GameDefs *gameDefs;
+
+	// Pointer to the current game.
+	GameDef *game;
 
 	// TODO: Pointer to a QVector of Entity definitions.
 	// EntityDefs *entityDefs;
@@ -78,6 +84,16 @@ class EditorState : public QObject
 		this->blockTexturePath = blockTexturePath;
 		emit blockTexturePathChanged( blockTexturePath );
 	}
+	void setGameDefs( GameDefs *gameDefs )
+	{
+		this->gameDefs = gameDefs;
+		emit gameDefsChanged( gameDefs );
+	}
+	void setGame( GameDef *game )
+	{
+		this->game = game;
+		emit gameChanged( game );
+	}
 
   signals:
 	void filenameChanged( QString filename );
@@ -87,4 +103,6 @@ class EditorState : public QObject
 	void chosenBlockTypeChanged( uint16_t chosenBlockType );
 	void chosenBlockMetaChanged( uint16_t chosenBlockMeta );
 	void blockTexturePathChanged( QString blockTexturePath );
+	void gameDefsChanged( GameDefs *gameDefs );
+	void gameChanged( GameDef *game );
 };

@@ -16,5 +16,6 @@
         <file>img/texatlas_internal.png</file>
         <!-- Text Files -->
         <file>example/palette_internal.toml</file>
+        <file>example/games.toml</file>
     </qresource>
 </RCC>

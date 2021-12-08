@@ -33,4 +33,24 @@ struct BlockDef
 
 using BlockDefs = QMap<int, BlockDef>;
 
-BlockDefs *LoadBlockDefs( const QString &path );
+struct GameDef
+{
+	QString name;
+	QString absolutePath;
+	QString workingPath;
+	QString texturePath;
+	QString filePath;
+
+	BlockDefs *blockDefs;
+};
+
+using GameDefs = QMap<QString, GameDef>;
+
+namespace definitions {
+
+	BlockDefs *LoadBlockDefs( const QString &path );
+
+	GameDefs *LoadGameDefs( const QString &path );
+	GameDef LoadGameDef( GameDef def, const QString &path );
+
+}

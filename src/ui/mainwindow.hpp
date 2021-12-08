@@ -1,6 +1,6 @@
 #include <QMainWindow>
 
-#include "editor/blockdefs.hpp"
+#include "editor/defs.hpp"
 
 #include "world/world.hpp"
 #include <QVector>

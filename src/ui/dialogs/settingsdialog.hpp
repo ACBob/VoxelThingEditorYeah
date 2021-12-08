@@ -4,13 +4,15 @@
 #include <QDialog>
 
 class ColorPicker;
+class EditorState;
+class QComboBox;
 
 class SettingsDialog : public QDialog
 {
 	Q_OBJECT
 
   public:
-	SettingsDialog( QWidget *parent = 0 );
+	SettingsDialog( EditorState *editorState, QWidget *parent = 0 );
 
   public slots:
 	void accept();
@@ -18,4 +20,7 @@ class SettingsDialog : public QDialog
   private:
 	ColorPicker *m_gridColorPicker;
 	ColorPicker *m_voidColorPicker;
+	QComboBox *m_gameDefComboBox;
+
+	EditorState *m_editorState;
 };

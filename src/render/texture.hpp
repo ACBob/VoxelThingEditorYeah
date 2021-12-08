@@ -1,7 +1,7 @@
 // -- Texture!
 // Handles some texture stuff w/ Qt, plus lets you get a texture from an ID with a block definition.
 
-#include "editor/blockdefs.hpp"
+#include "editor/defs.hpp"
 
 #include "world/vector.hpp"
 

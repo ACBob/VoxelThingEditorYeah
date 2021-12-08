@@ -7,15 +7,20 @@
 #include <QTabWidget>
 #include <QVBoxLayout>
 #include <QWidget>
+#include <QComboBox>
 
 #include <QSettings>
 
 #include "ui/widgets/colorpicker.hpp"
 
-SettingsDialog::SettingsDialog( QWidget *parent ) : QDialog( parent )
+#include "editor/editorstate.hpp"
+
+SettingsDialog::SettingsDialog( EditorState *editorState, QWidget *parent ) : QDialog( parent )
 {
 	QSettings settings;
 	setWindowTitle( tr( "Settings" ) );
+
+	m_editorState = editorState;
 
 	QVBoxLayout *mainLayout = new QVBoxLayout( this );
 	setLayout( mainLayout );
@@ -38,6 +43,9 @@ SettingsDialog::SettingsDialog( QWidget *parent ) : QDialog( parent )
 	QWidget *tabGeneral = new QWidget( this );
 	tabWidget->addTab( tabGeneral, tr( "General" ) );
 
+	QWidget *tabGame = new QWidget( this );
+	tabWidget->addTab( tabGame, tr( "Game" ) );
+
 	// General
 	QFormLayout *generalLayout = new QFormLayout( tabGeneral );
 	tabGeneral->setLayout( generalLayout );
@@ -56,6 +64,20 @@ SettingsDialog::SettingsDialog( QWidget *parent ) : QDialog( parent )
 	m_voidColorPicker->setColor( settings.value( "voidColor", QColor( Qt::black ) ).value<QColor>() );
 
 	generalLayout->addRow( label2, m_voidColorPicker );
+
+	// Game
+	QFormLayout *gameLayout = new QFormLayout( tabGame );
+	tabGame->setLayout( gameLayout );
+
+	QLabel *label3 = new QLabel( tr( "Game Definition:" ), tabGame );
+
+	m_gameDefComboBox = new QComboBox( tabGame );
+	for ( GameDef &gameDef : *m_editorState->gameDefs )
+	{
+		m_gameDefComboBox->addItem( gameDef.name );
+	}
+
+	gameLayout->addRow( label3, m_gameDefComboBox );
 }
 
 void SettingsDialog::accept()

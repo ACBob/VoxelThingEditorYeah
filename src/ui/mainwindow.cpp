@@ -16,7 +16,7 @@
 #include "ui/docks/currentblock.hpp"
 #include "ui/docks/editor4pane.hpp"
 
-#include "editor/blockdefs.hpp"
+#include "editor/defs.hpp"
 #include "editor/editorstate.hpp"
 #include "editor/tools.hpp"
 #include "world/chunk.hpp"
@@ -30,7 +30,7 @@ MainWindow::MainWindow( EditorState *editorState, QWidget *parent )
 	this->setMinimumSize( 800, 600 );
 
 	m_editorState			 = editorState;
-	m_editorState->blockDefs = LoadBlockDefs( ":/example/palette_internal.toml" );
+	m_editorState->blockDefs = definitions::LoadBlockDefs( ":/example/palette_internal.toml" );
 	m_editorState->world	 = &m_world;
 
 	// Worlds always have the 0,0,0 chunk, it cannot be removed
@@ -159,7 +159,7 @@ void MainWindow::toolChanged( QAction *action )
 void MainWindow::editPreferences()
 {
 	// Show the preferences dialog
-	SettingsDialog *dialog = new SettingsDialog( this );
+	SettingsDialog *dialog = new SettingsDialog( m_editorState, this );
 	dialog->exec();
 }
 

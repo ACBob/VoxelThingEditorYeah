@@ -12,11 +12,12 @@ The editor uses the file 'games.toml' to get information of a game. It stores wh
 
 ```toml
 [<game_name>]
+name = "My Game" # The name of the game
 path = "/home/foo/.bar/" # An absolute path to the game's files
 working_dir = "bar" # The ideal working directory, relative to the game's path
 texture_path = "textures" # The path to the game's textures, relative to the game's path
-file = "foobar.toml" # a path to the game.toml format file
-name = "Foo Bar" # The name of the game
+file = "foobar.toml" # a path to the game.toml format file, which will override any previously applied settings
+blockdefs = "foobar.toml" # A path to the blockdefs file, relative to the game directory.
 ```
 
 ## game.toml
@@ -24,10 +25,11 @@ This file is used to store information about the game. It is used to store where
 
 ```toml
 [game]
+name = "My Game" # The name of the game
 path = "." # A path relative to the directory containing the game.toml file
 working_dir = "." # The ideal working directory, relative to the game's path
 texture_path = "assets/textures" # The path to the game's textures, relative to the game's path
-name = "My Game" # The name of the game
+blockdefs = "foobar.toml" # A path to the blockdefs file, relative to the game directory.
 ```
 
 ## palette.toml

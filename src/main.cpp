@@ -16,13 +16,17 @@ int main( int argc, char *argv[] )
 
 	// Create editor state
 	EditorState editorState;
-	editorState.blockDefs		 = nullptr;
 	editorState.filename		 = "";
 	editorState.world			 = nullptr;
 	editorState.tool			 = nullptr;
 	editorState.chosenBlockType	 = 1;
 	editorState.chosenBlockMeta	 = 0;
 	editorState.blockTexturePath = ":/img/texatlas_internal.png";
+
+	// TODO: load the following from the QSettings
+	editorState.gameDefs = definitions::LoadGameDefs(":/example/games.toml");
+	editorState.game = &editorState.gameDefs->begin().value();
+	editorState.blockDefs = editorState.game->blockDefs;
 
 	auto pEditor = new MainWindow( &editorState, nullptr );
 	pEditor->show();

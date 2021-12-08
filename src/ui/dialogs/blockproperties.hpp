@@ -5,7 +5,7 @@
 #include <QComboBox>
 #include <QDialog>
 
-#include "editor/blockdefs.hpp"
+#include "editor/defs.hpp"
 
 class ColorPicker;
 class BetterSlider;

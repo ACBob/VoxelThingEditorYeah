@@ -11,7 +11,7 @@
 #include <QMouseEvent>
 #include <QObject>
 
-#include "blockdefs.hpp"
+#include "defs.hpp"
 
 class RenderWidget; // forward declaration
 class EditorState;	// forward declaration

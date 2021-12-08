@@ -4,7 +4,7 @@
 
 #include <random>
 
-#include "editor/blockdefs.hpp"
+#include "editor/defs.hpp"
 #include "editor/editorstate.hpp"
 
 #include "render/model.hpp"

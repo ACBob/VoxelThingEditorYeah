@@ -7,7 +7,7 @@
 #include "world/raycast.hpp"
 #include "world/world.hpp"
 
-#include "blockdefs.hpp"
+#include "defs.hpp"
 
 #include <QDebug>
 

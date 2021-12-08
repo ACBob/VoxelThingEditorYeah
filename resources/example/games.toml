@@ -1,0 +1,10 @@
+# Games.toml example
+# Specifies just the devtest
+
+[devtest]
+name = "Developer Test"
+path = ":"
+texture_path = "img"
+blockdefs = "example/palette_internal.toml"
+working_dir = ""
+file = ""
