@@ -17,6 +17,8 @@ class CurrentBlock : public QDockWidget
     private slots:
         void updateCurrentBlock(uint16_t blockId);
 
+        void browse();
+
     private:
         EditorState *m_editorState;
         uint16_t m_BlockID;

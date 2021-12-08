@@ -35,6 +35,8 @@ set(SRC
     src/ui/dialogs/blockproperties.hpp
     src/ui/dialogs/settingsdialog.cpp
     src/ui/dialogs/settingsdialog.hpp
+    src/ui/dialogs/blocklist.cpp
+    src/ui/dialogs/blocklist.hpp
 
     src/world/chunk.cpp
     src/world/chunk.hpp

@@ -14,6 +14,7 @@
 #include "ui/docks/editor4pane.hpp"
 #include "ui/docks/currentblock.hpp"
 #include "ui/dialogs/settingsdialog.hpp"
+#include "ui/dialogs/blocklist.hpp"
 
 #include "editor/blockdefs.hpp"
 #include "editor/tools.hpp"
@@ -213,4 +214,17 @@ void MainWindow::saveFile()
 		format->Save( &m_world, path );
 		delete format;
 	}
+}
+
+void MainWindow::showBlocks()
+{
+	// Show the block list dialog
+	BlockList *dialog = new BlockList( m_editorState, this );
+	
+	if ( dialog->exec() == QDialog::Accepted )
+	{
+		m_editorState->setChosenBlockType( dialog->getSelectedBlock() );
+
+		qDebug() << "Chosen block: " << m_editorState->chosenBlockType;
+	}		
 }

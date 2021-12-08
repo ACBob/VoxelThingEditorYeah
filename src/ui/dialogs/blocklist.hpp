@@ -5,7 +5,9 @@
 #include <QDialog>
 
 class QListWidget;
+class QListWidgetItem;
 class EditorState;
+class BlockTexture;
 
 class BlockList : public QDialog
 {
@@ -18,9 +20,13 @@ class BlockList : public QDialog
         uint16_t getSelectedBlock();
 
     private:
-        EditorState *editorState;
-        QListWidget *list;
+        EditorState *m_editorState;
+        QListWidget *m_list;
+        uint16_t m_selectedBlock;
+
+        BlockTexture *m_blockPreview;
 
     private slots:
-        void onItemSelected(QListWidgetItem *item);
+        void onItemClicked(QListWidgetItem *item);
+        void onItemSelectionChanged();
 };

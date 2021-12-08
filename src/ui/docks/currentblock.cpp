@@ -1,6 +1,7 @@
 #include "currentblock.hpp"
 
 #include "ui/widgets/blocktexture.hpp"
+#include "ui/dialogs/blocklist.hpp"
 
 #include "editor/editorstate.hpp"
 
@@ -52,4 +53,14 @@ CurrentBlock::~CurrentBlock()
 void CurrentBlock::updateCurrentBlock( uint16_t blockType )
 {
     m_blockTexWidget->setBlockId( blockType );
+}
+
+void CurrentBlock::browse()
+{
+    BlockList *blockList = new BlockList( m_editorState, this );
+    
+    if ( blockList->exec() == QDialog::Accepted )
+    {
+        m_editorState->setChosenBlockType( blockList->getSelectedBlock() );
+    }
 }

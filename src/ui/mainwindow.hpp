@@ -35,6 +35,8 @@ class MainWindow : public QMainWindow
 
 	void showAbout();
 
+	void showBlocks();
+
   private:
 	Editor4Pane *m_editor;
 	CWorld m_world;
