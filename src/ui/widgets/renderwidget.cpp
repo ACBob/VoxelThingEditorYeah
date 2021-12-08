@@ -130,7 +130,22 @@ void RenderWidget::paintGL()
 		glMatrixMode( GL_PROJECTION );
 		glLoadIdentity();
 
-		glOrtho( -m_zoom, m_zoom, -m_zoom, m_zoom, -100.0f, 100.0f );
+		// setup zoomed viewport dimensions that also care about the aspect ratio
+		float w = (float)width();
+		float h = (float)height();
+		float aspect = w / h;
+		float viewport_w = m_zoom;
+		float viewport_h = m_zoom;
+		if ( aspect > 1.0f )
+		{
+			viewport_w = m_zoom * aspect;
+		}
+		else
+		{
+			viewport_h = m_zoom / aspect;
+		}
+
+		glOrtho( -viewport_w / 2.0f, viewport_w / 2.0f, -viewport_h / 2.0f, viewport_h / 2.0f, -100.0f, 100.0f );
 
 		glMatrixMode( GL_MODELVIEW );
 		glLoadIdentity();
@@ -138,19 +153,19 @@ void RenderWidget::paintGL()
 		if ( m_displayMode == DispMode::DISP_GRID_XY )
 		{
 			// Looking towards negative Z
-			gluLookAt( 0.0f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f );
+			gluLookAt( 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f );
 			glTranslatef( offset_x, offset_y, 0.0f );
 		}
 		else if ( m_displayMode == DispMode::DISP_GRID_XZ )
 		{
 			// Looking towards negative Y
-			gluLookAt( 0.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f );
+			gluLookAt( 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f );
 			glTranslatef( offset_x, 0.0f, offset_y );
 		}
 		else
 		{
 			// Looking towards negative X
-			gluLookAt( -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f );
+			gluLookAt( 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f );
 			glTranslatef( 0.0f, offset_x, offset_y );
 		}
 
@@ -218,7 +233,22 @@ void RenderWidget::paintGL()
 		glMatrixMode( GL_PROJECTION );
 		glLoadIdentity();
 
-		glOrtho( -m_zoom, m_zoom, -m_zoom, m_zoom, -100.0f, 100.0f );
+		// setup zoomed viewport dimensions that also care about the aspect ratio
+		float w = (float)width();
+		float h = (float)height();
+		float aspect = w / h;
+		float viewport_w = m_zoom;
+		float viewport_h = m_zoom;
+		if ( aspect > 1.0f )
+		{
+			viewport_w = m_zoom * aspect;
+		}
+		else
+		{
+			viewport_h = m_zoom / aspect;
+		}
+
+		glOrtho( -viewport_w / 2.0f, viewport_w / 2.0f, -viewport_h / 2.0f, viewport_h / 2.0f, -100.0f, 100.0f );
 
 		glMatrixMode( GL_MODELVIEW );
 		glLoadIdentity();
@@ -293,13 +323,13 @@ void RenderWidget::paintGL()
 			mode = "Normal";
 			break;
 		case DispMode::DISP_GRID_XY:
-			mode = "XY";
+			mode = "Front (X/Y)";
 			break;
 		case DispMode::DISP_GRID_XZ:
-			mode = "XZ";
+			mode = "Side (X/Z)";
 			break;
 		case DispMode::DISP_GRID_ZY:
-			mode = "YZ";
+			mode = "Top (Y/Z)";
 			break;
 		case DispMode::DISP_ISOMETRIC:
 			mode = "Isometric";
@@ -393,8 +423,19 @@ void RenderWidget::mouseMoveEvent( QMouseEvent *event )
 
 	GLdouble x, y, z;
 	gluUnProject( event->x(), height() - event->y(), 0.0f, m_modelview, m_projection, m_viewport, &x, &y, &z );
-	Vector3f ray_direction = Vector3f( x, y, z ) - m_camera;
-	ray_direction.Normal();
+	
+	Vector3f ray_direction;
+	if (m_displayMode == DispMode::DISP_3D)
+		ray_direction = Vector3f( x, y, z ) - m_camera;
+	else if (m_displayMode == DispMode::DISP_GRID_XY)
+		ray_direction = Vector3f( 0, 0, -1 );
+	else if (m_displayMode == DispMode::DISP_GRID_XZ)
+		ray_direction = Vector3f( 0, -1, 0 );
+	else if (m_displayMode == DispMode::DISP_GRID_ZY)
+		ray_direction = Vector3f( -1, 0, 0 );
+	else if (m_displayMode == DispMode::DISP_ISOMETRIC)
+		ray_direction = Vector3f( x, y, z ) - Vector3f( m_modelview[12], m_modelview[13], m_modelview[14] );
+	ray_direction = ray_direction.Normal();
 
 	m_editorState->tool->mouseMoveEvent( event, Vector3f( x, y, z ), ray_direction, this );
 }
@@ -430,8 +471,18 @@ void RenderWidget::mousePressEvent( QMouseEvent *event )
 			gluUnProject( event->x(), height() - event->y(), 0.0f, m_modelview, m_projection, m_viewport, &x, &y, &z );
 
 			// we then need to figure out the direction of the ray
-			Vector3f ray_direction = Vector3f( x, y, z ) - m_camera;
-			ray_direction.Normal();
+			Vector3f ray_direction;
+			if (m_displayMode == DispMode::DISP_3D)
+				ray_direction = Vector3f( x, y, z ) - m_camera;
+			else if (m_displayMode == DispMode::DISP_GRID_XY)
+				ray_direction = Vector3f( 0, 0, -1 );
+			else if (m_displayMode == DispMode::DISP_GRID_XZ)
+				ray_direction = Vector3f( 0, -1, 0 );
+			else if (m_displayMode == DispMode::DISP_GRID_ZY)
+				ray_direction = Vector3f( -1, 0, 0 );
+			else if (m_displayMode == DispMode::DISP_ISOMETRIC)
+				ray_direction = Vector3f( x, y, z ) - Vector3f( m_modelview[12], m_modelview[13], m_modelview[14] );
+			ray_direction = ray_direction.Normal();
 
 			m_editorState->tool->mousePressEvent( event, Vector3f( x, y, z ), ray_direction, this );
 		}

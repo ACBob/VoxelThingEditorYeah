@@ -21,6 +21,9 @@
 
 #include "editorstate.hpp"
 
+// How far the tools will cast rays
+#define TOOL_CAST_DISTANCE 150.0f
+
 CTool::CTool( EditorState *editorState, QObject *parent ) : QObject( parent ){
 	m_editorState = editorState;
 };
@@ -32,12 +35,12 @@ CHandTool::~CHandTool() {}
 
 void CHandTool::mousePressEvent( QMouseEvent *event, Vector3f pos, Vector3f dir, RenderWidget *view )
 {
-	qDebug() << "Hand tool pressed @" << pos;
+	qDebug() << "Hand tool pressed @" << pos << "pointing" << dir;
 	// m_selectedBlockPos = pos;
 	// view->update();
 
 	CRaycast caster;
-	std::pair<Vector3f, Vector3f> cast = caster.cast( m_editorState->world, pos, dir, 100.0f );
+	std::pair<Vector3f, Vector3f> cast = caster.cast( m_editorState->world, pos, dir, TOOL_CAST_DISTANCE );
 
 	m_selectedBlockPos	  = cast.first;
 	m_selectedBlockNormal = cast.second;
@@ -80,7 +83,7 @@ void CHandTool::mouseMoveEvent( QMouseEvent *event, Vector3f pos, Vector3f dir, 
 	// qDebug () << "Hand tool moved @" << pos;
 
 	CRaycast caster;
-	std::pair<Vector3f, Vector3f> cast = caster.cast( m_editorState->world, pos, dir, 100.0f );
+	std::pair<Vector3f, Vector3f> cast = caster.cast( m_editorState->world, pos, dir, TOOL_CAST_DISTANCE );
 
 	m_selectedBlockPos	  = cast.first;
 	m_selectedBlockNormal = cast.second;
@@ -186,7 +189,7 @@ void CWrenchTool::mousePressEvent( QMouseEvent *event, Vector3f pos, Vector3f di
 	// view->update();
 
 	CRaycast caster;
-	std::pair<Vector3f, Vector3f> cast = caster.cast( m_editorState->world, pos, dir, 100.0f );
+	std::pair<Vector3f, Vector3f> cast = caster.cast( m_editorState->world, pos, dir, TOOL_CAST_DISTANCE );
 
 	m_selectedBlockPos	  = cast.first;
 	m_selectedBlockNormal = cast.second;
@@ -224,7 +227,7 @@ void CWrenchTool::mouseMoveEvent( QMouseEvent *event, Vector3f pos, Vector3f dir
 	// qDebug () << "Wrench tool moved @" << pos;
 
 	CRaycast caster;
-	std::pair<Vector3f, Vector3f> cast = caster.cast( m_editorState->world, pos, dir, 100.0f );
+	std::pair<Vector3f, Vector3f> cast = caster.cast( m_editorState->world, pos, dir, TOOL_CAST_DISTANCE );
 
 	m_selectedBlockPos	  = cast.first;
 	m_selectedBlockNormal = cast.second;
