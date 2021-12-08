@@ -57,10 +57,15 @@ void CHandTool::mousePressEvent( QMouseEvent *event, Vector3f pos, Vector3f dir,
 		else if ( event->button() == Qt::RightButton )
 		{
 			Vector3f p = m_selectedBlockPos + m_selectedBlockNormal;
-			m_editorState->world->setID( p.x, p.y, p.z, 1 );
-			m_editorState->world->setMeta( p.x, p.y, p.z, 0 );
+			m_editorState->world->setID( p.x, p.y, p.z, m_editorState->chosenBlockType );
+			m_editorState->world->setMeta( p.x, p.y, p.z, m_editorState->chosenBlockMeta );
 			CChunk *c = m_editorState->world->getChunkWorldPos( p );
 			c->rebuildModel();
+		}
+		else if ( event->button() == Qt::MiddleButton )
+		{
+			Vector3f p = m_selectedBlockPos;
+			m_editorState->world->get( p.x, p.y, p.z, m_editorState->chosenBlockType, m_editorState->chosenBlockMeta );
 		}
 	}
 
@@ -78,6 +83,24 @@ void CHandTool::mouseMoveEvent( QMouseEvent *event, Vector3f pos, Vector3f dir, 
 	m_selectedBlockNormal = cast.second;
 
 	view->update();
+}
+
+void CHandTool::wheelEvent( QWheelEvent *event, Vector3f pos, Vector3f dir, RenderWidget *view )
+{
+	qDebug() << "Hand tool wheeled @" << pos;
+
+	if ( event->delta() > 0 )
+	{
+		m_editorState->chosenBlockType++;
+		if ( m_editorState->chosenBlockType >= m_editorState->blockDefs->keys().size() )
+			m_editorState->chosenBlockType = 1;
+	}
+	else
+	{
+		m_editorState->chosenBlockType--;
+		if ( m_editorState->chosenBlockType < 1 )
+			m_editorState->chosenBlockType = m_editorState->blockDefs->keys().size() - 1;
+	}
 }
 
 const static Vector3f cubeLinesVertices[32] = {

@@ -450,6 +450,14 @@ void RenderWidget::setDispMode( DispMode mode )
 
 void RenderWidget::wheelEvent( QWheelEvent *event )
 {
+	if (m_displayMode == DispMode::DISP_3D)
+	{
+		if ( m_editorState->tool != nullptr )
+			m_editorState->tool->wheelEvent( event, m_camera, m_camera_forward, this );
+		update();
+		return;
+	}
+
 	m_zoom += event->delta() * 0.001f;
 	m_zoom = qBound( 0.1f, m_zoom, 20.0f );
 	update();

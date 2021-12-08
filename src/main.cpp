@@ -17,6 +17,8 @@ int main( int argc, char *argv[] )
 	editorState.filename = "";
 	editorState.world = nullptr;
 	editorState.tool = nullptr;
+	editorState.chosenBlockType = 1;
+	editorState.chosenBlockMeta = 0;
 
 	auto pEditor = new MainWindow( &editorState, nullptr );
 	pEditor->show();

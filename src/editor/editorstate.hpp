@@ -27,4 +27,9 @@ struct EditorState
 
     // TODO: Pointer to a QVector of Entity definitions.
     // EntityDefs *entityDefs;
+
+    // Holds the block type / meta we want to place.
+    // Interpreted by tools differently.
+    uint16_t chosenBlockType;
+    uint16_t chosenBlockMeta;
 };

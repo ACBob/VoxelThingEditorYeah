@@ -32,6 +32,8 @@ class CTool : public QObject
 								 RenderWidget *view )	 = 0; // Called when the mouse is moved
 	virtual void mouseReleaseEvent( QMouseEvent *event, Vector3f pos, Vector3f dir,
 									RenderWidget *view ) = 0; // Called when the mouse is released
+	virtual void wheelEvent( QWheelEvent *event, Vector3f pos, Vector3f dir,
+							 RenderWidget *view )		 = 0; // Called when the mouse wheel is used
 
 	virtual void keyPressEvent( QKeyEvent *event, Vector3f pos, Vector3f dir,
 								RenderWidget *view )   = 0; // Called when a key is pressed
@@ -57,6 +59,7 @@ class CHandTool final : public CTool
 
 	void mousePressEvent( QMouseEvent *event, Vector3f pos, Vector3f dir, RenderWidget *view );
 	void mouseMoveEvent( QMouseEvent *event, Vector3f pos, Vector3f dir, RenderWidget *view );
+	void wheelEvent( QWheelEvent *event, Vector3f pos, Vector3f dir, RenderWidget *view );
 	void draw( RenderWidget *view );
 
 	void mouseReleaseEvent( QMouseEvent *event, Vector3f pos, Vector3f dir, RenderWidget *view ){};
@@ -86,6 +89,7 @@ class CWrenchTool final : public CTool
 	void mouseReleaseEvent( QMouseEvent *event, Vector3f pos, Vector3f dir, RenderWidget *view ){};
 	void keyPressEvent( QKeyEvent *event, Vector3f pos, Vector3f dir, RenderWidget *view ){};
 	void keyReleaseEvent( QKeyEvent *event, Vector3f pos, Vector3f dir, RenderWidget *view ){};
+	void wheelEvent( QWheelEvent *event, Vector3f pos, Vector3f dir, RenderWidget *view ){};
 
   private:
 	Vector3f m_selectedBlockPos;
