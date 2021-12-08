@@ -208,8 +208,11 @@ void CChunk::rebuildModel()
 						v.z = m_pos.z * m_size.z + z + cubeVertices[cubeTriangles[face][i]][2];
 
 						Vector4f uv;
-						if (m_editorState != nullptr)
+						if (m_editorState != nullptr) {
 							uv = render::getUV( m_editorState->blockDefs, getID( x, y, z ) );
+							uv.y -= 1/16.0f; // HACK: otherwise all textures are offset by 1/16
+							uv.w -= 1/16.0f;
+						}
 						else
 							uv = { 0, 0, 1, 1 };
 

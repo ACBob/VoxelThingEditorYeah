@@ -24,7 +24,7 @@ class BlockTexture : public QWidget
         int heightForWidth(int width) const;
         bool hasHeightForWidth() const;
 
-    public signals:
+    signals:
         void clicked();
         void doubleClicked();
 
