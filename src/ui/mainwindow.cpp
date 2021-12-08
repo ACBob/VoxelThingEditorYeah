@@ -108,6 +108,23 @@ MainWindow::MainWindow( EditorState *editorState, QWidget *parent ) : QMainWindo
 	// Help menu
 	QMenu *helpMenu = menuBar->addMenu( tr( "&Help" ) );
 	helpMenu->addAction( tr( "&About" ), this, SLOT( showAbout() ) );
+
+	// The actions bar
+	// Holds various icons and buttons
+	QToolBar *actionsBar = new QToolBar( "Actions Bar", this );
+	this->addToolBar( Qt::TopToolBarArea, actionsBar );
+	actionsBar->setIconSize( QSize( 32, 32 ) );
+
+	// The show block list action
+	// When pushed it opens the block list dialog
+	QAction *showBlocksAction = actionsBar->addAction( QIcon( ":/img/icon_blocklist.png" ), tr( "Show Blocks" ) );
+	connect( showBlocksAction, SIGNAL( triggered() ), this, SLOT( showBlocks() ) );
+
+	// Single chunk mode action
+	// When pushed it toggles the single chunk mode
+	QAction *singleChunkAction = actionsBar->addAction( QIcon( ":/img/icon_chunkview.png" ), tr( "Single Chunk" ) );
+	singleChunkAction->setCheckable( true );
+	singleChunkAction->setChecked( false );
 }
 
 MainWindow::~MainWindow()
