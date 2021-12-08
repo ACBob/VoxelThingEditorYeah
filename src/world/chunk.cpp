@@ -329,6 +329,4 @@ void CChunk::simulateLiquid() {
 		// if the block is not on the floor, flow down
 		setIfAir( pos.x, pos.y - 1, pos.z, flowBlock, (uint16_t)qBound(0, level + 1, (int)m_editorState->blockDefs->value( id ).metaMax) );
 	}
-
-	rebuildModel();
 }

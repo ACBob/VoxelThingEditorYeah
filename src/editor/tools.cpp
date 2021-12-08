@@ -15,6 +15,9 @@
 #include <QDialogButtonBox>
 #include <QFormLayout>
 #include <QLineEdit>
+#include <QSpinBox>
+#include <QPushButton>
+#include <QLabel>
 
 #include <GL/glu.h>
 #include <QOpenGLFunctions>
@@ -274,7 +277,48 @@ void CSimulateTool::mousePressEvent( QMouseEvent *event, Vector3f pos, Vector3f 
 
 	if ( chunk != nullptr )
 	{
-		chunk->simulateLiquid();
-		view->update();
+		if ( event->button() == Qt::LeftButton )
+		{
+			chunk->simulateLiquid();
+			chunk->rebuildModel();
+			view->update();
+		}
+		else if ( event->button() == Qt::RightButton )
+		{
+			// right button shows a dialog to choose how many iterations to run
+			QDialog *dialog = new QDialog( view );
+			dialog->setWindowTitle( tr("Simulation") );
+			dialog->setWindowModality( Qt::WindowModal );
+
+			QVBoxLayout *layout = new QVBoxLayout( dialog );
+			dialog->setLayout( layout );
+
+			QLabel *label = new QLabel( tr("Iterations"), dialog );
+			layout->addWidget( label );
+
+			QSpinBox *spinBox = new QSpinBox( dialog );
+			spinBox->setMinimum( 1 );
+			spinBox->setMaximum( 100 );
+			layout->addWidget( spinBox );
+
+			QPushButton *okButton = new QPushButton( tr("Simulate"), dialog );
+			layout->addWidget( okButton );
+			QObject::connect( okButton, SIGNAL( clicked() ), dialog, SLOT( accept() ) );
+
+			QPushButton *cancelButton = new QPushButton( tr("Cancel"), dialog );
+			layout->addWidget( cancelButton );
+			QObject::connect( cancelButton, SIGNAL( clicked() ), dialog, SLOT( reject() ) );
+
+			if ( dialog->exec() == QDialog::Accepted )
+			{
+				int iterations = spinBox->value();
+				while (iterations--)
+				{
+					chunk->simulateLiquid();
+				}
+				chunk->rebuildModel();
+				view->update();
+			}
+		}
 	}
 }
