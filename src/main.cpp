@@ -10,6 +10,9 @@ int main( int argc, char *argv[] )
 
 	QCoreApplication::setOrganizationName( "ActuatingLemons" );
 	QCoreApplication::setApplicationName( "VoxelThingEditorYeah" );
+	
+	// Set icon
+	app.setWindowIcon( QIcon( ":/img/logo.png" ) );
 
 	// Create editor state
 	EditorState editorState;
