@@ -65,7 +65,10 @@ void CHandTool::mousePressEvent( QMouseEvent *event, Vector3f pos, Vector3f dir,
 		else if ( event->button() == Qt::MiddleButton )
 		{
 			Vector3f p = m_selectedBlockPos;
-			m_editorState->world->get( p.x, p.y, p.z, m_editorState->chosenBlockType, m_editorState->chosenBlockMeta );
+			uint16_t id, meta;
+			m_editorState->world->get( p.x, p.y, p.z, id, meta );
+			m_editorState->setChosenBlockType( id );
+			m_editorState->setChosenBlockMeta( meta );
 		}
 	}
 
@@ -94,12 +97,14 @@ void CHandTool::wheelEvent( QWheelEvent *event, Vector3f pos, Vector3f dir, Rend
 		m_editorState->chosenBlockType++;
 		if ( m_editorState->chosenBlockType >= m_editorState->blockDefs->keys().size() )
 			m_editorState->chosenBlockType = 1;
+		m_editorState->setChosenBlockType( m_editorState->chosenBlockType ); // HACK: emit the signal
 	}
 	else
 	{
 		m_editorState->chosenBlockType--;
 		if ( m_editorState->chosenBlockType < 1 )
 			m_editorState->chosenBlockType = m_editorState->blockDefs->keys().size() - 1;
+		m_editorState->setChosenBlockType( m_editorState->chosenBlockType ); // HACK: emit the signal
 	}
 }
 

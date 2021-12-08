@@ -12,6 +12,7 @@
 #include <QFileDialog>
 
 #include "ui/docks/editor4pane.hpp"
+#include "ui/docks/currentblock.hpp"
 #include "ui/dialogs/settingsdialog.hpp"
 
 #include "editor/blockdefs.hpp"
@@ -72,6 +73,11 @@ MainWindow::MainWindow( EditorState *editorState, QWidget *parent ) : QMainWindo
 	// when a different chunk is selected, we need to update the editor
 	connect( thingsList, SIGNAL( currentRowChanged( int ) ), this, SLOT( onChunkSelected( int ) ) );
 
+	// Current chosen block
+	CurrentBlock *currentBlock = new CurrentBlock( editorState, this );
+	this->addDockWidget( Qt::RightDockWidgetArea, currentBlock );
+	currentBlock->setVisible( true );
+
 	// Editor 4-pane
 	m_editor = new Editor4Pane( editorState, this );
 	this->setCentralWidget( m_editor );
@@ -97,6 +103,7 @@ MainWindow::MainWindow( EditorState *editorState, QWidget *parent ) : QMainWindo
 	viewMenu->addAction( thingsDock->toggleViewAction() );
 	viewMenu->addAction( m_editor->toggleViewAction() );
 	viewMenu->addAction( toolsBar->toggleViewAction() );
+	viewMenu->addAction( currentBlock->toggleViewAction() );
 
 	// Help menu
 	QMenu *helpMenu = menuBar->addMenu( tr( "&Help" ) );

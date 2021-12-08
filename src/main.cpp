@@ -19,6 +19,7 @@ int main( int argc, char *argv[] )
 	editorState.tool = nullptr;
 	editorState.chosenBlockType = 1;
 	editorState.chosenBlockMeta = 0;
+	editorState.blockTexturePath = ":/img/texatlas_internal.png";
 
 	auto pEditor = new MainWindow( &editorState, nullptr );
 	pEditor->show();

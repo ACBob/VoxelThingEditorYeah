@@ -19,6 +19,8 @@ set(SRC
 
     src/ui/docks/editor4pane.cpp
     src/ui/docks/editor4pane.hpp
+    src/ui/docks/currentblock.cpp
+    src/ui/docks/currentblock.hpp
 
     src/ui/widgets/renderwidget.cpp
     src/ui/widgets/renderwidget.hpp
@@ -26,6 +28,8 @@ set(SRC
     src/ui/widgets/colorpicker.hpp
     src/ui/widgets/betterslider.cpp
     src/ui/widgets/betterslider.hpp
+    src/ui/widgets/blocktexture.cpp
+    src/ui/widgets/blocktexture.hpp
 
     src/ui/dialogs/blockproperties.cpp
     src/ui/dialogs/blockproperties.hpp
