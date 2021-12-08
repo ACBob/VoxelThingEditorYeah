@@ -45,7 +45,7 @@ RenderWidget::RenderWidget( EditorState *editorState, QWidget *parent ) : QGLWid
 	m_viewDropdown->addAction( "3D" );
 	m_viewDropdown->addAction( "XY" );
 	m_viewDropdown->addAction( "XZ" );
-	m_viewDropdown->addAction( "YZ" );
+	m_viewDropdown->addAction( "ZY" );
 	m_viewDropdown->addAction( "Isometric" );
 
 	m_viewDropdown->setActiveAction( m_viewDropdown->actions().at( 0 ) );
@@ -153,7 +153,7 @@ void RenderWidget::paintGL()
 		if ( m_displayMode == DispMode::DISP_GRID_XY )
 		{
 			// Looking towards negative Z
-			gluLookAt( 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f );
+			gluLookAt( 0.0f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f );
 			glTranslatef( offset_x, offset_y, 0.0f );
 		}
 		else if ( m_displayMode == DispMode::DISP_GRID_XZ )
@@ -166,7 +166,7 @@ void RenderWidget::paintGL()
 		{
 			// Looking towards negative X
 			gluLookAt( 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f );
-			glTranslatef( 0.0f, offset_x, offset_y );
+			glTranslatef( 0.0f, offset_y, offset_x );
 		}
 
 		// After that is setup, draw!
@@ -183,45 +183,65 @@ void RenderWidget::paintGL()
 		glLineWidth( 1.0f );
 		glColor3f( gridColor.redF(), gridColor.greenF(), gridColor.blueF() );
 
-		// XZ
+		// the grid is rendered snapped to world coordinates
+		// but it follows the camera
+		float grid_spacing = 1.0f;
+		float grid_offset_x = -offset_x - ( viewport_w / 2.0f );
+		float grid_offset_y = -offset_y - ( viewport_h / 2.0f );
 
-		// Draw a grid independent of size
-		// with 1 GL unit per grid unit
+		float grid_begin_x = grid_offset_x - ( grid_offset_x - (int)grid_offset_x ) / grid_spacing * grid_spacing;
+		float grid_begin_y = grid_offset_y - ( grid_offset_y - (int)grid_offset_y ) / grid_spacing * grid_spacing;
+		float grid_end_x = grid_begin_x + (int)( viewport_w / grid_spacing ) * grid_spacing;
+		float grid_end_y = grid_begin_y + (int)( viewport_h / grid_spacing ) * grid_spacing;
 
-		for ( float i = -m_zoom; i <= m_zoom; i += 1.0f )
-		{
-			glVertex3f( i, 0.0f, 0.0f );
-			glVertex3f( i, m_zoom, 0.0f );
-		}
-		for ( float i = -m_zoom; i <= m_zoom; i += 1.0f )
-		{
-			glVertex3f( 0.0f, i, 0.0f );
-			glVertex3f( m_zoom, i, 0.0f );
-		}
+		// Add some extra padding to the grid, so there's no clipping at the edges of the viewport
+		grid_begin_x -= grid_spacing * 2.0f;
+		grid_begin_y -= grid_spacing * 2.0f;
+		grid_end_x += grid_spacing * 2.0f;
+		grid_end_y += grid_spacing * 2.0f;
 
-		// XY
 
-		for ( float i = -m_zoom; i <= m_zoom; i += 1.0f )
+		// XY plane
+		if ( m_displayMode == DispMode::DISP_GRID_XY )
 		{
-			glVertex3f( i, 0.0f, 0.0f );
-			glVertex3f( i, 0.0f, m_zoom );
+			for (float x = grid_begin_x; x <= grid_end_x; x += grid_spacing)
+			{
+				glVertex3f( x, grid_begin_y, 0.0f );
+				glVertex3f( x, grid_end_y, 0.0f );
+			}
+			for (float y = grid_begin_y; y <= grid_end_y; y += grid_spacing)
+			{
+				glVertex3f( grid_begin_x, y, 0.0f );
+				glVertex3f( grid_end_x, y, 0.0f );
+			}
 		}
-		for ( float i = -m_zoom; i <= m_zoom; i += 1.0f )
+		// XZ plane
+		else if ( m_displayMode == DispMode::DISP_GRID_XZ )
 		{
-			glVertex3f( 0.0f, 0.0f, i );
-			glVertex3f( m_zoom, 0.0f, i );
+			for (float x = grid_begin_x; x <= grid_end_x; x += grid_spacing)
+			{
+				glVertex3f( x, 0.0f, grid_begin_y );
+				glVertex3f( x, 0.0f, grid_end_y );
+			}
+			for (float y = grid_begin_y; y <= grid_end_y; y += grid_spacing)
+			{
+				glVertex3f( grid_begin_x, 0.0f, y );
+				glVertex3f( grid_end_x, 0.0f, y );
+			}
 		}
-
-		// YZ
-		for ( float i = -m_zoom; i <= m_zoom; i += 1.0f )
+		// ZY plane
+		else if ( m_displayMode == DispMode::DISP_GRID_ZY )
 		{
-			glVertex3f( 0.0f, i, 0.0f );
-			glVertex3f( 0.0f, i, m_zoom );
-		}
-		for ( float i = -m_zoom; i <= m_zoom; i += 1.0f )
-		{
-			glVertex3f( 0.0f, 0.0f, i );
-			glVertex3f( 0.0f, m_zoom, i );
+			for (float x = grid_begin_x; x <= grid_end_x; x += grid_spacing)
+			{
+				glVertex3f( 0.0f, grid_begin_y, x );
+				glVertex3f( 0.0f, grid_end_y, x );
+			}
+			for (float y = grid_begin_y; y <= grid_end_y; y += grid_spacing)
+			{
+				glVertex3f( 0.0f, y, grid_begin_x );
+				glVertex3f( 0.0f, y, grid_end_x );
+			}
 		}
 
 		glEnd();
@@ -326,10 +346,10 @@ void RenderWidget::paintGL()
 			mode = "Front (X/Y)";
 			break;
 		case DispMode::DISP_GRID_XZ:
-			mode = "Side (X/Z)";
+			mode = "Top (X/Z)";
 			break;
 		case DispMode::DISP_GRID_ZY:
-			mode = "Top (Y/Z)";
+			mode = "Side (Y/Z)";
 			break;
 		case DispMode::DISP_ISOMETRIC:
 			mode = "Isometric";
@@ -396,7 +416,7 @@ void RenderWidget::mouseMoveEvent( QMouseEvent *event )
 		 event->buttons() & Qt::MiddleButton )
 	{
 		offset_x += ( event->x() - m_lastMousePos.x() ) * 0.01f;
-		offset_y -= ( event->y() - m_lastMousePos.y() ) * 0.01f;
+		offset_y += ( event->y() - m_lastMousePos.y() ) * 0.01f;
 		update();
 
 		// Move mouse back to where it was
@@ -524,7 +544,7 @@ void RenderWidget::setView( QAction *action )
 		m_displayMode = DispMode::DISP_GRID_XY;
 	else if ( action->text() == "XZ" )
 		m_displayMode = DispMode::DISP_GRID_XZ;
-	else if ( action->text() == "YZ" )
+	else if ( action->text() == "ZY" )
 		m_displayMode = DispMode::DISP_GRID_ZY;
 
 	m_viewDropdown->setActiveAction( action );
