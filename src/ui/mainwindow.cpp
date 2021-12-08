@@ -28,9 +28,11 @@ MainWindow::MainWindow( EditorState *editorState, QWidget *parent ) : QMainWindo
 	this->setMinimumSize( 800, 600 );
 
 	m_editorState = editorState;
-	BlockDefs defs = LoadBlockDefs(":/example/palette_internal.toml");
-	m_editorState->blockDefs = &defs;
+	m_editorState->blockDefs = LoadBlockDefs( ":/example/palette_internal.toml");
 	m_editorState->world = &m_world;
+
+	// Worlds always have the 0,0,0 chunk, it cannot be removed
+	m_world.createChunk( 0, 0, 0 );
 
 	// Main window has toolbars to the left, right and top
 	// And the central widget is a 4-way split

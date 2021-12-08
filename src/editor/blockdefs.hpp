@@ -30,4 +30,4 @@ struct BlockDef
 
 using BlockDefs = QMap<int, BlockDef>;
 
-BlockDefs LoadBlockDefs( const QString &path );
+BlockDefs *LoadBlockDefs( const QString &path );

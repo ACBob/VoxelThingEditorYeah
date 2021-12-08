@@ -38,6 +38,10 @@ CChunk *CWorld::createChunk(const Vector3i &pos) {
     
     m_chunks.insert(pos, c);
 
+    c->m_world = this;
+    c->m_editorState = m_editorState;
+    c->rebuildModel();
+
     // qDebug() << "Created chunk at " << pos;
     // qDebug() << "Chunk count: " << m_chunks.size();
     // qDebug() << "Chunk ptr value: " << c;

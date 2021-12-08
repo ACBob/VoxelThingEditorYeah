@@ -16,8 +16,8 @@
 
 class Model;	  // Forward declaration
 class QGLContext; // Forward declaration
-
-#include "editor/blockdefs.hpp"
+class CWorld;	  // Forward declaration
+class EditorState; // Forward declaration
 
 #include "vector.hpp"
 
@@ -75,7 +75,8 @@ class CChunk : public QObject
 	Vector3i getPosition() { return m_pos; }
 	Vector3i getSize() { return m_size; }
 
-	BlockDefs *m_blockDefs;
+	CWorld *m_world;
+	EditorState *m_editorState;
 
   private:
 	uint32_t *m_voxels;

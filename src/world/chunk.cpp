@@ -1,6 +1,11 @@
 #include "chunk.hpp"
 
+#include "world.hpp"
+
 #include <random>
+
+#include "editor/editorstate.hpp"
+#include "editor/blockdefs.hpp"
 
 #include "render/model.hpp"
 #include "render/texture.hpp"
@@ -30,10 +35,9 @@ CChunk::CChunk( int x, int y, int z, int sizeX, int sizeY, int sizeZ )
 		}
 	}
 	
-	m_blockDefs = nullptr;
+	m_world = nullptr;
 
 	m_model = new Model();
-	rebuildModel();
 }
 
 CChunk::~CChunk() { delete[] m_voxels; }
@@ -204,8 +208,8 @@ void CChunk::rebuildModel()
 						v.z = m_pos.z * m_size.z + z + cubeVertices[cubeTriangles[face][i]][2];
 
 						Vector4f uv;
-						if (m_blockDefs != nullptr)
-							uv = render::getUV( m_blockDefs, getID( x, y, z ) );
+						if (m_editorState != nullptr)
+							uv = render::getUV( m_editorState->blockDefs, getID( x, y, z ) );
 						else
 							uv = { 0, 0, 1, 1 };
 

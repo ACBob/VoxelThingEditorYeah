@@ -10,7 +10,7 @@
 
 #include <QDialog>
 
-BlockDefs LoadBlockDefs( const QString &path )
+BlockDefs *LoadBlockDefs( const QString &path )
 {
 	// Open for reading
 	QFile file( path );
@@ -33,7 +33,7 @@ BlockDefs LoadBlockDefs( const QString &path )
 	// Parse the TOML
 	toml::table root = toml::parse( contents.toStdString() );
 
-	BlockDefs defs;
+	BlockDefs *defs = new BlockDefs();
 
 	for ( auto &k : root )
 	{
@@ -120,7 +120,7 @@ BlockDefs LoadBlockDefs( const QString &path )
 		else
 			def.metaMax = UINT16_MAX;
 
-		defs[id] = def;
+		defs->insert( id, def );
 	}
 
 	return defs;
