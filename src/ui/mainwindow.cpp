@@ -16,16 +16,21 @@
 
 #include "editor/blockdefs.hpp"
 #include "editor/tools.hpp"
+#include "editor/editorstate.hpp"
 #include "world/chunk.hpp"
 #include "world/world.hpp"
 #include "world/loading/worldformat.hpp"
 
-MainWindow::MainWindow( QWidget *parent ) : QMainWindow( parent )
+MainWindow::MainWindow( EditorState *editorState, QWidget *parent ) : QMainWindow( parent ),
+	m_world( editorState, this )
 {
 	this->setWindowTitle( tr( "VoxelThingEditorYeah" ) );
 	this->setMinimumSize( 800, 600 );
 
-	m_blockDefs = LoadBlockDefs( ":/example/palette_internal.toml" );
+	m_editorState = editorState;
+	BlockDefs defs = LoadBlockDefs(":/example/palette_internal.toml");
+	m_editorState->blockDefs = &defs;
+	m_editorState->world = &m_world;
 
 	// Main window has toolbars to the left, right and top
 	// And the central widget is a 4-way split
@@ -38,19 +43,17 @@ MainWindow::MainWindow( QWidget *parent ) : QMainWindow( parent )
 	QActionGroup *toolGroup = new QActionGroup( this );
 	toolGroup->setExclusive( true );
 
-	CTool *handTool		= new CHandTool( this );
+	CTool *handTool		= new CHandTool( editorState, this );
 	QAction *handAction = toolsBar->addAction( QIcon( ":/img/tool_hand.png" ), handTool->getName() );
 	handAction->setCheckable( true );
 	handAction->setChecked( true );
 	handAction->setActionGroup( toolGroup );
-	handTool->setBlockDefs( &m_blockDefs );
 	this->m_tools.push_back( handTool );
 
-	CTool *wrenchTool	  = new CWrenchTool( this );
+	CTool *wrenchTool	  = new CWrenchTool( editorState, this );
 	QAction *wrenchAction = toolsBar->addAction( QIcon( ":/img/tool_wrench.png" ), wrenchTool->getName() );
 	wrenchAction->setCheckable( true );
 	wrenchAction->setActionGroup( toolGroup );
-	wrenchTool->setBlockDefs( &m_blockDefs );
 	this->m_tools.push_back( wrenchTool );
 
 	connect( toolGroup, SIGNAL( triggered( QAction * ) ), this, SLOT( toolChanged( QAction * ) ) );
@@ -59,24 +62,18 @@ MainWindow::MainWindow( QWidget *parent ) : QMainWindow( parent )
 	QDockWidget *thingsDock = new QDockWidget( tr( "Chunks" ), this );
 	thingsDock->setAllowedAreas( Qt::RightDockWidgetArea );
 	this->addDockWidget( Qt::RightDockWidgetArea, thingsDock );
+	thingsDock->setVisible( false ); // hide by default
 
 	QListWidget *thingsList = new QListWidget( thingsDock );
 	thingsDock->setWidget( thingsList );
-
-	m_world.createChunk(0, 0, 0);
-	m_world.createChunk(1, 0, 0);
-	m_world.createChunk(-1, 0, 0);
-	m_world.createChunk(0, 0, 1);
-	m_world.createChunk(0, 0, -1);
 
 	// when a different chunk is selected, we need to update the editor
 	connect( thingsList, SIGNAL( currentRowChanged( int ) ), this, SLOT( onChunkSelected( int ) ) );
 
 	// Editor 4-pane
-	m_editor = new Editor4Pane( this );
+	m_editor = new Editor4Pane( editorState, this );
 	this->setCentralWidget( m_editor );
-	m_editor->setTool( handTool );
-	m_editor->setWorld( &m_world );
+	m_editorState->tool = m_tools[0];
 
 	// Menubar
 	QMenuBar *menuBar = new QMenuBar( this );
@@ -122,7 +119,7 @@ void MainWindow::toolChanged( QAction *action )
 	{
 		if ( tool->getName() == action->text() )
 		{
-			m_editor->setTool( tool );
+			m_editorState->tool = tool;
 			return;
 		}
 	}

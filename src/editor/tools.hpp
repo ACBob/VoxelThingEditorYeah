@@ -14,13 +14,14 @@
 #include "blockdefs.hpp"
 
 class RenderWidget; // forward declaration
+class EditorState; // forward declaration
 
 class CTool : public QObject
 {
 	Q_OBJECT
 
   public:
-	CTool( QObject *parent = 0 );
+	CTool( EditorState *editorState, QObject *parent = 0 );
 	virtual ~CTool();
 
 	virtual QString getName() = 0;
@@ -39,10 +40,8 @@ class CTool : public QObject
 
 	virtual void draw( RenderWidget *view ) = 0; // This is called during the RenderWidget's OpenGL paint event.
 
-	virtual void setBlockDefs( BlockDefs *blockDefs ) { m_blockDefs = blockDefs; }
-
 	protected:
-		BlockDefs *m_blockDefs; // The block definitions we use
+		EditorState *m_editorState;
 };
 
 // Placing/Breaking like minecraft.
@@ -51,7 +50,7 @@ class CHandTool final : public CTool
 	Q_OBJECT
 
   public:
-	CHandTool( QObject *parent = 0 );
+	CHandTool( EditorState *editorState, QObject *parent = 0 );
 	~CHandTool();
 
 	QString getName() { return "Hand"; };
@@ -75,7 +74,7 @@ class CWrenchTool final : public CTool
 	Q_OBJECT
 
   public:
-	CWrenchTool( QObject *parent = 0 );
+	CWrenchTool( EditorState *editorState, QObject *parent = 0 );
 	~CWrenchTool();
 
 	QString getName() { return "Wrench"; };

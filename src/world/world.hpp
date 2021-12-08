@@ -11,13 +11,14 @@
 
 class CChunk;
 class QGLContext;
+class EditorState;
 
 class CWorld : public QObject {
     
     Q_OBJECT
 
     public:
-        CWorld(QObject *parent = 0);
+        CWorld( EditorState *editorState, QObject *parent = 0);
         ~CWorld();
 
         CChunk *getChunk(int x, int y, int z);
@@ -84,4 +85,6 @@ class CWorld : public QObject {
         QString m_name;
         uint32_t m_seed;
         uint32_t m_time;
+
+        EditorState *m_editorState;
 };

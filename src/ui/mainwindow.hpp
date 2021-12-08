@@ -8,13 +8,14 @@
 class Editor4Pane; // forward declaration
 class CChunk;	   // forward declaration
 class CTool;	   // forward declaration
+class EditorState; // forward declaration
 
 class MainWindow : public QMainWindow
 {
 	Q_OBJECT;
 
   public:
-	MainWindow( QWidget *parent );
+	MainWindow( EditorState *editorState, QWidget *parent );
 	~MainWindow();
 
   private slots:
@@ -36,10 +37,8 @@ class MainWindow : public QMainWindow
 
   private:
 	Editor4Pane *m_editor;
-
 	CWorld m_world;
-
 	QVector<CTool *> m_tools;
 
-	BlockDefs m_blockDefs;
+	EditorState *m_editorState;
 };

@@ -10,13 +10,14 @@ class CChunk;	// forward declaration
 class CRaycast; // forward declaration
 class CTool;	// forward declaration
 class CWorld;
+class EditorState;
 
 class RenderWidget : public QGLWidget
 {
 	Q_OBJECT;
 
   public:
-	RenderWidget( QWidget *parent = 0 );
+	RenderWidget( EditorState *m_editorState, QWidget *parent = 0 );
 
 	void initializeGL();
 	void paintGL();
@@ -39,10 +40,6 @@ class RenderWidget : public QGLWidget
 	};
 
 	void setDispMode( DispMode mode );
-	void setTool( CTool *tool );
-
-	CChunk *m_chunk;
-	CWorld *m_world;
 
 	Vector3f m_camera;
 	Vector3f m_camera_forward;
@@ -63,16 +60,12 @@ class RenderWidget : public QGLWidget
 	float offset_y; // Used for grid & isometric
 
 	QPoint m_lastMousePos;
-
 	bool m_captureMouse;
-
 	DispMode m_displayMode;
-
 	QOpenGLTexture *m_texture;
-
 	CRaycast *m_raycast;
 
-	CTool *m_currentTool;
+	EditorState *m_editorState;
 
 	// stores the GL stuff
 	double m_modelview[16];

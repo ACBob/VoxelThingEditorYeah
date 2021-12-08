@@ -19,10 +19,14 @@
 #include <GL/glu.h>
 #include <QOpenGLFunctions>
 
-CTool::CTool( QObject *parent ) : QObject( parent ){};
+#include "editorstate.hpp"
+
+CTool::CTool( EditorState *editorState, QObject *parent ) : QObject( parent ){
+	m_editorState = editorState;
+};
 CTool::~CTool(){};
 
-CHandTool::CHandTool( QObject *parent ) : CTool( parent ) { m_selectedBlockPos = Vector3f( 0, 0, 0 ); }
+CHandTool::CHandTool( EditorState *editorState, QObject *parent ) : CTool( editorState, parent ) { m_selectedBlockPos = Vector3f( 0, 0, 0 ); }
 
 CHandTool::~CHandTool() {}
 
@@ -33,7 +37,7 @@ void CHandTool::mousePressEvent( QMouseEvent *event, Vector3f pos, Vector3f dir,
 	// view->update();
 
 	CRaycast caster;
-	std::pair<Vector3f, Vector3f> cast = caster.cast( view->m_world, pos, dir, 100.0f );
+	std::pair<Vector3f, Vector3f> cast = caster.cast( m_editorState->world, pos, dir, 100.0f );
 
 	m_selectedBlockPos	  = cast.first;
 	m_selectedBlockNormal = cast.second;
@@ -43,19 +47,19 @@ void CHandTool::mousePressEvent( QMouseEvent *event, Vector3f pos, Vector3f dir,
 		if ( event->button() == Qt::LeftButton )
 		{
 			Vector3f p = m_selectedBlockPos;
-			view->m_world->setID( p.x, p.y, p.z, 0 );
-			view->m_world->setMeta( p.x, p.y, p.z, 0 );
+			m_editorState->world->setID( p.x, p.y, p.z, 0 );
+			m_editorState->world->setMeta( p.x, p.y, p.z, 0 );
 			
 			// find chunk
-			CChunk *c = view->m_world->getChunkWorldPos( p );
+			CChunk *c = m_editorState->world->getChunkWorldPos( p );
 			c->rebuildModel();
 		}
 		else if ( event->button() == Qt::RightButton )
 		{
 			Vector3f p = m_selectedBlockPos + m_selectedBlockNormal;
-			view->m_world->setID( p.x, p.y, p.z, 1 );
-			view->m_world->setMeta( p.x, p.y, p.z, 0 );
-			CChunk *c = view->m_world->getChunkWorldPos( p );
+			m_editorState->world->setID( p.x, p.y, p.z, 1 );
+			m_editorState->world->setMeta( p.x, p.y, p.z, 0 );
+			CChunk *c = m_editorState->world->getChunkWorldPos( p );
 			c->rebuildModel();
 		}
 	}
@@ -68,7 +72,7 @@ void CHandTool::mouseMoveEvent( QMouseEvent *event, Vector3f pos, Vector3f dir, 
 	// qDebug () << "Hand tool moved @" << pos;
 
 	CRaycast caster;
-	std::pair<Vector3f, Vector3f> cast = caster.cast( view->m_world, pos, dir, 100.0f );
+	std::pair<Vector3f, Vector3f> cast = caster.cast( m_editorState->world, pos, dir, 100.0f );
 
 	m_selectedBlockPos	  = cast.first;
 	m_selectedBlockNormal = cast.second;
@@ -143,7 +147,7 @@ void CHandTool::draw( RenderWidget *view )
 }
 
 // Wrench
-CWrenchTool::CWrenchTool( QObject *parent ) : CTool( parent ) {}
+CWrenchTool::CWrenchTool( EditorState *editorState, QObject *parent ) : CTool( editorState, parent ) {}
 
 CWrenchTool::~CWrenchTool() {}
 
@@ -154,7 +158,7 @@ void CWrenchTool::mousePressEvent( QMouseEvent *event, Vector3f pos, Vector3f di
 	// view->update();
 
 	CRaycast caster;
-	std::pair<Vector3f, Vector3f> cast = caster.cast( view->m_world, pos, dir, 100.0f );
+	std::pair<Vector3f, Vector3f> cast = caster.cast( m_editorState->world, pos, dir, 100.0f );
 
 	m_selectedBlockPos	  = cast.first;
 	m_selectedBlockNormal = cast.second;
@@ -167,17 +171,17 @@ void CWrenchTool::mousePressEvent( QMouseEvent *event, Vector3f pos, Vector3f di
 			{
 				// Display configure dialog
 				uint16_t id, meta;
-				view->m_world->get( m_selectedBlockPos.x, m_selectedBlockPos.y, m_selectedBlockPos.z, id, meta );
-				BlockPropertyDialog *dlg = new BlockPropertyDialog( m_blockDefs, id, meta );
+				m_editorState->world->get( m_selectedBlockPos.x, m_selectedBlockPos.y, m_selectedBlockPos.z, id, meta );
+				BlockPropertyDialog *dlg = new BlockPropertyDialog( m_editorState->blockDefs, id, meta );
 
 				if ( dlg->exec() == QDialog::Accepted )
 				{
 					id	 = dlg->getChosenId();
 					meta = dlg->getChosenMeta();
 
-					view->m_world->set( m_selectedBlockPos.x, m_selectedBlockPos.y, m_selectedBlockPos.z, id,
+					m_editorState->world->set( m_selectedBlockPos.x, m_selectedBlockPos.y, m_selectedBlockPos.z, id,
 										meta );
-					view->m_world->getChunkWorldPos( m_selectedBlockPos )->rebuildModel();
+					m_editorState->world->getChunkWorldPos( m_selectedBlockPos )->rebuildModel();
 					view->update();
 				}
 			}
@@ -192,7 +196,7 @@ void CWrenchTool::mouseMoveEvent( QMouseEvent *event, Vector3f pos, Vector3f dir
 	// qDebug () << "Wrench tool moved @" << pos;
 
 	CRaycast caster;
-	std::pair<Vector3f, Vector3f> cast = caster.cast( view->m_world, pos, dir, 100.0f );
+	std::pair<Vector3f, Vector3f> cast = caster.cast( m_editorState->world, pos, dir, 100.0f );
 
 	m_selectedBlockPos	  = cast.first;
 	m_selectedBlockNormal = cast.second;

@@ -17,9 +17,11 @@
 
 #include <math.h>
 
-Editor4Pane::Editor4Pane( QWidget *parent ) : QDockWidget( parent )
+Editor4Pane::Editor4Pane( EditorState *editorState, QWidget *parent ) : QDockWidget( parent )
 {
 	this->setWindowTitle( "Editor4Pane" );
+
+	m_editorState = editorState;
 
 	QWidget *centralWidget = new QWidget( this );
 	this->setWidget( centralWidget );
@@ -39,39 +41,15 @@ Editor4Pane::Editor4Pane( QWidget *parent ) : QDockWidget( parent )
 	// default to 50%
 	rightUpDownSplitter->setSizes( QList<int>() << 50 << 50 );
 
-	m_topLeftView = new RenderWidget( leftUpDownSplitter );
+	m_topLeftView = new RenderWidget( editorState, leftUpDownSplitter );
 	m_topLeftView->setDispMode( RenderWidget::DispMode::DISP_3D );
-	m_topRightView = new RenderWidget( rightUpDownSplitter );
+	m_topRightView = new RenderWidget( editorState, rightUpDownSplitter );
 	m_topRightView->setDispMode( RenderWidget::DispMode::DISP_GRID_XZ );
-	m_bottomLeftView = new RenderWidget( leftUpDownSplitter );
+	m_bottomLeftView = new RenderWidget( editorState, leftUpDownSplitter );
 	m_bottomLeftView->setDispMode( RenderWidget::DispMode::DISP_GRID_XY );
-	m_bottomRightView = new RenderWidget( rightUpDownSplitter );
+	m_bottomRightView = new RenderWidget( editorState, rightUpDownSplitter );
 	m_bottomRightView->setDispMode( RenderWidget::DispMode::DISP_GRID_ZY );
 
 	// // Disable all features
 	// this->setFeatures(QDockWidget::NoDockWidgetFeatures);
-}
-
-void Editor4Pane::setChunk( CChunk *chunk )
-{
-	m_topLeftView->setChunk( chunk );
-	m_topRightView->setChunk( chunk );
-	m_bottomLeftView->setChunk( chunk );
-	m_bottomRightView->setChunk( chunk );
-}
-
-void Editor4Pane::setWorld( CWorld *world )
-{
-	m_topLeftView->setWorld( world );
-	m_topRightView->setWorld( world );
-	m_bottomLeftView->setWorld( world );
-	m_bottomRightView->setWorld( world );
-}
-
-void Editor4Pane::setTool( CTool *tool )
-{
-	m_topLeftView->setTool( tool );
-	m_topRightView->setTool( tool );
-	m_bottomLeftView->setTool( tool );
-	m_bottomRightView->setTool( tool );
 }

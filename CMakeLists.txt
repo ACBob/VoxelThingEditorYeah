@@ -48,6 +48,7 @@ set(SRC
     src/editor/toml.hpp
     src/editor/blockdefs.cpp
     src/editor/blockdefs.hpp
+    src/editor/editorstate.hpp
 
     src/render/model.cpp
     src/render/model.hpp

@@ -5,6 +5,7 @@
 #include <QOpenGLFunctions_3_3_Core>
 
 #include "editor/tools.hpp"
+#include "editor/editorstate.hpp"
 #include "world/chunk.hpp"
 #include "world/raycast.hpp"
 #include "world/world.hpp"
@@ -19,12 +20,13 @@
 
 #include <math.h>
 
-RenderWidget::RenderWidget( QWidget *parent ) : QGLWidget( parent )
+RenderWidget::RenderWidget( EditorState *editorState, QWidget *parent ) : QGLWidget( parent )
 {
 	setFocusPolicy( Qt::StrongFocus );
 	setMouseTracking( true );
 
-	m_chunk			 = nullptr;
+	m_editorState = editorState;
+
 	m_camera_pitch	 = 0.0f;
 	m_camera_yaw	 = 0.0f;
 	m_camera_forward = Vector3f( 0.0f, 0.0f, -1.0f );
@@ -34,7 +36,6 @@ RenderWidget::RenderWidget( QWidget *parent ) : QGLWidget( parent )
 	m_captureMouse = false;
 
 	m_raycast	  = new CRaycast( this );
-	m_currentTool = nullptr;
 
 	m_zoom	 = 12.0f;
 	offset_x = -8.0f;
@@ -91,7 +92,7 @@ void RenderWidget::paintGL()
 	glClearColor( voidColor.redF(), voidColor.greenF(), voidColor.blueF(), 1.0f );
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
-	if ( m_world != nullptr && m_displayMode == DispMode::DISP_3D )
+	if ( m_editorState->world != nullptr && m_displayMode == DispMode::DISP_3D )
 	{
 		// first-person camera
 		glMatrixMode( GL_PROJECTION );
@@ -119,11 +120,11 @@ void RenderWidget::paintGL()
 
 		m_texture->bind();
 
-		m_world->render( context() );
+		m_editorState->world->render( context() );
 
 		m_texture->release();
 	}
-	else if ( m_world != nullptr && m_displayMode >= DispMode::DISP_GRID_XY && m_displayMode <= DispMode::DISP_GRID_ZY )
+	else if ( m_editorState->world != nullptr && m_displayMode >= DispMode::DISP_GRID_XY && m_displayMode <= DispMode::DISP_GRID_ZY )
 	{
 		// orthographic camera
 		glMatrixMode( GL_PROJECTION );
@@ -156,7 +157,7 @@ void RenderWidget::paintGL()
 		// After that is setup, draw!
 		m_texture->bind();
 
-		m_world->render( context() );
+		m_editorState->world->render( context() );
 
 		m_texture->release();
 
@@ -212,7 +213,7 @@ void RenderWidget::paintGL()
 
 		glEnable( GL_DEPTH_TEST );
 	}
-	else if ( m_world != nullptr && m_displayMode == DispMode::DISP_ISOMETRIC )
+	else if ( m_editorState->world != nullptr && m_displayMode == DispMode::DISP_ISOMETRIC )
 	{
 		glMatrixMode( GL_PROJECTION );
 		glLoadIdentity();
@@ -234,7 +235,7 @@ void RenderWidget::paintGL()
 		// same as DISP_3D now
 		m_texture->bind();
 
-		m_world->render( context() );
+		m_editorState->world->render( context() );
 
 		m_texture->release();
 	}
@@ -244,9 +245,9 @@ void RenderWidget::paintGL()
 	glGetIntegerv( GL_VIEWPORT, m_viewport );
 
 	// Draw the tool last
-	if ( m_currentTool != nullptr )
+	if ( m_editorState->tool != nullptr )
 	{
-		m_currentTool->draw( this );
+		m_editorState->tool->draw( this );
 	}
 
 	glDisable( GL_DEPTH_TEST );
@@ -308,18 +309,6 @@ void RenderWidget::paintGL()
 	renderText( 10, 15, mode );
 
 	glEnable( GL_DEPTH_TEST );
-}
-
-void RenderWidget::setChunk( CChunk *chunk )
-{
-	m_chunk = chunk;
-	update();
-}
-
-void RenderWidget::setWorld( CWorld *world )
-{
-	m_world = world;
-	update();
 }
 
 void RenderWidget::keyPressEvent( QKeyEvent *event )
@@ -407,7 +396,7 @@ void RenderWidget::mouseMoveEvent( QMouseEvent *event )
 	Vector3f ray_direction = Vector3f( x, y, z ) - m_camera;
 	ray_direction.Normal();
 
-	m_currentTool->mouseMoveEvent( event, Vector3f( x, y, z ), ray_direction, this );
+	m_editorState->tool->mouseMoveEvent( event, Vector3f( x, y, z ), ray_direction, this );
 }
 
 void RenderWidget::mousePressEvent( QMouseEvent *event )
@@ -431,7 +420,7 @@ void RenderWidget::mousePressEvent( QMouseEvent *event )
 		}
 	}
 
-	if ( m_currentTool != nullptr )
+	if ( m_editorState->tool != nullptr )
 	{
 		if ( !m_captureMouse )
 		{
@@ -444,11 +433,11 @@ void RenderWidget::mousePressEvent( QMouseEvent *event )
 			Vector3f ray_direction = Vector3f( x, y, z ) - m_camera;
 			ray_direction.Normal();
 
-			m_currentTool->mousePressEvent( event, Vector3f( x, y, z ), ray_direction, this );
+			m_editorState->tool->mousePressEvent( event, Vector3f( x, y, z ), ray_direction, this );
 		}
 		else
 		{
-			m_currentTool->mousePressEvent( event, m_camera, m_camera_forward, this );
+			m_editorState->tool->mousePressEvent( event, m_camera, m_camera_forward, this );
 		}
 	}
 }
@@ -456,11 +445,6 @@ void RenderWidget::mousePressEvent( QMouseEvent *event )
 void RenderWidget::setDispMode( DispMode mode )
 {
 	m_displayMode = mode;
-	update();
-}
-void RenderWidget::setTool( CTool *tool )
-{
-	m_currentTool = tool;
 	update();
 }
 

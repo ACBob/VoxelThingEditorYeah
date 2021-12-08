@@ -7,9 +7,10 @@
 
 #include <QDebug>
 
-CWorld::CWorld(QObject *parent) : QObject(parent)
+CWorld::CWorld(EditorState *editorState, QObject *parent) : QObject(parent)
 {
     m_chunkSize = Vector3f(DEF_CHUNK_SIZE_X, DEF_CHUNK_SIZE_Y, DEF_CHUNK_SIZE_Z);
+    m_editorState = editorState;
 }
 
 CWorld::~CWorld() {
