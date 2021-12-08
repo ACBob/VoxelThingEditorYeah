@@ -4,8 +4,8 @@
 #include "ui/widgets/renderwidget.hpp"
 
 #include "world/chunk.hpp"
-#include "world/world.hpp"
 #include "world/raycast.hpp"
+#include "world/world.hpp"
 
 #include "blockdefs.hpp"
 
@@ -14,10 +14,10 @@
 #include <QDialog>
 #include <QDialogButtonBox>
 #include <QFormLayout>
-#include <QLineEdit>
-#include <QSpinBox>
-#include <QPushButton>
 #include <QLabel>
+#include <QLineEdit>
+#include <QPushButton>
+#include <QSpinBox>
 
 #include <GL/glu.h>
 #include <QOpenGLFunctions>
@@ -27,12 +27,13 @@
 // How far the tools will cast rays
 #define TOOL_CAST_DISTANCE 150.0f
 
-CTool::CTool( EditorState *editorState, QObject *parent ) : QObject( parent ){
-	m_editorState = editorState;
-};
+CTool::CTool( EditorState *editorState, QObject *parent ) : QObject( parent ) { m_editorState = editorState; };
 CTool::~CTool(){};
 
-CHandTool::CHandTool( EditorState *editorState, QObject *parent ) : CTool( editorState, parent ) { m_selectedBlockPos = Vector3f( 0, 0, 0 ); }
+CHandTool::CHandTool( EditorState *editorState, QObject *parent ) : CTool( editorState, parent )
+{
+	m_selectedBlockPos = Vector3f( 0, 0, 0 );
+}
 
 CHandTool::~CHandTool() {}
 
@@ -55,7 +56,7 @@ void CHandTool::mousePressEvent( QMouseEvent *event, Vector3f pos, Vector3f dir,
 			Vector3f p = m_selectedBlockPos;
 			m_editorState->world->setID( p.x, p.y, p.z, 0 );
 			m_editorState->world->setMeta( p.x, p.y, p.z, 0 );
-			
+
 			// find chunk
 			CChunk *c = m_editorState->world->getChunkWorldPos( p );
 			c->rebuildModel();
@@ -214,7 +215,7 @@ void CWrenchTool::mousePressEvent( QMouseEvent *event, Vector3f pos, Vector3f di
 					meta = dlg->getChosenMeta();
 
 					m_editorState->world->set( m_selectedBlockPos.x, m_selectedBlockPos.y, m_selectedBlockPos.z, id,
-										meta );
+											   meta );
 					m_editorState->world->getChunkWorldPos( m_selectedBlockPos )->rebuildModel();
 					view->update();
 				}
@@ -287,13 +288,13 @@ void CSimulateTool::mousePressEvent( QMouseEvent *event, Vector3f pos, Vector3f 
 		{
 			// right button shows a dialog to choose how many iterations to run
 			QDialog *dialog = new QDialog( view );
-			dialog->setWindowTitle( tr("Simulation") );
+			dialog->setWindowTitle( tr( "Simulation" ) );
 			dialog->setWindowModality( Qt::WindowModal );
 
 			QVBoxLayout *layout = new QVBoxLayout( dialog );
 			dialog->setLayout( layout );
 
-			QLabel *label = new QLabel( tr("Iterations"), dialog );
+			QLabel *label = new QLabel( tr( "Iterations" ), dialog );
 			layout->addWidget( label );
 
 			QSpinBox *spinBox = new QSpinBox( dialog );
@@ -301,18 +302,18 @@ void CSimulateTool::mousePressEvent( QMouseEvent *event, Vector3f pos, Vector3f 
 			spinBox->setMaximum( 100 );
 			layout->addWidget( spinBox );
 
-			QPushButton *okButton = new QPushButton( tr("Simulate"), dialog );
+			QPushButton *okButton = new QPushButton( tr( "Simulate" ), dialog );
 			layout->addWidget( okButton );
 			QObject::connect( okButton, SIGNAL( clicked() ), dialog, SLOT( accept() ) );
 
-			QPushButton *cancelButton = new QPushButton( tr("Cancel"), dialog );
+			QPushButton *cancelButton = new QPushButton( tr( "Cancel" ), dialog );
 			layout->addWidget( cancelButton );
 			QObject::connect( cancelButton, SIGNAL( clicked() ), dialog, SLOT( reject() ) );
 
 			if ( dialog->exec() == QDialog::Accepted )
 			{
 				int iterations = spinBox->value();
-				while (iterations--)
+				while ( iterations-- )
 				{
 					chunk->simulateLiquid();
 				}

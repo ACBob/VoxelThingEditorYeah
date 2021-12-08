@@ -11,22 +11,22 @@ class BlockTexture;
 
 class BlockList : public QDialog
 {
-    Q_OBJECT
+	Q_OBJECT
 
-    public:
-        BlockList(EditorState *editorState, QWidget *parent = 0);
-        ~BlockList();
+  public:
+	BlockList( EditorState *editorState, QWidget *parent = 0 );
+	~BlockList();
 
-        uint16_t getSelectedBlock();
+	uint16_t getSelectedBlock();
 
-    private:
-        EditorState *m_editorState;
-        QListWidget *m_list;
-        uint16_t m_selectedBlock;
+  private:
+	EditorState *m_editorState;
+	QListWidget *m_list;
+	uint16_t m_selectedBlock;
 
-        BlockTexture *m_blockPreview;
+	BlockTexture *m_blockPreview;
 
-    private slots:
-        void onItemClicked(QListWidgetItem *item);
-        void onItemSelectionChanged();
+  private slots:
+	void onItemClicked( QListWidgetItem *item );
+	void onItemSelectionChanged();
 };

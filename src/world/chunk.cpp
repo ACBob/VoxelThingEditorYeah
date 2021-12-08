@@ -4,8 +4,8 @@
 
 #include <random>
 
-#include "editor/editorstate.hpp"
 #include "editor/blockdefs.hpp"
+#include "editor/editorstate.hpp"
 
 #include "render/model.hpp"
 #include "render/texture.hpp"
@@ -34,7 +34,7 @@ CChunk::CChunk( int x, int y, int z, int sizeX, int sizeY, int sizeZ )
 			}
 		}
 	}
-	
+
 	m_world = nullptr;
 
 	m_model = new Model();
@@ -125,9 +125,7 @@ void CChunk::get( int x, int y, int z, uint16_t &id, uint16_t &meta )
 	meta = getMeta( x, y, z );
 }
 
-void CChunk::set( int i, uint16_t id, uint16_t meta ) {
-	m_voxels[i] = id | ( meta << 16 );
-}
+void CChunk::set( int i, uint16_t id, uint16_t meta ) { m_voxels[i] = id | ( meta << 16 ); }
 
 uint32_t CChunk::get( int i ) { return m_voxels[i]; }
 void CChunk::set( int i, uint32_t voxel ) { m_voxels[i] = voxel; }
@@ -140,7 +138,7 @@ void CChunk::getMeta( int i, uint16_t &meta ) { meta = m_voxels[i] >> 16; }
 
 void CChunk::get( int i, uint16_t &id, uint16_t &meta )
 {
-	id = getID( i );
+	id	 = getID( i );
 	meta = getMeta( i );
 }
 
@@ -208,10 +206,11 @@ void CChunk::rebuildModel()
 						v.z = m_pos.z * m_size.z + z + cubeVertices[cubeTriangles[face][i]][2];
 
 						Vector4f uv;
-						if (m_editorState != nullptr) {
+						if ( m_editorState != nullptr )
+						{
 							uv = render::getUV( m_editorState->blockDefs, getID( x, y, z ) );
-							uv.y -= 1/16.0f; // HACK: otherwise all textures are offset by 1/16
-							uv.w -= 1/16.0f;
+							uv.y -= 1 / 16.0f; // HACK: otherwise all textures are offset by 1/16
+							uv.w -= 1 / 16.0f;
 						}
 						else
 							uv = { 0, 0, 1, 1 };
@@ -259,14 +258,15 @@ void CChunk::rebuildModel()
 
 void CChunk::render( QGLContext *context ) { m_model->render( context ); }
 
-#define setIfAir( x, y, z, id, meta ) \
-	if ( getID( x, y, z ) == 0 ) \
-	{ \
-		setID( x, y, z, id ); \
-		setMeta( x, y, z, meta ); \
+#define setIfAir( x, y, z, id, meta )                                                                                  \
+	if ( getID( x, y, z ) == 0 )                                                                                       \
+	{                                                                                                                  \
+		setID( x, y, z, id );                                                                                          \
+		setMeta( x, y, z, meta );                                                                                      \
 	}
 
-void CChunk::simulateLiquid() {
+void CChunk::simulateLiquid()
+{
 
 	QList<Vector3i> liquidPositions;
 
@@ -285,7 +285,7 @@ void CChunk::simulateLiquid() {
 				// if it is marked as liquid by the block definition, add it to the list
 				if ( m_editorState->blockDefs->value( id ).isLiquid )
 				{
-					if (m_editorState->blockDefs->value( id ).liquidSource == 0)
+					if ( m_editorState->blockDefs->value( id ).liquidSource == 0 )
 						continue;
 					liquidPositions.append( Vector3i( x, y, z ) );
 				}
@@ -297,7 +297,7 @@ void CChunk::simulateLiquid() {
 	for ( int i = 0; i < liquidPositions.size(); i++ )
 	{
 		Vector3i pos = liquidPositions[i];
-		uint16_t id = getID( pos.x, pos.y, pos.z );
+		uint16_t id	 = getID( pos.x, pos.y, pos.z );
 
 		// get the liquid level from the metadata
 		uint16_t level = getMeta( pos.x, pos.y, pos.z );
@@ -327,6 +327,7 @@ void CChunk::simulateLiquid() {
 		}
 
 		// if the block is not on the floor, flow down
-		setIfAir( pos.x, pos.y - 1, pos.z, flowBlock, (uint16_t)qBound(0, level + 1, (int)m_editorState->blockDefs->value( id ).metaMax) );
+		setIfAir( pos.x, pos.y - 1, pos.z, flowBlock,
+				  (uint16_t)qBound( 0, level + 1, (int)m_editorState->blockDefs->value( id ).metaMax ) );
 	}
 }

@@ -6,15 +6,15 @@
 // Tools are given the world coordinates of the mouse click,
 // A pointer to the calling viewport, and a direction for a raycast.
 
+#include "world/vector.hpp"
 #include <QKeyEvent>
 #include <QMouseEvent>
 #include <QObject>
-#include "world/vector.hpp"
 
 #include "blockdefs.hpp"
 
 class RenderWidget; // forward declaration
-class EditorState; // forward declaration
+class EditorState;	// forward declaration
 
 class CTool : public QObject
 {
@@ -42,8 +42,8 @@ class CTool : public QObject
 
 	virtual void draw( RenderWidget *view ) = 0; // This is called during the RenderWidget's OpenGL paint event.
 
-	protected:
-		EditorState *m_editorState;
+  protected:
+	EditorState *m_editorState;
 };
 
 // Placing/Breaking like minecraft.
@@ -109,11 +109,10 @@ class CSimulateTool final : public CTool
 
 	void mousePressEvent( QMouseEvent *event, Vector3f pos, Vector3f dir, RenderWidget *view );
 
-
-	void mouseMoveEvent( QMouseEvent *event, Vector3f pos, Vector3f dir, RenderWidget *view ) {};
-	void mouseReleaseEvent( QMouseEvent *event, Vector3f pos, Vector3f dir, RenderWidget *view ) {};
-	void wheelEvent( QWheelEvent *event, Vector3f pos, Vector3f dir, RenderWidget *view ) {};
-	void keyPressEvent( QKeyEvent *event, Vector3f pos, Vector3f dir, RenderWidget *view ) {};
-	void keyReleaseEvent( QKeyEvent *event, Vector3f pos, Vector3f dir, RenderWidget *view ) {};
-	void draw( RenderWidget *view ) {};
+	void mouseMoveEvent( QMouseEvent *event, Vector3f pos, Vector3f dir, RenderWidget *view ){};
+	void mouseReleaseEvent( QMouseEvent *event, Vector3f pos, Vector3f dir, RenderWidget *view ){};
+	void wheelEvent( QWheelEvent *event, Vector3f pos, Vector3f dir, RenderWidget *view ){};
+	void keyPressEvent( QKeyEvent *event, Vector3f pos, Vector3f dir, RenderWidget *view ){};
+	void keyReleaseEvent( QKeyEvent *event, Vector3f pos, Vector3f dir, RenderWidget *view ){};
+	void draw( RenderWidget *view ){};
 };

@@ -1,10 +1,10 @@
 // -- Render Widget
 // all da opengl stuff
 
+#include "world/vector.hpp"
 #include <QGLWidget>
 #include <QMenu>
 #include <QOpenGLTexture>
-#include "world/vector.hpp"
 
 class CChunk;	// forward declaration
 class CRaycast; // forward declaration

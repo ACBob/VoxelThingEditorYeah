@@ -14,15 +14,14 @@ class ColorPicker : public QWidget
 	void enableAlpha();
 	void disableAlpha();
 
-	public slots:
+  public slots:
 	void setColor( const QColor &color );
 	void setColorFromVTY( uint16_t vty_color ); // converts VoxelThingYeah 16bit color to Qt color
 	QColor getColor();
 	uint16_t getVTYColor(); // converts Qt color to VoxelThingYeah 16bit color
 
-	signals:
+  signals:
 	void colorChanged( const QColor &color );
-
 
   protected:
 	void paintEvent( QPaintEvent *event );

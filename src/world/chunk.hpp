@@ -14,9 +14,9 @@
 #define DEF_CHUNK_SIZE_Y 16
 #define DEF_CHUNK_SIZE_Z 16
 
-class Model;	  // Forward declaration
-class QGLContext; // Forward declaration
-class CWorld;	  // Forward declaration
+class Model;	   // Forward declaration
+class QGLContext;  // Forward declaration
+class CWorld;	   // Forward declaration
 class EditorState; // Forward declaration
 
 #include "vector.hpp"

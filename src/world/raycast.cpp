@@ -73,8 +73,7 @@ std::pair<Vector3f, Vector3f> CRaycast::cast( CWorld *world )
 
 		if ( world->getID( x, y, z ) > 0 )
 		{
-			Vector3f normal =
-				Vector3f( floor( oRay.x ), floor( oRay.y ), floor( oRay.z ) ) - Vector3f( x, y, z );
+			Vector3f normal = Vector3f( floor( oRay.x ), floor( oRay.y ), floor( oRay.z ) ) - Vector3f( x, y, z );
 			normal.Normal();
 			return { ray, normal };
 		}

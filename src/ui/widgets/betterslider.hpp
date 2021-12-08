@@ -7,15 +7,16 @@
 class QLabel;
 
 // functionality 100% the same as QSlider, we just add a label
-class BetterSlider : public QSlider {
-    Q_OBJECT
+class BetterSlider : public QSlider
+{
+	Q_OBJECT
 
-    public:
-        BetterSlider(QWidget *parent = 0);
-        ~BetterSlider();
+  public:
+	BetterSlider( QWidget *parent = 0 );
+	~BetterSlider();
 
-        void paintEvent(QPaintEvent *event);
+	void paintEvent( QPaintEvent *event );
 
-    private:
-        QLabel *m_label;
+  private:
+	QLabel *m_label;
 };

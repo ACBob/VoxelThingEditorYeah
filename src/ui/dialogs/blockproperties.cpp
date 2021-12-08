@@ -2,8 +2,8 @@
 
 // TODO: Setting
 
-#include "ui/widgets/colorpicker.hpp"
 #include "ui/widgets/betterslider.hpp"
+#include "ui/widgets/colorpicker.hpp"
 
 #include <QCheckBox>
 #include <QComboBox>
@@ -74,7 +74,8 @@ BlockPropertyDialog::BlockPropertyDialog( BlockDefs *defs, uint16_t id, uint16_t
 	m_metaDirectionVert->setWrapping( true );
 	m_metaDirectionVert->setMinimum( 0 );
 	m_metaDirectionVert->setMaximum( 4 );
-	connect( m_metaDirectionVert, SIGNAL( valueChanged( int ) ), this, SLOT( onMetaChangeDial( int ) ) ); // TODO: horizontal/vertical override each other
+	connect( m_metaDirectionVert, SIGNAL( valueChanged( int ) ), this,
+			 SLOT( onMetaChangeDial( int ) ) ); // TODO: horizontal/vertical override each other
 
 	m_metaLevel = new BetterSlider( this );
 	m_metaLevel->setMinimum( 0 );
@@ -214,32 +215,16 @@ void BlockPropertyDialog::showAppropriateMetaThingie()
 	}
 }
 
-
 // The different slots for when the meta value changes
-void BlockPropertyDialog::onMetaChangeLineEdit( const QString &text )
-{
-	meta = text.toInt();
-}
+void BlockPropertyDialog::onMetaChangeLineEdit( const QString &text ) { meta = text.toInt(); }
 
-void BlockPropertyDialog::onMetaChangeSlider( int value )
-{
-	meta = value;
-}
+void BlockPropertyDialog::onMetaChangeSlider( int value ) { meta = value; }
 
-void BlockPropertyDialog::onMetaChangeDial( int value )
-{
-	meta = value;
-}
+void BlockPropertyDialog::onMetaChangeDial( int value ) { meta = value; }
 
-void BlockPropertyDialog::onMetaChangeCheckBox( bool checked )
-{
-	meta = checked;
-}
+void BlockPropertyDialog::onMetaChangeCheckBox( bool checked ) { meta = checked; }
 
-void BlockPropertyDialog::onMetaChangeComboBox( int index )
-{
-	meta = index;
-}
+void BlockPropertyDialog::onMetaChangeComboBox( int index ) { meta = index; }
 
 void BlockPropertyDialog::onMetaChangeColorPicker( const QColor &color )
 {

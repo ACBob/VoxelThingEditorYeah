@@ -8,30 +8,30 @@
 #include <QToolBar>
 #include <QVBoxLayout>
 
-#include <QMessageBox>
 #include <QFileDialog>
+#include <QMessageBox>
 
-#include "ui/docks/editor4pane.hpp"
-#include "ui/docks/currentblock.hpp"
-#include "ui/dialogs/settingsdialog.hpp"
 #include "ui/dialogs/blocklist.hpp"
+#include "ui/dialogs/settingsdialog.hpp"
+#include "ui/docks/currentblock.hpp"
+#include "ui/docks/editor4pane.hpp"
 
 #include "editor/blockdefs.hpp"
-#include "editor/tools.hpp"
 #include "editor/editorstate.hpp"
+#include "editor/tools.hpp"
 #include "world/chunk.hpp"
-#include "world/world.hpp"
 #include "world/loading/worldformat.hpp"
+#include "world/world.hpp"
 
-MainWindow::MainWindow( EditorState *editorState, QWidget *parent ) : QMainWindow( parent ),
-	m_world( editorState, this )
+MainWindow::MainWindow( EditorState *editorState, QWidget *parent )
+	: QMainWindow( parent ), m_world( editorState, this )
 {
 	this->setWindowTitle( tr( "VoxelThingEditorYeah" ) );
 	this->setMinimumSize( 800, 600 );
 
-	m_editorState = editorState;
-	m_editorState->blockDefs = LoadBlockDefs( ":/example/palette_internal.toml");
-	m_editorState->world = &m_world;
+	m_editorState			 = editorState;
+	m_editorState->blockDefs = LoadBlockDefs( ":/example/palette_internal.toml" );
+	m_editorState->world	 = &m_world;
 
 	// Worlds always have the 0,0,0 chunk, it cannot be removed
 	m_world.createChunk( 0, 0, 0 );
@@ -60,7 +60,7 @@ MainWindow::MainWindow( EditorState *editorState, QWidget *parent ) : QMainWindo
 	wrenchAction->setActionGroup( toolGroup );
 	this->m_tools.push_back( wrenchTool );
 
-	CTool *simulateTool	  = new CSimulateTool( editorState, this );
+	CTool *simulateTool		= new CSimulateTool( editorState, this );
 	QAction *simulateAction = toolsBar->addAction( QIcon( ":/img/tool_simulate.png" ), simulateTool->getName() );
 	simulateAction->setCheckable( true );
 	simulateAction->setActionGroup( toolGroup );
@@ -134,9 +134,7 @@ MainWindow::MainWindow( EditorState *editorState, QWidget *parent ) : QMainWindo
 	singleChunkAction->setChecked( false );
 }
 
-MainWindow::~MainWindow()
-{
-}
+MainWindow::~MainWindow() {}
 
 void MainWindow::onChunkSelected( int index )
 {
@@ -192,7 +190,7 @@ void MainWindow::openFile()
 		// TODO: multiple format support
 		VoxelFormatYeah *format = new VoxelFormatYeah();
 		format->Load( &m_world, path );
-		delete format;		
+		delete format;
 	}
 }
 
@@ -226,11 +224,11 @@ void MainWindow::showBlocks()
 {
 	// Show the block list dialog
 	BlockList *dialog = new BlockList( m_editorState, this );
-	
+
 	if ( dialog->exec() == QDialog::Accepted )
 	{
 		m_editorState->setChosenBlockType( dialog->getSelectedBlock() );
 
 		qDebug() << "Chosen block: " << m_editorState->chosenBlockType;
-	}		
+	}
 }

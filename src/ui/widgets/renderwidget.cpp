@@ -4,17 +4,17 @@
 
 #include <QOpenGLFunctions_3_3_Core>
 
-#include "editor/tools.hpp"
 #include "editor/editorstate.hpp"
+#include "editor/tools.hpp"
 #include "world/chunk.hpp"
 #include "world/raycast.hpp"
 #include "world/world.hpp"
 
+#include "world/vector.hpp"
 #include <QDebug>
 #include <QKeyEvent>
 #include <QMatrix4x4>
 #include <QMenu>
-#include "world/vector.hpp"
 
 #include <QSettings>
 
@@ -35,7 +35,7 @@ RenderWidget::RenderWidget( EditorState *editorState, QWidget *parent ) : QGLWid
 
 	m_captureMouse = false;
 
-	m_raycast	  = new CRaycast( this );
+	m_raycast = new CRaycast( this );
 
 	m_zoom	 = 12.0f;
 	offset_x = -8.0f;
@@ -124,16 +124,17 @@ void RenderWidget::paintGL()
 
 		m_texture->release();
 	}
-	else if ( m_editorState->world != nullptr && m_displayMode >= DispMode::DISP_GRID_XY && m_displayMode <= DispMode::DISP_GRID_ZY )
+	else if ( m_editorState->world != nullptr && m_displayMode >= DispMode::DISP_GRID_XY &&
+			  m_displayMode <= DispMode::DISP_GRID_ZY )
 	{
 		// orthographic camera
 		glMatrixMode( GL_PROJECTION );
 		glLoadIdentity();
 
 		// setup zoomed viewport dimensions that also care about the aspect ratio
-		float w = (float)width();
-		float h = (float)height();
-		float aspect = w / h;
+		float w			 = (float)width();
+		float h			 = (float)height();
+		float aspect	 = w / h;
 		float viewport_w = m_zoom;
 		float viewport_h = m_zoom;
 		if ( aspect > 1.0f )
@@ -185,14 +186,14 @@ void RenderWidget::paintGL()
 
 		// the grid is rendered snapped to world coordinates
 		// but it follows the camera
-		float grid_spacing = 1.0f;
+		float grid_spacing	= 1.0f;
 		float grid_offset_x = -offset_x - ( viewport_w / 2.0f );
 		float grid_offset_y = -offset_y - ( viewport_h / 2.0f );
 
 		float grid_begin_x = grid_offset_x - ( grid_offset_x - (int)grid_offset_x ) / grid_spacing * grid_spacing;
 		float grid_begin_y = grid_offset_y - ( grid_offset_y - (int)grid_offset_y ) / grid_spacing * grid_spacing;
-		float grid_end_x = grid_begin_x + (int)( viewport_w / grid_spacing ) * grid_spacing;
-		float grid_end_y = grid_begin_y + (int)( viewport_h / grid_spacing ) * grid_spacing;
+		float grid_end_x   = grid_begin_x + (int)( viewport_w / grid_spacing ) * grid_spacing;
+		float grid_end_y   = grid_begin_y + (int)( viewport_h / grid_spacing ) * grid_spacing;
 
 		// Add some extra padding to the grid, so there's no clipping at the edges of the viewport
 		grid_begin_x -= grid_spacing * 2.0f;
@@ -200,16 +201,15 @@ void RenderWidget::paintGL()
 		grid_end_x += grid_spacing * 2.0f;
 		grid_end_y += grid_spacing * 2.0f;
 
-
 		// XY plane
 		if ( m_displayMode == DispMode::DISP_GRID_XY )
 		{
-			for (float x = grid_begin_x; x <= grid_end_x; x += grid_spacing)
+			for ( float x = grid_begin_x; x <= grid_end_x; x += grid_spacing )
 			{
 				glVertex3f( x, grid_begin_y, 0.0f );
 				glVertex3f( x, grid_end_y, 0.0f );
 			}
-			for (float y = grid_begin_y; y <= grid_end_y; y += grid_spacing)
+			for ( float y = grid_begin_y; y <= grid_end_y; y += grid_spacing )
 			{
 				glVertex3f( grid_begin_x, y, 0.0f );
 				glVertex3f( grid_end_x, y, 0.0f );
@@ -218,12 +218,12 @@ void RenderWidget::paintGL()
 		// XZ plane
 		else if ( m_displayMode == DispMode::DISP_GRID_XZ )
 		{
-			for (float x = grid_begin_x; x <= grid_end_x; x += grid_spacing)
+			for ( float x = grid_begin_x; x <= grid_end_x; x += grid_spacing )
 			{
 				glVertex3f( x, 0.0f, grid_begin_y );
 				glVertex3f( x, 0.0f, grid_end_y );
 			}
-			for (float y = grid_begin_y; y <= grid_end_y; y += grid_spacing)
+			for ( float y = grid_begin_y; y <= grid_end_y; y += grid_spacing )
 			{
 				glVertex3f( grid_begin_x, 0.0f, y );
 				glVertex3f( grid_end_x, 0.0f, y );
@@ -232,12 +232,12 @@ void RenderWidget::paintGL()
 		// ZY plane
 		else if ( m_displayMode == DispMode::DISP_GRID_ZY )
 		{
-			for (float x = grid_begin_x; x <= grid_end_x; x += grid_spacing)
+			for ( float x = grid_begin_x; x <= grid_end_x; x += grid_spacing )
 			{
 				glVertex3f( 0.0f, grid_begin_y, x );
 				glVertex3f( 0.0f, grid_end_y, x );
 			}
-			for (float y = grid_begin_y; y <= grid_end_y; y += grid_spacing)
+			for ( float y = grid_begin_y; y <= grid_end_y; y += grid_spacing )
 			{
 				glVertex3f( 0.0f, y, grid_begin_x );
 				glVertex3f( 0.0f, y, grid_end_x );
@@ -254,9 +254,9 @@ void RenderWidget::paintGL()
 		glLoadIdentity();
 
 		// setup zoomed viewport dimensions that also care about the aspect ratio
-		float w = (float)width();
-		float h = (float)height();
-		float aspect = w / h;
+		float w			 = (float)width();
+		float h			 = (float)height();
+		float aspect	 = w / h;
 		float viewport_w = m_zoom;
 		float viewport_h = m_zoom;
 		if ( aspect > 1.0f )
@@ -404,8 +404,10 @@ void RenderWidget::mouseMoveEvent( QMouseEvent *event )
 		m_camera_pitch += ( event->y() - m_lastMousePos.y() ) * 0.1f;
 		m_camera_pitch = qBound( -89.0f, m_camera_pitch, 89.0f );
 
-		m_camera_forward = Vector3f( 0.0f, 0.0f, 1.0f ).Rotate( Vector3f( m_camera_pitch, -m_camera_yaw, 0.0f ) ).Normal();
-		m_camera_right = Vector3f( 1.0f, 0.0f, 0.0f ).Rotate( Vector3f( m_camera_pitch, -m_camera_yaw, 0.0f ) ).Normal();
+		m_camera_forward =
+			Vector3f( 0.0f, 0.0f, 1.0f ).Rotate( Vector3f( m_camera_pitch, -m_camera_yaw, 0.0f ) ).Normal();
+		m_camera_right =
+			Vector3f( 1.0f, 0.0f, 0.0f ).Rotate( Vector3f( m_camera_pitch, -m_camera_yaw, 0.0f ) ).Normal();
 
 		m_camera_right = m_camera_forward.Cross( Vector3f( 0.0f, 1.0f, 0.0f ) );
 
@@ -443,17 +445,17 @@ void RenderWidget::mouseMoveEvent( QMouseEvent *event )
 
 	GLdouble x, y, z;
 	gluUnProject( event->x(), height() - event->y(), 0.0f, m_modelview, m_projection, m_viewport, &x, &y, &z );
-	
+
 	Vector3f ray_direction;
-	if (m_displayMode == DispMode::DISP_3D)
+	if ( m_displayMode == DispMode::DISP_3D )
 		ray_direction = Vector3f( x, y, z ) - m_camera;
-	else if (m_displayMode == DispMode::DISP_GRID_XY)
+	else if ( m_displayMode == DispMode::DISP_GRID_XY )
 		ray_direction = Vector3f( 0, 0, -1 );
-	else if (m_displayMode == DispMode::DISP_GRID_XZ)
+	else if ( m_displayMode == DispMode::DISP_GRID_XZ )
 		ray_direction = Vector3f( 0, -1, 0 );
-	else if (m_displayMode == DispMode::DISP_GRID_ZY)
+	else if ( m_displayMode == DispMode::DISP_GRID_ZY )
 		ray_direction = Vector3f( -1, 0, 0 );
-	else if (m_displayMode == DispMode::DISP_ISOMETRIC)
+	else if ( m_displayMode == DispMode::DISP_ISOMETRIC )
 		ray_direction = Vector3f( x, y, z ) - Vector3f( m_modelview[12], m_modelview[13], m_modelview[14] );
 	ray_direction = ray_direction.Normal();
 
@@ -492,15 +494,15 @@ void RenderWidget::mousePressEvent( QMouseEvent *event )
 
 			// we then need to figure out the direction of the ray
 			Vector3f ray_direction;
-			if (m_displayMode == DispMode::DISP_3D)
+			if ( m_displayMode == DispMode::DISP_3D )
 				ray_direction = Vector3f( x, y, z ) - m_camera;
-			else if (m_displayMode == DispMode::DISP_GRID_XY)
+			else if ( m_displayMode == DispMode::DISP_GRID_XY )
 				ray_direction = Vector3f( 0, 0, -1 );
-			else if (m_displayMode == DispMode::DISP_GRID_XZ)
+			else if ( m_displayMode == DispMode::DISP_GRID_XZ )
 				ray_direction = Vector3f( 0, -1, 0 );
-			else if (m_displayMode == DispMode::DISP_GRID_ZY)
+			else if ( m_displayMode == DispMode::DISP_GRID_ZY )
 				ray_direction = Vector3f( -1, 0, 0 );
-			else if (m_displayMode == DispMode::DISP_ISOMETRIC)
+			else if ( m_displayMode == DispMode::DISP_ISOMETRIC )
 				ray_direction = Vector3f( x, y, z ) - Vector3f( m_modelview[12], m_modelview[13], m_modelview[14] );
 			ray_direction = ray_direction.Normal();
 
@@ -521,7 +523,7 @@ void RenderWidget::setDispMode( DispMode mode )
 
 void RenderWidget::wheelEvent( QWheelEvent *event )
 {
-	if (m_displayMode == DispMode::DISP_3D)
+	if ( m_displayMode == DispMode::DISP_3D )
 	{
 		if ( m_editorState->tool != nullptr )
 			m_editorState->tool->wheelEvent( event, m_camera, m_camera_forward, this );

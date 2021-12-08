@@ -7,10 +7,8 @@
 #define RAD2DEG ( 180.0 / M_PI )
 
 // Forward declarations
-template <typename T>
-class Vector3;
-template <typename T>
-class Vector4;
+template <typename T> class Vector3;
+template <typename T> class Vector4;
 
 // QT:
 #include <QDebug>
@@ -159,30 +157,30 @@ template <typename T> class Vector3
 
 	T Distance( const Vector3<T> &v ) const { return ( *this - v ).Magnitude(); }
 
-    // Math hurts my head
-    // Copied the project/unproject from the glu library (roughly)
-    // Substituted a Matrix4x4 with a Vector4<Vector4<T>>
+	// Math hurts my head
+	// Copied the project/unproject from the glu library (roughly)
+	// Substituted a Matrix4x4 with a Vector4<Vector4<T>>
 
-    // Takes a point in screen space and returns a point in world space
-    Vector3<T> UnProject( const Vector3<T> &v, const Vector4<Vector4<T>> &m, const Vector4<T> &viewport ) const
-    {
-        Vector4<T> v2 = Vector4<T>( v.x, v.y, v.z, 1.0f );
-        v2 = m * v2;
-        v2 /= v2.w;
-        v2 = v2 * viewport;
-        return Vector3<T>( v2.x, v2.y, v2.z );
-    }
+	// Takes a point in screen space and returns a point in world space
+	Vector3<T> UnProject( const Vector3<T> &v, const Vector4<Vector4<T>> &m, const Vector4<T> &viewport ) const
+	{
+		Vector4<T> v2 = Vector4<T>( v.x, v.y, v.z, 1.0f );
+		v2			  = m * v2;
+		v2 /= v2.w;
+		v2 = v2 * viewport;
+		return Vector3<T>( v2.x, v2.y, v2.z );
+	}
 
-    // Takes a point in world space and returns a point in screen space
-    // TODO: is this correct?
-    Vector3<T> Project( const Vector3<T> &v, const Vector4<Vector4<T>> &m, const Vector4<T> &viewport ) const
-    {
-        Vector4<T> v2 = Vector4<T>( v.x, v.y, v.z, 1.0f );
-        v2 = m * v2;
-        v2 /= v2.w;
-        v2 = v2 * viewport;
-        return Vector3<T>( v2.x, v2.y, v2.z );
-    }
+	// Takes a point in world space and returns a point in screen space
+	// TODO: is this correct?
+	Vector3<T> Project( const Vector3<T> &v, const Vector4<Vector4<T>> &m, const Vector4<T> &viewport ) const
+	{
+		Vector4<T> v2 = Vector4<T>( v.x, v.y, v.z, 1.0f );
+		v2			  = m * v2;
+		v2 /= v2.w;
+		v2 = v2 * viewport;
+		return Vector3<T>( v2.x, v2.y, v2.z );
+	}
 
 	// Comparison
 
@@ -193,17 +191,16 @@ template <typename T> class Vector3
 	bool operator>=( const Vector3<T> &v ) const { return x >= v.x && y >= v.y && z >= v.z; }
 	bool operator<=( const Vector3<T> &v ) const { return x <= v.x && y <= v.y && z <= v.z; }
 
-    // Conversion to arbitrary types
-    template<typename U>
-    operator Vector3<U>() const { return Vector3<U>( (U)x, (U)y, (U)z ); }
+	// Conversion to arbitrary types
+	template <typename U> operator Vector3<U>() const { return Vector3<U>( (U)x, (U)y, (U)z ); }
 
-    // QT:
-    // purely for qDebug()
-    friend QDebug operator<<( QDebug dbg, const Vector3<T> &v )
-    {
-        dbg.nospace() << "Vector3<" << typeid( T ).name() << ">(" << v.x << ", " << v.y << ", " << v.z << ")";
-        return dbg.space();
-    }
+	// QT:
+	// purely for qDebug()
+	friend QDebug operator<<( QDebug dbg, const Vector3<T> &v )
+	{
+		dbg.nospace() << "Vector3<" << typeid( T ).name() << ">(" << v.x << ", " << v.y << ", " << v.z << ")";
+		return dbg.space();
+	}
 };
 
 template <typename T> Vector3<T> inline RandomVector3( T min, T max )
@@ -328,20 +325,20 @@ template <typename T> class Vector4
 	bool operator>=( const Vector4<T> &v ) const { return x >= v.x && y >= v.y && z >= v.z && w >= v.w; }
 	bool operator<=( const Vector4<T> &v ) const { return x <= v.x && y <= v.y && z <= v.z && w <= v.w; }
 
-    // Conversion to Vector3
-    operator Vector3<T>() const { return Vector3<T>( x, y, z ); }
+	// Conversion to Vector3
+	operator Vector3<T>() const { return Vector3<T>( x, y, z ); }
 
-    // Arbitrary conversions
-    template <typename U> operator Vector3<U>() const { return Vector3<U>( x, y, z ); }
-    template <typename U> operator Vector4<U>() const { return Vector4<U>( x, y, z, w ); }
+	// Arbitrary conversions
+	template <typename U> operator Vector3<U>() const { return Vector3<U>( x, y, z ); }
+	template <typename U> operator Vector4<U>() const { return Vector4<U>( x, y, z, w ); }
 
-    // QT:
-    // purely for qDebug()
-    friend QDebug operator<<( QDebug dbg, const Vector4<T> &v )
-    {
-        dbg.nospace() << "Vector4(" << v.x << ", " << v.y << ", " << v.z << ", " << v.w << ")";
-        return dbg.space();
-    }
+	// QT:
+	// purely for qDebug()
+	friend QDebug operator<<( QDebug dbg, const Vector4<T> &v )
+	{
+		dbg.nospace() << "Vector4(" << v.x << ", " << v.y << ", " << v.z << ", " << v.w << ")";
+		return dbg.space();
+	}
 };
 
 template <typename T> Vector4<T> inline RandomVector4( T min, T max )

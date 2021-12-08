@@ -5,7 +5,8 @@
 
 #include "world/vector.hpp"
 
-namespace render {
-    Vector4f getUV(const BlockDef& def);
-    Vector4f getUV(BlockDefs *defs, uint16_t id);
-}
+namespace render
+{
+	Vector4f getUV( const BlockDef &def );
+	Vector4f getUV( BlockDefs *defs, uint16_t id );
+} // namespace render

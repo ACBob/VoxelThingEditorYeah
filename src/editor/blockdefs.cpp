@@ -61,7 +61,7 @@ BlockDefs *LoadBlockDefs( const QString &path )
 		// Get the meta type
 		BlockMetaType metaType = META_NONE;
 		QString meta;
-		if ( blockdef->get("metaUse") )
+		if ( blockdef->get( "metaUse" ) )
 			meta = QString::fromStdString( blockdef->get( "metaUse" )->value_or<std::string>( "None" ) );
 		else
 			meta = "None";
@@ -111,29 +111,29 @@ BlockDefs *LoadBlockDefs( const QString &path )
 		def.metaType = metaType;
 
 		// min/max
-		if ( blockdef->get("metaMin") )
+		if ( blockdef->get( "metaMin" ) )
 			def.metaMin = blockdef->get( "metaMin" )->value_or<int>( 0 );
 		else
 			def.metaMin = 0;
-		if ( blockdef->get("metaMax") )
+		if ( blockdef->get( "metaMax" ) )
 			def.metaMax = blockdef->get( "metaMax" )->value_or<int>( UINT16_MAX );
 		else
 			def.metaMax = UINT16_MAX;
 
 		// isLiquid
-		if ( blockdef->get("isLiquid") )
+		if ( blockdef->get( "isLiquid" ) )
 			def.isLiquid = blockdef->get( "isLiquid" )->value_or<bool>( false );
 		else
 			def.isLiquid = false;
 
 		// liquidSource
-		if ( blockdef->get("liquidSource") )
+		if ( blockdef->get( "liquidSource" ) )
 			def.liquidSource = blockdef->get( "liquidSource" )->value_or<uint16_t>( 0 );
 		else
 			def.liquidSource = 0;
 
 		// liquidFlow
-		if ( blockdef->get("liquidFlow") )
+		if ( blockdef->get( "liquidFlow" ) )
 			def.liquidFlow = blockdef->get( "liquidFlow" )->value_or<uint16_t>( 0 );
 		else
 			def.liquidFlow = 0;

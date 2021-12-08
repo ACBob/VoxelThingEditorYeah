@@ -8,13 +8,14 @@
 class CWorld;
 class QFile;
 
-class WorldFormat {
-	public:
-    // Loads into the given world
-    // Is also given the file data
-    virtual bool Load(CWorld *world, QString filePath) = 0;
-    // The saved file should use the filename!
-    virtual bool Save(CWorld *world, QString filename) = 0;
+class WorldFormat
+{
+  public:
+	// Loads into the given world
+	// Is also given the file data
+	virtual bool Load( CWorld *world, QString filePath ) = 0;
+	// The saved file should use the filename!
+	virtual bool Save( CWorld *world, QString filename ) = 0;
 };
 
 // MEEGREEF VERSION 1
@@ -35,14 +36,15 @@ class WorldFormat {
 		 Block ID - 2 bytes
 		 Block Meta - 2 bytes
 		Chunk data may be vacant if the chunk is empty, instead marked by "EMPTY"
-	
+
 	Time of day - 2 bytes
 */
 
-class Meegreef1Format final : public WorldFormat {
-	public:
-    bool Load(CWorld *world, QString filePath);
-    bool Save(CWorld *world, QString filename);
+class Meegreef1Format final : public WorldFormat
+{
+  public:
+	bool Load( CWorld *world, QString filePath );
+	bool Save( CWorld *world, QString filename );
 };
 
 // VoxelThingYeah Generic Format
@@ -50,8 +52,9 @@ class Meegreef1Format final : public WorldFormat {
 #define VTYG_CURRENT_VERSION 1
 #define VTYG_OLDEST_SUPPORTED_VERSION 1
 
-class VoxelFormatYeah final : public WorldFormat {
-	public:
-	bool Load(CWorld *world, QString filePath);
-	bool Save(CWorld *world, QString filename);
+class VoxelFormatYeah final : public WorldFormat
+{
+  public:
+	bool Load( CWorld *world, QString filePath );
+	bool Save( CWorld *world, QString filename );
 };

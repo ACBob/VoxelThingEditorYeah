@@ -35,7 +35,7 @@ void ColorPicker::setColorFromVTY( uint16_t vty )
 	uint8_t r = ( vty >> 12 ) & 0xF;
 	uint8_t g = ( vty >> 8 ) & 0xF;
 	uint8_t b = ( vty >> 4 ) & 0xF;
-	uint8_t a = m_allowAlpha ? ( vty ) & 0xF : 0xF;
+	uint8_t a = m_allowAlpha ? (vty)&0xF : 0xF;
 
 	// qDebug() << "Color:" << r << g << b << a;
 
@@ -48,11 +48,11 @@ void ColorPicker::setColorFromVTY( uint16_t vty )
 	// qDebug() << "Color:" << r << g << b << a;
 
 	// now pack
-	uint32_t qtColor = (a << 24) | ( r << 16 ) | ( g << 8 ) | b;
+	uint32_t qtColor = ( a << 24 ) | ( r << 16 ) | ( g << 8 ) | b;
 
 	// qDebug() << "Color:" << qtColor << QString("%1").arg(qtColor, 0, 16);
 
-	m_color = QColor::fromRgba(qtColor);
+	m_color = QColor::fromRgba( qtColor );
 }
 
 QColor ColorPicker::getColor() { return m_color; }
@@ -65,25 +65,25 @@ uint16_t ColorPicker::getVTYColor()
 	// We lose some precision, but also we'd have too many bits if meta was 32bit.
 	QRgb color = m_color.rgba();
 
-	uint8_t a = m_allowAlpha ? (color & 0xFF000000) >> 24 : 0xFF;
-	uint8_t r = (color & 0x00FF0000) >> 16;
-	uint8_t g = (color & 0x0000FF00) >> 8;
-	uint8_t b = (color & 0x000000FF);
+	uint8_t a = m_allowAlpha ? ( color & 0xFF000000 ) >> 24 : 0xFF;
+	uint8_t r = ( color & 0x00FF0000 ) >> 16;
+	uint8_t g = ( color & 0x0000FF00 ) >> 8;
+	uint8_t b = ( color & 0x000000FF );
 
 	// qDebug() << "Color:" << a << r << g << b;
 
 	// Smash it down to half the bits
 	// I could technically do this in the first step but this is more readable
 	// We use the most significant bits
-	a = (a & 0xF0) >> 4;
-	r = (r & 0xF0) >> 4;
-	g = (g & 0xF0) >> 4;
-	b = (b & 0xF0) >> 4;
+	a = ( a & 0xF0 ) >> 4;
+	r = ( r & 0xF0 ) >> 4;
+	g = ( g & 0xF0 ) >> 4;
+	b = ( b & 0xF0 ) >> 4;
 
 	// qDebug() << "Color:" << a << r << g << b;
 
 	// merge it into one, final colour
-	uint16_t vtyColor = (r << 12) | (g << 8) | (b << 4) | a;
+	uint16_t vtyColor = ( r << 12 ) | ( g << 8 ) | ( b << 4 ) | a;
 
 	// qDebug() << "Color:" << vtyColor << QString("%1").arg(vtyColor, 0, 16);
 
