@@ -26,6 +26,9 @@ struct BlockDef
 	QPoint texturePos;
 	uint16_t metaMin;
 	uint16_t metaMax;
+	bool isLiquid;
+	uint16_t liquidSource;
+	uint16_t liquidFlow;
 };
 
 using BlockDefs = QMap<int, BlockDef>;

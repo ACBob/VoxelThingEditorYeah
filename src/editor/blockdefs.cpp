@@ -120,6 +120,24 @@ BlockDefs *LoadBlockDefs( const QString &path )
 		else
 			def.metaMax = UINT16_MAX;
 
+		// isLiquid
+		if ( blockdef->get("isLiquid") )
+			def.isLiquid = blockdef->get( "isLiquid" )->value_or<bool>( false );
+		else
+			def.isLiquid = false;
+
+		// liquidSource
+		if ( blockdef->get("liquidSource") )
+			def.liquidSource = blockdef->get( "liquidSource" )->value_or<uint16_t>( 0 );
+		else
+			def.liquidSource = 0;
+
+		// liquidFlow
+		if ( blockdef->get("liquidFlow") )
+			def.liquidFlow = blockdef->get( "liquidFlow" )->value_or<uint16_t>( 0 );
+		else
+			def.liquidFlow = 0;
+
 		defs->insert( id, def );
 	}
 

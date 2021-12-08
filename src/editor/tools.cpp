@@ -257,3 +257,24 @@ void CWrenchTool::draw( RenderWidget *view )
 		glEnd();
 	}
 }
+
+CSimulateTool::CSimulateTool( EditorState *editorState, QObject *parent ) : CTool( editorState, parent ) {}
+CSimulateTool::~CSimulateTool() {}
+
+void CSimulateTool::mousePressEvent( QMouseEvent *event, Vector3f pos, Vector3f dir, RenderWidget *view )
+{
+	qDebug() << "Simulate tool pressed @" << pos;
+
+	// cast a ray to find the block we're pointing at
+	CRaycast caster;
+	std::pair<Vector3f, Vector3f> cast = caster.cast( m_editorState->world, pos, dir, TOOL_CAST_DISTANCE );
+
+	// find the chunk the block is in
+	CChunk *chunk = m_editorState->world->getChunkWorldPos( cast.first );
+
+	if ( chunk != nullptr )
+	{
+		chunk->simulateLiquid();
+		view->update();
+	}
+}

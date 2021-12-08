@@ -75,6 +75,8 @@ class CChunk : public QObject
 	Vector3i getPosition() { return m_pos; }
 	Vector3i getSize() { return m_size; }
 
+	void simulateLiquid();
+
 	CWorld *m_world;
 	EditorState *m_editorState;
 

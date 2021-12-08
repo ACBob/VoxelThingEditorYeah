@@ -7,6 +7,9 @@
 # metaMax = Maximum value for meta. ( Only usable for Level )
 # metaMin = Minimum value for meta. ( Only usable for Level )
 # texturePos = [x, y]
+# isLiquid = True/False assumed false, if true, will be simulated as a liquid.
+# liquidSource = id of liquid source block.
+# liquidFlow = id of liquid flow block.
 
 # This is the internal file. It contains basic testing data.
 # Ideally each game provides their own file!
@@ -67,6 +70,26 @@ texturePos = [9, 0]
 name = "OtherBlock_Test"
 metaUse = "OtherBlock"
 texturePos = [10, 0]
+
+[11]
+name = "Water"
+metaUse = "Level"
+metaMin = 0
+metaMax = 8
+texturePos = [0, 4]
+isLiquid = true
+liquidSource = 11
+liquidFlow = 12
+    
+[12]
+name = "Water Flow"
+metaUse = "Level"
+metaMin = 0
+metaMax = 7
+texturePos = [1, 4]
+isLiquid = true
+liquidSource = 11
+liquidFlow = 12
 
 
 # Entity Palette! (TO DO)

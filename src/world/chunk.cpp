@@ -258,3 +258,77 @@ void CChunk::rebuildModel()
 }
 
 void CChunk::render( QGLContext *context ) { m_model->render( context ); }
+
+#define setIfAir( x, y, z, id, meta ) \
+	if ( getID( x, y, z ) == 0 ) \
+	{ \
+		setID( x, y, z, id ); \
+		setMeta( x, y, z, meta ); \
+	}
+
+void CChunk::simulateLiquid() {
+
+	QList<Vector3i> liquidPositions;
+
+	for ( int z = 0; z < m_size.z; z++ )
+	{
+		for ( int y = 0; y < m_size.y; y++ )
+		{
+			for ( int x = 0; x < m_size.x; x++ )
+			{
+				uint16_t id = getID( x, y, z );
+				if ( id == 0 )
+				{
+					continue;
+				}
+
+				// if it is marked as liquid by the block definition, add it to the list
+				if ( m_editorState->blockDefs->value( id ).isLiquid )
+				{
+					if (m_editorState->blockDefs->value( id ).liquidSource == 0)
+						continue;
+					liquidPositions.append( Vector3i( x, y, z ) );
+				}
+			}
+		}
+	}
+
+	// simulate the liquid
+	for ( int i = 0; i < liquidPositions.size(); i++ )
+	{
+		Vector3i pos = liquidPositions[i];
+		uint16_t id = getID( pos.x, pos.y, pos.z );
+
+		// get the liquid level from the metadata
+		uint16_t level = getMeta( pos.x, pos.y, pos.z );
+
+		// simulate the liquid
+
+		// test if the block is on the floor
+		bool onFloor = ( getID( pos.x, pos.y - 1, pos.z ) != 0 && getID( pos.x, pos.y - 1, pos.z ) != id );
+
+		// if the level is 0, continue
+		if ( level == 0 && onFloor )
+		{
+			continue;
+		}
+
+		uint16_t flowBlock = m_editorState->blockDefs->value( id ).liquidFlow;
+
+		if ( onFloor && level > 0 )
+		{
+			// Flow in all directions
+			setIfAir( pos.x + 1, pos.y, pos.z, flowBlock, level - 1 );
+			setIfAir( pos.x - 1, pos.y, pos.z, flowBlock, level - 1 );
+			setIfAir( pos.x, pos.y, pos.z + 1, flowBlock, level - 1 );
+			setIfAir( pos.x, pos.y, pos.z - 1, flowBlock, level - 1 );
+
+			continue;
+		}
+
+		// if the block is not on the floor, flow down
+		setIfAir( pos.x, pos.y - 1, pos.z, flowBlock, (uint16_t)qBound(0, level + 1, (int)m_editorState->blockDefs->value( id ).metaMax) );
+	}
+
+	rebuildModel();
+}

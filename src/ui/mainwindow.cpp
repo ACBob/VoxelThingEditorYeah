@@ -60,6 +60,12 @@ MainWindow::MainWindow( EditorState *editorState, QWidget *parent ) : QMainWindo
 	wrenchAction->setActionGroup( toolGroup );
 	this->m_tools.push_back( wrenchTool );
 
+	CTool *simulateTool	  = new CSimulateTool( editorState, this );
+	QAction *simulateAction = toolsBar->addAction( QIcon( ":/img/tool_simulate.png" ), simulateTool->getName() );
+	simulateAction->setCheckable( true );
+	simulateAction->setActionGroup( toolGroup );
+	this->m_tools.push_back( simulateTool );
+
 	connect( toolGroup, SIGNAL( triggered( QAction * ) ), this, SLOT( toolChanged( QAction * ) ) );
 
 	// To the right side of the screen we have a list of chunks

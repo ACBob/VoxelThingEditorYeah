@@ -95,3 +95,25 @@ class CWrenchTool final : public CTool
 	Vector3f m_selectedBlockPos;
 	Vector3f m_selectedBlockNormal;
 };
+
+// Simulates a chunk for any physics that may exist (i.e water, falling blocks, etc).
+class CSimulateTool final : public CTool
+{
+	Q_OBJECT
+
+  public:
+	CSimulateTool( EditorState *editorState, QObject *parent = 0 );
+	~CSimulateTool();
+
+	QString getName() { return "Simulate"; };
+
+	void mousePressEvent( QMouseEvent *event, Vector3f pos, Vector3f dir, RenderWidget *view );
+
+
+	void mouseMoveEvent( QMouseEvent *event, Vector3f pos, Vector3f dir, RenderWidget *view ) {};
+	void mouseReleaseEvent( QMouseEvent *event, Vector3f pos, Vector3f dir, RenderWidget *view ) {};
+	void wheelEvent( QWheelEvent *event, Vector3f pos, Vector3f dir, RenderWidget *view ) {};
+	void keyPressEvent( QKeyEvent *event, Vector3f pos, Vector3f dir, RenderWidget *view ) {};
+	void keyReleaseEvent( QKeyEvent *event, Vector3f pos, Vector3f dir, RenderWidget *view ) {};
+	void draw( RenderWidget *view ) {};
+};
