@@ -10,6 +10,7 @@
 
 #include <QMessageBox>
 #include <QFileDialog>
+#include <QUndoStack>
 
 #include "ui/docks/editor4pane.hpp"
 #include "ui/docks/currentblock.hpp"
@@ -132,6 +133,11 @@ MainWindow::MainWindow( EditorState *editorState, QWidget *parent ) : QMainWindo
 	QAction *singleChunkAction = actionsBar->addAction( QIcon( ":/img/icon_chunkview.png" ), tr( "Single Chunk" ) );
 	singleChunkAction->setCheckable( true );
 	singleChunkAction->setChecked( false );
+
+	// Undo/redo actions
+	actionsBar->addSeparator();
+	actionsBar->addAction( m_editorState->undoStack->createUndoAction( actionsBar, tr( "Undo" ) ) );
+	actionsBar->addAction( m_editorState->undoStack->createRedoAction( actionsBar, tr( "Redo" ) ) );
 }
 
 MainWindow::~MainWindow()

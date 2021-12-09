@@ -56,6 +56,9 @@ class CWorld : public QObject {
         void get(int x, int y, int z, uint16_t &id, uint16_t &meta);
         void set(int x, int y, int z, uint16_t id, uint16_t meta);
 
+        uint32_t get( int x, int y, int z );
+        void set( int x, int y, int z, uint32_t data );
+
         void setChunkSize(int x, int y, int z);
         void getChunkSize(int &x, int &y, int &z);
 

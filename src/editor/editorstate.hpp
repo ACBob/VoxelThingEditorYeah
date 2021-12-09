@@ -8,6 +8,7 @@
 
 class CWorld;
 class CTool;
+class QUndoStack;
 
 // TODO: any way to forward-declare a using statement?
 #include "blockdefs.hpp"
@@ -39,6 +40,9 @@ class EditorState : public QObject
 
     // The absolute path of the block texture.
     QString blockTexturePath;
+
+    // The undo stack
+    QUndoStack *undoStack;
 
     // Functions to set
     // These ideally should be what you call to set stuff, where-as you just access the variables directly.

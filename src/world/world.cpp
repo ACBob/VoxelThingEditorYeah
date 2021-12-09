@@ -213,6 +213,42 @@ void CWorld::set( int x, int y, int z, uint16_t id, uint16_t meta ) {
     c->set(x, y, z, id, meta);
 }
 
+uint32_t CWorld::get( int x, int y, int z ) {
+    // get in chunk coordinates
+    int cx = x;
+    int cy = y;
+    int cz = z;
+    worldPosToChunkPos(cx, cy, cz);
+
+    x -= cx * m_chunkSize.x;
+    y -= cy * m_chunkSize.y;
+    z -= cz * m_chunkSize.z;
+
+    CChunk *c = getChunk(cx, cy, cz);
+    if (c == nullptr)
+        return 0;
+
+    return c->get(x, y, z);
+}
+
+void CWorld::set( int x, int y, int z, uint32_t data ) {
+    // get in chunk coordinates
+    int cx = x;
+    int cy = y;
+    int cz = z;
+    worldPosToChunkPos(cx, cy, cz);
+
+    x -= cx * m_chunkSize.x;
+    y -= cy * m_chunkSize.y;
+    z -= cz * m_chunkSize.z;
+
+    CChunk *c = getChunk(cx, cy, cz);
+    if (c == nullptr)
+        return;
+
+    c->set(x, y, z, data);
+}
+
 void CWorld::setChunkSize(int x, int y, int z) {
     m_chunkSize.x = x;
     m_chunkSize.y = y;

@@ -15,11 +15,13 @@
 #include <QDialogButtonBox>
 #include <QFormLayout>
 #include <QLineEdit>
+#include <QUndoStack>
 
 #include <GL/glu.h>
 #include <QOpenGLFunctions>
 
 #include "editorstate.hpp"
+#include "undo.hpp"
 
 // How far the tools will cast rays
 #define TOOL_CAST_DISTANCE 150.0f
@@ -50,20 +52,30 @@ void CHandTool::mousePressEvent( QMouseEvent *event, Vector3f pos, Vector3f dir,
 		if ( event->button() == Qt::LeftButton )
 		{
 			Vector3f p = m_selectedBlockPos;
+			uint32_t oldVoxel = m_editorState->world->get( p.x, p.y, p.z );
 			m_editorState->world->setID( p.x, p.y, p.z, 0 );
 			m_editorState->world->setMeta( p.x, p.y, p.z, 0 );
 			
 			// find chunk
 			CChunk *c = m_editorState->world->getChunkWorldPos( p );
 			c->rebuildModel();
+
+			// push the undo
+			UndoBlockEdit *undo = new UndoBlockEdit( m_editorState, p.x, p.y, p.z, oldVoxel, 0 );
+			m_editorState->undoStack->push( undo );
 		}
 		else if ( event->button() == Qt::RightButton )
 		{
 			Vector3f p = m_selectedBlockPos + m_selectedBlockNormal;
+			uint32_t oldVoxel = m_editorState->world->get( p.x, p.y, p.z );
 			m_editorState->world->setID( p.x, p.y, p.z, m_editorState->chosenBlockType );
 			m_editorState->world->setMeta( p.x, p.y, p.z, m_editorState->chosenBlockMeta );
 			CChunk *c = m_editorState->world->getChunkWorldPos( p );
 			c->rebuildModel();
+
+			// push the undo
+			UndoBlockEdit *undo = new UndoBlockEdit( m_editorState, p.x, p.y, p.z, oldVoxel, m_editorState->chosenBlockType );
+			m_editorState->undoStack->push( undo );
 		}
 		else if ( event->button() == Qt::MiddleButton )
 		{
@@ -274,7 +286,27 @@ void CSimulateTool::mousePressEvent( QMouseEvent *event, Vector3f pos, Vector3f 
 
 	if ( chunk != nullptr )
 	{
+		uint32_t *oldVoxels = new uint32_t[chunk->getSizeX() * chunk->getSizeY() * chunk->getSizeZ()];
+		uint32_t *newVoxels = new uint32_t[chunk->getSizeX() * chunk->getSizeY() * chunk->getSizeZ()];
+
+		// copy the old voxels
+		for ( int i = 0; i < chunk->getSizeX() * chunk->getSizeY() * chunk->getSizeZ(); i++ )
+		{
+			chunk->get(i, oldVoxels[i]);
+		}
+
 		chunk->simulateLiquid();
 		view->update();
+
+		// copy the new voxels
+		for ( int i = 0; i < chunk->getSizeX() * chunk->getSizeY() * chunk->getSizeZ(); i++ )
+		{
+			chunk->get(i, newVoxels[i]);
+		}
+
+		// from there the undo will delete the arrays when it doesn't need them anymore
+
+		UndoChunkEdit *undo = new UndoChunkEdit( m_editorState, chunk, oldVoxels, newVoxels );
+		m_editorState->undoStack->push( undo );
 	}
 }
