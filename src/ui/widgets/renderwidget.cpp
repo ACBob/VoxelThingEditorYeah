@@ -56,7 +56,7 @@ RenderWidget::RenderWidget( EditorState *editorState, QWidget *parent ) : QGLWid
 	memset( m_projection, 0, sizeof( m_projection ) );
 	memset( m_viewport, 0, sizeof( m_viewport ) );
 
-	setMinimumSize( 320, 240 );
+	// setMinimumSize( 320, 240 );
 }
 
 void RenderWidget::initializeGL()

@@ -6,6 +6,7 @@
 
 class RenderWidget; // forward declaration
 class EditorState;
+class QSplitter;
 
 class Editor4Pane : public QDockWidget
 {
@@ -14,6 +15,10 @@ class Editor4Pane : public QDockWidget
   public:
 	Editor4Pane( EditorState *editorState, QWidget *parent );
 
+	private slots:
+	void splitterLeftMoved( int pos, int index );
+	void splitterRightMoved( int pos, int index );
+
   private:
 	RenderWidget *m_topLeftView;
 	RenderWidget *m_bottomLeftView;
@@ -21,4 +26,7 @@ class Editor4Pane : public QDockWidget
 	RenderWidget *m_bottomRightView;
 
 	EditorState *m_editorState;
+
+	QSplitter *m_leftSplitter;
+	QSplitter *m_rightSplitter;
 };
