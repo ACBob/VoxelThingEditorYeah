@@ -103,13 +103,36 @@ MainWindow::MainWindow( EditorState *editorState, QWidget *parent ) : QMainWindo
 
 	// File menu
 	QMenu *fileMenu = menuBar->addMenu( tr( "&File" ) );
-	fileMenu->addAction( tr( "&New" ), this, SLOT( newFile() ), QKeySequence::New );
-	fileMenu->addAction( tr( "&Open" ), this, SLOT( openFile() ), QKeySequence::Open );
-	fileMenu->addAction( tr( "&Save" ), this, SLOT( saveFile() ), QKeySequence::Save );
+	QAction *newFileAction = fileMenu->addAction( tr( "&New" ), this, SLOT( newFile() ), QKeySequence::New );
+	newFileAction->setIcon( QIcon::fromTheme( "document-new" ) );
+
+	QAction *openFileAction = fileMenu->addAction( tr( "&Open" ), this, SLOT( openFile() ), QKeySequence::Open );
+	openFileAction->setIcon( QIcon::fromTheme( "document-open" ) );
+
+	QAction *saveFileAction = fileMenu->addAction( tr( "&Save" ), this, SLOT( saveFile() ), QKeySequence::Save );
+	saveFileAction->setIcon( QIcon::fromTheme( "document-save" ) );
+
+	QAction *saveAsFileAction = fileMenu->addAction( tr( "Save &As" ), this, SLOT( saveAsFile() ), QKeySequence::SaveAs );
+	saveAsFileAction->setIcon( QIcon::fromTheme( "document-save-as" ) );
 
 	// Edit menu
 	QMenu *editMenu = menuBar->addMenu( tr( "&Edit" ) );
-	editMenu->addAction( tr( "&Preferences" ), this, SLOT( editPreferences() ), QKeySequence::Preferences );
+
+	QAction *undoAction = m_editorState->undoStack->createUndoAction( this, tr( "Undo" ) );
+	undoAction->setIcon( QIcon::fromTheme( "edit-undo" ) );
+	undoAction->setShortcut( QKeySequence::Undo );
+	editMenu->addAction( undoAction );
+
+	QAction *redoAction = m_editorState->undoStack->createRedoAction( this, tr( "Redo" ) );
+	redoAction->setIcon( QIcon::fromTheme( "edit-redo" ) );
+	redoAction->setShortcut( QKeySequence::Redo );
+	editMenu->addAction( redoAction );
+
+	editMenu->addSeparator();
+
+	QAction *preferencesAction = editMenu->addAction( tr( "&Preferences" ), this, SLOT( editPreferences() ) );
+	preferencesAction->setIcon( QIcon::fromTheme( "preferences-system" ) );
+
 
 	// View menu
 	QMenu *viewMenu = menuBar->addMenu( tr( "&View" ) );
@@ -121,7 +144,8 @@ MainWindow::MainWindow( EditorState *editorState, QWidget *parent ) : QMainWindo
 
 	// Help menu
 	QMenu *helpMenu = menuBar->addMenu( tr( "&Help" ) );
-	helpMenu->addAction( tr( "&About" ), this, SLOT( showAbout() ) );
+	QAction *aboutAction = helpMenu->addAction( tr( "&About" ), this, SLOT( showAbout() ) );
+	aboutAction->setIcon( QIcon::fromTheme( "help-about" ) );
 
 	// The actions bar
 	// Holds various icons and buttons
@@ -142,8 +166,8 @@ MainWindow::MainWindow( EditorState *editorState, QWidget *parent ) : QMainWindo
 
 	// Undo/redo actions
 	actionsBar->addSeparator();
-	actionsBar->addAction( m_editorState->undoStack->createUndoAction( actionsBar, tr( "Undo" ) ) );
-	actionsBar->addAction( m_editorState->undoStack->createRedoAction( actionsBar, tr( "Redo" ) ) );
+	actionsBar->addAction( undoAction );
+	actionsBar->addAction( redoAction );
 }
 
 MainWindow::~MainWindow()
