@@ -219,6 +219,7 @@ void CWrenchTool::mousePressEvent( QMouseEvent *event, Vector3f pos, Vector3f di
 
 				if ( dlg->exec() == QDialog::Accepted )
 				{
+					uint32_t oldVoxel = m_editorState->world->get( m_selectedBlockPos.x, m_selectedBlockPos.y, m_selectedBlockPos.z );
 					id	 = dlg->getChosenId();
 					meta = dlg->getChosenMeta();
 
@@ -226,6 +227,13 @@ void CWrenchTool::mousePressEvent( QMouseEvent *event, Vector3f pos, Vector3f di
 										meta );
 					m_editorState->world->getChunkWorldPos( m_selectedBlockPos )->rebuildModel();
 					view->update();
+
+					uint32_t newVoxel = m_editorState->world->get( m_selectedBlockPos.x, m_selectedBlockPos.y, m_selectedBlockPos.z );
+
+					// Push undo
+					UndoBlockEdit *undo = new UndoBlockEdit( m_editorState, m_selectedBlockPos.x, m_selectedBlockPos.y,
+															  m_selectedBlockPos.z, oldVoxel, newVoxel );
+					m_editorState->undoStack->push( undo );
 				}
 			}
 		}
