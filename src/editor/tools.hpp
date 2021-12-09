@@ -117,3 +117,24 @@ class CSimulateTool final : public CTool
 	void keyReleaseEvent( QKeyEvent *event, Vector3f pos, Vector3f dir, RenderWidget *view ) {};
 	void draw( RenderWidget *view ) {};
 };
+
+// Selecting an area or an entity.
+class CSelectTool final : public CTool
+{
+	Q_OBJECT
+
+  public:
+	CSelectTool( EditorState *editorState, QObject *parent = 0 );
+	~CSelectTool();
+
+	QString getName() { return "Select"; };
+
+	void mousePressEvent( QMouseEvent *event, Vector3f pos, Vector3f dir, RenderWidget *view );
+	void mouseMoveEvent( QMouseEvent *event, Vector3f pos, Vector3f dir, RenderWidget *view );
+
+	void mouseReleaseEvent( QMouseEvent *event, Vector3f pos, Vector3f dir, RenderWidget *view ) {};
+	void wheelEvent( QWheelEvent *event, Vector3f pos, Vector3f dir, RenderWidget *view ) {};
+	void keyPressEvent( QKeyEvent *event, Vector3f pos, Vector3f dir, RenderWidget *view ) {};
+	void keyReleaseEvent( QKeyEvent *event, Vector3f pos, Vector3f dir, RenderWidget *view ) {};
+	void draw( RenderWidget *view ) {};
+};

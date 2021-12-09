@@ -40,6 +40,7 @@ class RenderWidget : public QGLWidget
 	};
 
 	void setDispMode( DispMode mode );
+	DispMode getDispMode() const;
 
 	Vector3f m_camera;
 	Vector3f m_camera_forward;

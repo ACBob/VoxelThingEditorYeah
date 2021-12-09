@@ -4,6 +4,8 @@
 #include <QString>
 #include <QObject>
 
+#include "world/vector.hpp"
+
 #pragma once
 
 class CWorld;
@@ -43,6 +45,10 @@ class EditorState : public QObject
 
     // The undo stack
     QUndoStack *undoStack;
+
+    // Selection Area
+    Vector3i selectionAreaStart;
+    Vector3i selectionAreaEnd;
 
     // Functions to set
     // These ideally should be what you call to set stuff, where-as you just access the variables directly.

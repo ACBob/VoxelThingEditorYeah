@@ -67,6 +67,12 @@ MainWindow::MainWindow( EditorState *editorState, QWidget *parent ) : QMainWindo
 	simulateAction->setActionGroup( toolGroup );
 	this->m_tools.push_back( simulateTool );
 
+	CTool *selectTool	  = new CSelectTool( editorState, this );
+	QAction *selectAction = toolsBar->addAction( QIcon( ":/img/tool.png" ), selectTool->getName() ); // TODO: icon
+	selectAction->setCheckable( true );
+	selectAction->setActionGroup( toolGroup );
+	this->m_tools.push_back( selectTool );
+
 	connect( toolGroup, SIGNAL( triggered( QAction * ) ), this, SLOT( toolChanged( QAction * ) ) );
 
 	// To the right side of the screen we have a list of chunks

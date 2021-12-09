@@ -318,3 +318,104 @@ void CSimulateTool::mousePressEvent( QMouseEvent *event, Vector3f pos, Vector3f 
 		m_editorState->undoStack->push( undo );
 	}
 }
+
+// ----------------------------------------------------------------------------
+// Selection tool
+// Modifies the editor's selection area and potentially the selected entities
+// ----------------------------------------------------------------------------
+
+CSelectTool::CSelectTool( EditorState *editorState, QObject *parent ) : CTool( editorState, parent ) {}
+CSelectTool::~CSelectTool() {}
+
+void CSelectTool::mousePressEvent( QMouseEvent *event, Vector3f pos, Vector3f dir, RenderWidget *view )
+{
+	qDebug() << "Select tool pressed @" << pos;
+
+	// No need to cast rays in 2D views
+	Vector3i selPos = m_editorState->selectionAreaStart;
+	if (event->button() == Qt::RightButton)
+		selPos = m_editorState->selectionAreaEnd;	
+
+	if ( view->getDispMode() == RenderWidget::DispMode::DISP_3D || view->getDispMode() == RenderWidget::DispMode::DISP_ISOMETRIC )
+	{
+		CRaycast caster;
+		std::pair<Vector3f, Vector3f> cast = caster.cast( m_editorState->world, pos, dir, TOOL_CAST_DISTANCE );
+
+		selPos	= cast.first;
+	}
+	else
+	{
+		// Depending on the view, change the coordinates of the selection
+
+		switch ( view->getDispMode() )
+		{
+			case RenderWidget::DispMode::DISP_GRID_XY:
+				selPos.x = (int)pos.x;
+				selPos.y = (int)pos.y;
+				break;
+			case RenderWidget::DispMode::DISP_GRID_XZ:
+				selPos.x = (int)pos.x;
+				selPos.z = (int)pos.z;
+				break;
+			case RenderWidget::DispMode::DISP_GRID_ZY:
+				selPos.z = (int)pos.z;
+				selPos.y = (int)pos.y;
+				break;
+		}
+	}
+
+	if ( event->button() == Qt::LeftButton )
+	{
+		m_editorState->selectionAreaStart = selPos;
+	}
+	else if ( event->button() == Qt::RightButton )
+	{
+		m_editorState->selectionAreaEnd = selPos;
+	}
+
+	view->update();
+}
+
+void CSelectTool::mouseMoveEvent( QMouseEvent *event, Vector3f pos, Vector3f dir, RenderWidget *view )
+{
+	// qDebug() << "Select tool moved @" << pos;
+
+	// Only continue if the mouse is held
+	if ( event->buttons() & Qt::LeftButton )
+	{
+		// No need to cast rays in 2D views
+		Vector3i selPosEnd = m_editorState->selectionAreaEnd;
+
+		if ( view->getDispMode() == RenderWidget::DispMode::DISP_3D || view->getDispMode() == RenderWidget::DispMode::DISP_ISOMETRIC )
+		{
+			CRaycast caster;
+			std::pair<Vector3f, Vector3f> cast = caster.cast( m_editorState->world, pos, dir, TOOL_CAST_DISTANCE );
+
+			selPosEnd	= cast.first;
+		}
+		else
+		{
+			// Depending on the view, change the coordinates of the selection
+
+			switch ( view->getDispMode() )
+			{
+				case RenderWidget::DispMode::DISP_GRID_XY:
+					selPosEnd.x = (int)pos.x;
+					selPosEnd.y = (int)pos.y;
+					break;
+				case RenderWidget::DispMode::DISP_GRID_XZ:
+					selPosEnd.x = (int)pos.x;
+					selPosEnd.z = (int)pos.z;
+					break;
+				case RenderWidget::DispMode::DISP_GRID_ZY:
+					selPosEnd.z = (int)pos.z;
+					selPosEnd.y = (int)pos.y;
+					break;
+			}
+		}
+
+		m_editorState->selectionAreaEnd = selPosEnd;
+	}
+
+	view->update();
+}
