@@ -76,6 +76,8 @@ class CWorld : public QObject
 	uint32_t getTime();
 	void setTime( uint32_t time );
 
+	void calculateLighting();
+
   private:
 	QMap<Vector3i, CChunk *> m_chunks;
 

@@ -39,6 +39,7 @@ CChunk *CWorld::createChunk( const Vector3i &pos )
 
 	c->m_world		 = this;
 	c->m_editorState = m_editorState;
+	c->calculateLighting();
 	c->rebuildModel();
 
 	// qDebug() << "Created chunk at " << pos;
@@ -280,3 +281,10 @@ void CWorld::setSeed( uint32_t seed ) { m_seed = seed; }
 uint32_t CWorld::getTime() { return m_time; }
 
 void CWorld::setTime( uint32_t time ) { m_time = time; }
+
+
+void CWorld::calculateLighting()
+{
+	for ( CChunk *c : m_chunks.values() )
+		c->calculateLighting();
+}

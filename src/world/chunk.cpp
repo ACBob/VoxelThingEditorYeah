@@ -12,6 +12,8 @@
 
 #include <QGLContext>
 
+#include <math.h>
+
 CChunk::CChunk( int x, int y, int z, int sizeX, int sizeY, int sizeZ )
 {
 	m_pos.x = x;
@@ -34,6 +36,9 @@ CChunk::CChunk( int x, int y, int z, int sizeX, int sizeY, int sizeZ )
 			}
 		}
 	}
+
+	m_lighting = new uint16_t[m_size.x * m_size.y * m_size.z];
+	memset( m_lighting, 0, m_size.x * m_size.y * m_size.z * sizeof( uint16_t ) );
 
 	m_world = nullptr;
 
@@ -197,6 +202,13 @@ void CChunk::rebuildModel()
 						continue;
 					}
 
+					// get lighting
+					uint16_t light = getLighting( dx, dy, dz );
+					uint8_t red = ( light >> 12 ) & 0xFF;
+					uint8_t green = ( light >> 8 ) & 0xFF;
+					uint8_t blue = ( light >> 4 ) & 0xFF;
+					uint8_t sky = ( light >> 0 ) & 0xFF;
+
 					// construct the face
 					for ( int i = 0; i < 4; i++ )
 					{
@@ -204,6 +216,9 @@ void CChunk::rebuildModel()
 						v.x = m_pos.x * m_size.x + x + cubeVertices[cubeTriangles[face][i]][0];
 						v.y = m_pos.y * m_size.y + y + cubeVertices[cubeTriangles[face][i]][1];
 						v.z = m_pos.z * m_size.z + z + cubeVertices[cubeTriangles[face][i]][2];
+						v.r = qBound(0.1f, fmaxf( red / 16.0f, sky / 16.0f ) * 1.5f, 1.0f);
+						v.g = qBound(0.1f, fmaxf( green / 16.0f, sky / 16.0f ) * 1.5f, 1.0f);
+						v.b = qBound(0.1f, fmaxf( blue / 16.0f, sky / 16.0f ) * 1.5f, 1.0f);
 
 						Vector4f uv;
 						if ( m_editorState != nullptr )
@@ -329,5 +344,125 @@ void CChunk::simulateLiquid()
 		// if the block is not on the floor, flow down
 		setIfAir( pos.x, pos.y - 1, pos.z, flowBlock,
 				  (uint16_t)qBound( 0, level + 1, (int)m_editorState->blockDefs->value( id ).metaMax ) );
+	}
+}
+
+// first 4 bits are used for skylight
+// last 12 bits are RGB
+// for 16 bit lighting
+
+uint8_t CChunk::getSkyLight( int x, int y, int z )
+{
+	if ( x < 0 || x >= m_size.x || y < 0 || y >= m_size.y || z < 0 || z >= m_size.z )
+		return 15;
+
+	return m_lighting[x + y * m_size.x + z * m_size.x * m_size.y] >> 4;
+}
+
+uint16_t CChunk::getBlockLight( int x, int y, int z )
+{
+	if ( x < 0 || x >= m_size.x || y < 0 || y >= m_size.y || z < 0 || z >= m_size.z )
+		return 15;
+
+	return m_lighting[x + y * m_size.x + z * m_size.x * m_size.y] & 0x0F;
+}
+
+uint16_t CChunk::getLighting( int x, int y, int z )
+{
+	if ( x < 0 || x >= m_size.x || y < 0 || y >= m_size.y || z < 0 || z >= m_size.z )
+		return 0xFFFF;
+
+	return m_lighting[x + y * m_size.x + z * m_size.x * m_size.y];
+}
+
+void CChunk::setSkyLight( int x, int y, int z, uint8_t light )
+{
+	if ( x < 0 || x >= m_size.x || y < 0 || y >= m_size.y || z < 0 || z >= m_size.z )
+		return;
+
+	m_lighting[x + y * m_size.x + z * m_size.x * m_size.y] = ( m_lighting[x + y * m_size.x + z * m_size.x * m_size.y] & 0xF0 ) | light;
+}
+
+void CChunk::setBlockLight( int x, int y, int z, uint16_t light )
+{
+	if ( x < 0 || x >= m_size.x || y < 0 || y >= m_size.y || z < 0 || z >= m_size.z )
+		return;
+
+	m_lighting[x + y * m_size.x + z * m_size.x * m_size.y] = ( m_lighting[x + y * m_size.x + z * m_size.x * m_size.y] & 0x0F ) | light;
+}
+
+void CChunk::setBlockLight(int x, int y, int z, uint8_t red, uint8_t green, uint8_t blue)
+{
+	if (x < 0 || x >= m_size.x || y < 0 || y >= m_size.y || z < 0 || z >= m_size.z)
+		return;
+
+	uint16_t light = (red << 12) | (green << 8) | (blue << 4) | (m_lighting[x + y * m_size.x + z * m_size.x * m_size.y] & 0x0F);
+	m_lighting[x + y * m_size.x + z * m_size.x * m_size.y] = light;
+}
+
+
+
+void CChunk::calculateLighting() {
+	// Reading material
+	// https://0fps.net/2018/02/21/voxel-lighting/
+	// https://web.archive.org/web/20210429192404/https://www.seedofandromeda.com/blogs/29-fast-flood-fill-lighting-in-a-blocky-voxel-game-pt-1
+	// https://web.archive.org/web/20210429192404/https://www.seedofandromeda.com/blogs/30-fast-flood-fill-lighting-in-a-blocky-voxel-game-pt-2
+	// https://web.archive.org/web/20181212111600/https://notch.tumblr.com/post/434902871/per-request-this-is-how-the-new-lighting-will
+
+	qDebug() << "Calculating lighting";
+
+	// Sky light is the last 4 bits of the lighting buffer
+	// Block light is the first 12 bits, each 4 bits is a channel
+	// So RGB is 12 bits each, and the last 4 bits are sky light
+	// Essentially RGBA, where A is sky light
+
+	memset( m_lighting, 0, m_size.x * m_size.y * m_size.z * sizeof( uint16_t ) );
+
+	// Step 1. Sunlight propagation
+	// test the chunk above us
+	CChunk *chunkAbove = m_editorState->world->getChunk( m_pos + Vector3i( 0, 1, 0 ) );
+	uint8_t *skyLight = new uint8_t[m_size.x * m_size.z];
+	if (chunkAbove != nullptr) {
+		for (int z = 0; z < m_size.z; z++) {
+			for (int x = 0; x < m_size.x; x++) {
+				skyLight[z * m_size.x + x] = chunkAbove->getSkyLight(x, 0, z);
+			}
+		}
+	}
+	else {
+		// if we're above 0, we can guess there'll be skylight
+		if (m_pos.y + 1 > 0) {
+			for (int z = 0; z < m_size.z; z++) {
+				for (int x = 0; x < m_size.x; x++) {
+					skyLight[z * m_size.x + x] = 15;
+				}
+			}
+		}
+		else {
+			for (int z = 0; z < m_size.z; z++) {
+				for (int x = 0; x < m_size.x; x++) {
+					skyLight[z * m_size.x + x] = 0;
+				}
+			}
+		}
+	}
+
+	// Now propogate that sunlight into us
+	for (int z = 0; z < m_size.z; z++) {
+		for (int x = 0; x < m_size.x; x++) {
+			uint8_t sky = skyLight[z * m_size.x + x];
+			if (sky > 0) {
+				// loop down to the bottom of the chunk, stopping if we hit a block
+				for (int y = m_size.y - 1; y >= 0; y--) {
+					uint16_t id = getID(x, y, z);
+					if (id != 0) {
+						break;
+					}
+					else {
+						setSkyLight(x, y, z, sky);
+					}
+				}
+			}
+		}
 	}
 }

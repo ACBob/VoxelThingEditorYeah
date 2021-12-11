@@ -479,3 +479,24 @@ void CSelectTool::mouseMoveEvent( QMouseEvent *event, Vector3f pos, Vector3f dir
 
 	view->update();
 }
+
+CLightingTool::CLightingTool( EditorState *editorState, QObject *parent ) : CTool( editorState, parent ) {}
+CLightingTool::~CLightingTool() {}
+
+void CLightingTool::mousePressEvent( QMouseEvent *event, Vector3f pos, Vector3f dir, RenderWidget *view )
+{
+	qDebug() << "Lighting tool pressed @" << pos;
+
+	// cast a ray to find the block we're pointing at
+	CRaycast caster;
+	std::pair<Vector3f, Vector3f> cast = caster.cast( m_editorState->world, pos, dir, TOOL_CAST_DISTANCE );
+
+	// if the raycast hit a chunk, light it
+	CChunk *chunk = m_editorState->world->getChunkWorldPos( cast.first );
+	if ( chunk != nullptr )
+	{
+		chunk->calculateLighting();
+		chunk->rebuildModel();
+		view->update();
+	}
+}

@@ -78,6 +78,7 @@ void RenderWidget::initializeGL()
 	glEnableClientState( GL_VERTEX_ARRAY );
 	glEnableClientState( GL_TEXTURE_COORD_ARRAY );
 	glEnableClientState( GL_NORMAL_ARRAY );
+	glEnableClientState( GL_COLOR_ARRAY );
 }
 
 void RenderWidget::resizeGL( int w, int h ) { glViewport( 0, 0, w, h ); }

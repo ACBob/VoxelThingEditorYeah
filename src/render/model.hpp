@@ -23,6 +23,7 @@ class Model : public QObject
 		float x, y, z;
 		float nx, ny, nz;
 		float u, v;
+		float r, g, b;
 	};
 
 	struct Face

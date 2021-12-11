@@ -21,7 +21,7 @@ void Model::render( QGLContext *context )
 
 	glNormalPointer( GL_FLOAT, sizeof( Model::Vertex ), &m_vertices.data()[0].nx );
 
-	glColor3f( 1.0f, 1.0f, 1.0f );
+	glColorPointer( 3, GL_FLOAT, sizeof( Model::Vertex ), &m_vertices.data()[0].r );
 
 	glDrawElements( GL_TRIANGLES, m_faces.size() * 3, GL_UNSIGNED_INT, m_faces.data() );
 

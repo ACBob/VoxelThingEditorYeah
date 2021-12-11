@@ -24,6 +24,13 @@
 #include "world/loading/worldformat.hpp"
 #include "world/world.hpp"
 
+#define addTool(toolname, classname) \
+	CTool *toolname = new classname(editorState, this); \
+	QAction *toolname##Action = toolsBar->addAction( QIcon(":/img/tool_" #toolname ".png"), toolname->getName() ); \
+	toolname##Action->setCheckable(true); \
+	toolname##Action->setActionGroup(toolGroup); \
+	m_tools.push_back(toolname)
+
 MainWindow::MainWindow( EditorState *editorState, QWidget *parent )
 	: QMainWindow( parent ), m_world( editorState, this )
 {
@@ -47,30 +54,12 @@ MainWindow::MainWindow( EditorState *editorState, QWidget *parent )
 	QActionGroup *toolGroup = new QActionGroup( this );
 	toolGroup->setExclusive( true );
 
-	CTool *handTool		= new CHandTool( editorState, this );
-	QAction *handAction = toolsBar->addAction( QIcon( ":/img/tool_hand.png" ), handTool->getName() );
-	handAction->setCheckable( true );
-	handAction->setChecked( true );
-	handAction->setActionGroup( toolGroup );
-	this->m_tools.push_back( handTool );
-
-	CTool *wrenchTool	  = new CWrenchTool( editorState, this );
-	QAction *wrenchAction = toolsBar->addAction( QIcon( ":/img/tool_wrench.png" ), wrenchTool->getName() );
-	wrenchAction->setCheckable( true );
-	wrenchAction->setActionGroup( toolGroup );
-	this->m_tools.push_back( wrenchTool );
-
-	CTool *simulateTool		= new CSimulateTool( editorState, this );
-	QAction *simulateAction = toolsBar->addAction( QIcon( ":/img/tool_simulate.png" ), simulateTool->getName() );
-	simulateAction->setCheckable( true );
-	simulateAction->setActionGroup( toolGroup );
-	this->m_tools.push_back( simulateTool );
-
-	CTool *selectTool	  = new CSelectTool( editorState, this );
-	QAction *selectAction = toolsBar->addAction( QIcon( ":/img/tool_select.png" ), selectTool->getName() );
-	selectAction->setCheckable( true );
-	selectAction->setActionGroup( toolGroup );
-	this->m_tools.push_back( selectTool );
+	addTool(hand, CHandTool);
+	handAction->setChecked(true);
+	addTool(wrench, CWrenchTool);
+	addTool(simulate, CSimulateTool);
+	addTool(select, CSelectTool);
+	addTool(lighting, CLightingTool);
 
 	connect( toolGroup, SIGNAL( triggered( QAction * ) ), this, SLOT( toolChanged( QAction * ) ) );
 

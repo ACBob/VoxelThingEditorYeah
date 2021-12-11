@@ -76,12 +76,22 @@ class CChunk : public QObject
 	Vector3i getSize() { return m_size; }
 
 	void simulateLiquid();
+	void calculateLighting();
+
+	uint8_t getSkyLight( int x, int y, int z );
+	uint16_t getBlockLight( int x, int y, int z );
+	uint16_t getLighting( int x, int y, int z );
+
+	void setSkyLight( int x, int y, int z, uint8_t light );
+	void setBlockLight( int x, int y, int z, uint16_t light );
+	void setBlockLight( int x, int y, int z, uint8_t red, uint8_t green, uint8_t blue );
 
 	CWorld *m_world;
 	EditorState *m_editorState;
 
   private:
 	uint32_t *m_voxels;
+	uint16_t *m_lighting; // 4 bit red, 4 bit green, 4 bit blue, 4 bit sky light (16 bits)
 
 	Vector3i m_pos;
 	Vector3i m_size;
