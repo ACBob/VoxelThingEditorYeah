@@ -298,11 +298,30 @@ void CSimulateTool::mousePressEvent( QMouseEvent *event, Vector3f pos, Vector3f 
 
 	if ( chunk != nullptr )
 	{
+		uint32_t *oldVoxels = new uint32_t[chunk->getSizeX() * chunk->getSizeY() * chunk->getSizeZ()];
+		uint32_t *newVoxels = new uint32_t[chunk->getSizeX() * chunk->getSizeY() * chunk->getSizeZ()];
+
+		// copy the old voxels
+		for ( int i = 0; i < chunk->getSizeX() * chunk->getSizeY() * chunk->getSizeZ(); i++ )
+		{
+			chunk->get(i, oldVoxels[i]);
+		}
+
 		if ( event->button() == Qt::LeftButton )
 		{
 			chunk->simulateLiquid();
 			chunk->rebuildModel();
 			view->update();
+
+			// copy the new voxels
+			for ( int i = 0; i < chunk->getSizeX() * chunk->getSizeY() * chunk->getSizeZ(); i++ )
+			{
+				chunk->get(i, newVoxels[i]);
+			}
+
+			// from there the undo will delete the arrays when it doesn't need them anymore
+			UndoChunkEdit *undo = new UndoChunkEdit( m_editorState, chunk, oldVoxels, newVoxels );
+			m_editorState->undoStack->push( undo );
 		}
 		else if ( event->button() == Qt::RightButton )
 		{
@@ -339,30 +358,24 @@ void CSimulateTool::mousePressEvent( QMouseEvent *event, Vector3f pos, Vector3f 
 				}
 				chunk->rebuildModel();
 				view->update();
+
+
+				// copy the new voxels
+				for ( int i = 0; i < chunk->getSizeX() * chunk->getSizeY() * chunk->getSizeZ(); i++ )
+				{
+					chunk->get(i, newVoxels[i]);
+				}
+
+				// from there the undo will delete the arrays when it doesn't need them anymore
+				UndoChunkEdit *undo = new UndoChunkEdit( m_editorState, chunk, oldVoxels, newVoxels );
+				m_editorState->undoStack->push( undo );
 			}
 		}
-		uint32_t *oldVoxels = new uint32_t[chunk->getSizeX() * chunk->getSizeY() * chunk->getSizeZ()];
-		uint32_t *newVoxels = new uint32_t[chunk->getSizeX() * chunk->getSizeY() * chunk->getSizeZ()];
-
-		// copy the old voxels
-		for ( int i = 0; i < chunk->getSizeX() * chunk->getSizeY() * chunk->getSizeZ(); i++ )
+		else
 		{
-			chunk->get(i, oldVoxels[i]);
+			delete[] oldVoxels;
+			delete[] newVoxels;
 		}
-
-		chunk->simulateLiquid();
-		view->update();
-
-		// copy the new voxels
-		for ( int i = 0; i < chunk->getSizeX() * chunk->getSizeY() * chunk->getSizeZ(); i++ )
-		{
-			chunk->get(i, newVoxels[i]);
-		}
-
-		// from there the undo will delete the arrays when it doesn't need them anymore
-
-		UndoChunkEdit *undo = new UndoChunkEdit( m_editorState, chunk, oldVoxels, newVoxels );
-		m_editorState->undoStack->push( undo );
 	}
 }
 
