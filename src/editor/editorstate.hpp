@@ -4,10 +4,13 @@
 #include <QObject>
 #include <QString>
 
+#include "world/vector.hpp"
+
 #pragma once
 
 class CWorld;
 class CTool;
+class QUndoStack;
 
 // TODO: any way to forward-declare a using statement?
 #include "defs.hpp"
@@ -45,6 +48,13 @@ class EditorState : public QObject
 
 	// The absolute path of the block texture.
 	QString blockTexturePath;
+
+    // The undo stack
+    QUndoStack *undoStack;
+
+    // Selection Area
+    Vector3i selectionAreaStart;
+    Vector3i selectionAreaEnd;
 
 	// Functions to set
 	// These ideally should be what you call to set stuff, where-as you just access the variables directly.

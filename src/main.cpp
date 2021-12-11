@@ -1,5 +1,7 @@
 #include <QApplication>
 
+#include <QUndoStack>
+
 #include "ui/mainwindow.hpp"
 
 #include "editor/editorstate.hpp"
@@ -22,6 +24,9 @@ int main( int argc, char *argv[] )
 	editorState.chosenBlockType	 = 1;
 	editorState.chosenBlockMeta	 = 0;
 	editorState.blockTexturePath = ":/img/texatlas_internal.png";
+	editorState.undoStack = new QUndoStack( &editorState );
+	editorState.undoStack->setUndoLimit( 100 );
+	editorState.undoStack->clear();
 
 	// TODO: load the following from the QSettings
 	editorState.gameDefs = definitions::LoadGameDefs(":/example/games.toml");

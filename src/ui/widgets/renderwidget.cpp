@@ -56,7 +56,7 @@ RenderWidget::RenderWidget( EditorState *editorState, QWidget *parent ) : QGLWid
 	memset( m_projection, 0, sizeof( m_projection ) );
 	memset( m_viewport, 0, sizeof( m_viewport ) );
 
-	setMinimumSize( 320, 240 );
+	// setMinimumSize( 320, 240 );
 }
 
 void RenderWidget::initializeGL()
@@ -294,6 +294,59 @@ void RenderWidget::paintGL()
 	glGetDoublev( GL_PROJECTION_MATRIX, m_projection );
 	glGetIntegerv( GL_VIEWPORT, m_viewport );
 
+	// Draw the selection if the size is not 0
+	if ( m_editorState->selectionAreaStart != m_editorState->selectionAreaEnd )
+	{
+		// Draw it as a yellow cuboid
+		glColor3f( 1.0f, 1.0f, 0.0f );
+
+		if ( m_displayMode >= DispMode::DISP_GRID_XY && m_displayMode <= DispMode::DISP_GRID_ZY )
+			glDisable( GL_DEPTH_TEST );
+
+		glBegin( GL_LINES );
+
+		glVertex3f( m_editorState->selectionAreaStart.x, m_editorState->selectionAreaStart.y, m_editorState->selectionAreaStart.z );
+		glVertex3f( m_editorState->selectionAreaStart.x, m_editorState->selectionAreaStart.y, m_editorState->selectionAreaEnd.z );
+		
+		glVertex3f( m_editorState->selectionAreaStart.x, m_editorState->selectionAreaStart.y, m_editorState->selectionAreaEnd.z );
+		glVertex3f( m_editorState->selectionAreaEnd.x, m_editorState->selectionAreaStart.y, m_editorState->selectionAreaEnd.z );
+
+		glVertex3f( m_editorState->selectionAreaEnd.x, m_editorState->selectionAreaStart.y, m_editorState->selectionAreaEnd.z );
+		glVertex3f( m_editorState->selectionAreaEnd.x, m_editorState->selectionAreaStart.y, m_editorState->selectionAreaStart.z );
+
+		glVertex3f( m_editorState->selectionAreaEnd.x, m_editorState->selectionAreaStart.y, m_editorState->selectionAreaStart.z );
+		glVertex3f( m_editorState->selectionAreaStart.x, m_editorState->selectionAreaStart.y, m_editorState->selectionAreaStart.z );
+
+		glVertex3f( m_editorState->selectionAreaStart.x, m_editorState->selectionAreaEnd.y, m_editorState->selectionAreaStart.z );
+		glVertex3f( m_editorState->selectionAreaStart.x, m_editorState->selectionAreaEnd.y, m_editorState->selectionAreaEnd.z );
+
+		glVertex3f( m_editorState->selectionAreaStart.x, m_editorState->selectionAreaEnd.y, m_editorState->selectionAreaEnd.z );
+		glVertex3f( m_editorState->selectionAreaEnd.x, m_editorState->selectionAreaEnd.y, m_editorState->selectionAreaEnd.z );
+
+		glVertex3f( m_editorState->selectionAreaEnd.x, m_editorState->selectionAreaEnd.y, m_editorState->selectionAreaEnd.z );
+		glVertex3f( m_editorState->selectionAreaEnd.x, m_editorState->selectionAreaEnd.y, m_editorState->selectionAreaStart.z );
+
+		glVertex3f( m_editorState->selectionAreaEnd.x, m_editorState->selectionAreaEnd.y, m_editorState->selectionAreaStart.z );
+		glVertex3f( m_editorState->selectionAreaStart.x, m_editorState->selectionAreaEnd.y, m_editorState->selectionAreaStart.z );
+
+		glVertex3f( m_editorState->selectionAreaStart.x, m_editorState->selectionAreaStart.y, m_editorState->selectionAreaStart.z );
+		glVertex3f( m_editorState->selectionAreaStart.x, m_editorState->selectionAreaEnd.y, m_editorState->selectionAreaStart.z );
+
+		glVertex3f( m_editorState->selectionAreaStart.x, m_editorState->selectionAreaStart.y, m_editorState->selectionAreaEnd.z );
+		glVertex3f( m_editorState->selectionAreaStart.x, m_editorState->selectionAreaEnd.y, m_editorState->selectionAreaEnd.z );
+
+		glVertex3f( m_editorState->selectionAreaEnd.x, m_editorState->selectionAreaStart.y, m_editorState->selectionAreaStart.z );
+		glVertex3f( m_editorState->selectionAreaEnd.x, m_editorState->selectionAreaEnd.y, m_editorState->selectionAreaStart.z );
+
+		glVertex3f( m_editorState->selectionAreaEnd.x, m_editorState->selectionAreaStart.y, m_editorState->selectionAreaEnd.z );
+		glVertex3f( m_editorState->selectionAreaEnd.x, m_editorState->selectionAreaEnd.y, m_editorState->selectionAreaEnd.z );
+
+		glEnd();
+
+		if ( m_displayMode >= DispMode::DISP_GRID_XY && m_displayMode <= DispMode::DISP_GRID_ZY )
+			glEnable( GL_DEPTH_TEST );
+	}
+
 	// Draw the tool last
 	if ( m_editorState->tool != nullptr )
 	{
@@ -519,6 +572,11 @@ void RenderWidget::setDispMode( DispMode mode )
 {
 	m_displayMode = mode;
 	update();
+}
+
+RenderWidget::DispMode RenderWidget::getDispMode() const
+{
+	return m_displayMode;
 }
 
 void RenderWidget::wheelEvent( QWheelEvent *event )

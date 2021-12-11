@@ -34,22 +34,35 @@ Editor4Pane::Editor4Pane( EditorState *editorState, QWidget *parent ) : QDockWid
 	layout->addWidget( leftRightSplitter );
 
 	// Split the left/right into top/bottom
-	QSplitter *leftUpDownSplitter = new QSplitter( Qt::Vertical, leftRightSplitter );
+	m_leftSplitter = new QSplitter( Qt::Vertical, leftRightSplitter );
+	m_rightSplitter = new QSplitter( Qt::Vertical, leftRightSplitter );
+	
 	// default to 50%
-	leftUpDownSplitter->setSizes( QList<int>() << 50 << 50 );
-	QSplitter *rightUpDownSplitter = new QSplitter( Qt::Vertical, leftRightSplitter );
-	// default to 50%
-	rightUpDownSplitter->setSizes( QList<int>() << 50 << 50 );
+	m_leftSplitter->setStretchFactor( 0, 1 );
+	m_leftSplitter->setStretchFactor( 1, 1 );
 
-	m_topLeftView = new RenderWidget( editorState, leftUpDownSplitter );
+	connect( m_leftSplitter, SIGNAL(splitterMoved(int,int)), this, SLOT(splitterLeftMoved(int,int)) );
+	connect( m_rightSplitter, SIGNAL(splitterMoved(int,int)), this, SLOT(splitterRightMoved(int,int)) );
+
+	m_topLeftView = new RenderWidget( editorState, m_leftSplitter );
 	m_topLeftView->setDispMode( RenderWidget::DispMode::DISP_3D );
-	m_topRightView = new RenderWidget( editorState, rightUpDownSplitter );
+	m_topRightView = new RenderWidget( editorState, m_rightSplitter );
 	m_topRightView->setDispMode( RenderWidget::DispMode::DISP_GRID_XZ );
-	m_bottomLeftView = new RenderWidget( editorState, leftUpDownSplitter );
+	m_bottomLeftView = new RenderWidget( editorState, m_leftSplitter );
 	m_bottomLeftView->setDispMode( RenderWidget::DispMode::DISP_GRID_XY );
-	m_bottomRightView = new RenderWidget( editorState, rightUpDownSplitter );
+	m_bottomRightView = new RenderWidget( editorState, m_rightSplitter );
 	m_bottomRightView->setDispMode( RenderWidget::DispMode::DISP_GRID_ZY );
 
 	// // Disable all features
 	// this->setFeatures(QDockWidget::NoDockWidgetFeatures);
+}
+
+void Editor4Pane::splitterLeftMoved( int pos, int index )
+{
+	m_rightSplitter->setSizes( QList<int>() << pos << m_rightSplitter->height() - pos );
+}
+
+void Editor4Pane::splitterRightMoved( int pos, int index )
+{
+	m_leftSplitter->setSizes( QList<int>() << pos << m_leftSplitter->height() - pos );
 }

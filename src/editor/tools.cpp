@@ -18,11 +18,13 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QSpinBox>
+#include <QUndoStack>
 
 #include <GL/glu.h>
 #include <QOpenGLFunctions>
 
 #include "editorstate.hpp"
+#include "undo.hpp"
 
 // How far the tools will cast rays
 #define TOOL_CAST_DISTANCE 150.0f
@@ -54,20 +56,30 @@ void CHandTool::mousePressEvent( QMouseEvent *event, Vector3f pos, Vector3f dir,
 		if ( event->button() == Qt::LeftButton )
 		{
 			Vector3f p = m_selectedBlockPos;
+			uint32_t oldVoxel = m_editorState->world->get( p.x, p.y, p.z );
 			m_editorState->world->setID( p.x, p.y, p.z, 0 );
 			m_editorState->world->setMeta( p.x, p.y, p.z, 0 );
 
 			// find chunk
 			CChunk *c = m_editorState->world->getChunkWorldPos( p );
 			c->rebuildModel();
+
+			// push the undo
+			UndoBlockEdit *undo = new UndoBlockEdit( m_editorState, p.x, p.y, p.z, oldVoxel, 0 );
+			m_editorState->undoStack->push( undo );
 		}
 		else if ( event->button() == Qt::RightButton )
 		{
 			Vector3f p = m_selectedBlockPos + m_selectedBlockNormal;
+			uint32_t oldVoxel = m_editorState->world->get( p.x, p.y, p.z );
 			m_editorState->world->setID( p.x, p.y, p.z, m_editorState->chosenBlockType );
 			m_editorState->world->setMeta( p.x, p.y, p.z, m_editorState->chosenBlockMeta );
 			CChunk *c = m_editorState->world->getChunkWorldPos( p );
 			c->rebuildModel();
+
+			// push the undo
+			UndoBlockEdit *undo = new UndoBlockEdit( m_editorState, p.x, p.y, p.z, oldVoxel, m_editorState->chosenBlockType );
+			m_editorState->undoStack->push( undo );
 		}
 		else if ( event->button() == Qt::MiddleButton )
 		{
@@ -211,6 +223,7 @@ void CWrenchTool::mousePressEvent( QMouseEvent *event, Vector3f pos, Vector3f di
 
 				if ( dlg->exec() == QDialog::Accepted )
 				{
+					uint32_t oldVoxel = m_editorState->world->get( m_selectedBlockPos.x, m_selectedBlockPos.y, m_selectedBlockPos.z );
 					id	 = dlg->getChosenId();
 					meta = dlg->getChosenMeta();
 
@@ -218,6 +231,13 @@ void CWrenchTool::mousePressEvent( QMouseEvent *event, Vector3f pos, Vector3f di
 											   meta );
 					m_editorState->world->getChunkWorldPos( m_selectedBlockPos )->rebuildModel();
 					view->update();
+
+					uint32_t newVoxel = m_editorState->world->get( m_selectedBlockPos.x, m_selectedBlockPos.y, m_selectedBlockPos.z );
+
+					// Push undo
+					UndoBlockEdit *undo = new UndoBlockEdit( m_editorState, m_selectedBlockPos.x, m_selectedBlockPos.y,
+															  m_selectedBlockPos.z, oldVoxel, newVoxel );
+					m_editorState->undoStack->push( undo );
 				}
 			}
 		}
@@ -321,5 +341,128 @@ void CSimulateTool::mousePressEvent( QMouseEvent *event, Vector3f pos, Vector3f 
 				view->update();
 			}
 		}
+		uint32_t *oldVoxels = new uint32_t[chunk->getSizeX() * chunk->getSizeY() * chunk->getSizeZ()];
+		uint32_t *newVoxels = new uint32_t[chunk->getSizeX() * chunk->getSizeY() * chunk->getSizeZ()];
+
+		// copy the old voxels
+		for ( int i = 0; i < chunk->getSizeX() * chunk->getSizeY() * chunk->getSizeZ(); i++ )
+		{
+			chunk->get(i, oldVoxels[i]);
+		}
+
+		chunk->simulateLiquid();
+		view->update();
+
+		// copy the new voxels
+		for ( int i = 0; i < chunk->getSizeX() * chunk->getSizeY() * chunk->getSizeZ(); i++ )
+		{
+			chunk->get(i, newVoxels[i]);
+		}
+
+		// from there the undo will delete the arrays when it doesn't need them anymore
+
+		UndoChunkEdit *undo = new UndoChunkEdit( m_editorState, chunk, oldVoxels, newVoxels );
+		m_editorState->undoStack->push( undo );
 	}
+}
+
+// ----------------------------------------------------------------------------
+// Selection tool
+// Modifies the editor's selection area and potentially the selected entities
+// ----------------------------------------------------------------------------
+
+CSelectTool::CSelectTool( EditorState *editorState, QObject *parent ) : CTool( editorState, parent ) {}
+CSelectTool::~CSelectTool() {}
+
+void CSelectTool::mousePressEvent( QMouseEvent *event, Vector3f pos, Vector3f dir, RenderWidget *view )
+{
+	qDebug() << "Select tool pressed @" << pos;
+
+	// No need to cast rays in 2D views
+	Vector3i selPos = m_editorState->selectionAreaStart;
+	if (event->button() == Qt::RightButton)
+		selPos = m_editorState->selectionAreaEnd;	
+
+	if ( view->getDispMode() == RenderWidget::DispMode::DISP_3D || view->getDispMode() == RenderWidget::DispMode::DISP_ISOMETRIC )
+	{
+		CRaycast caster;
+		std::pair<Vector3f, Vector3f> cast = caster.cast( m_editorState->world, pos, dir, TOOL_CAST_DISTANCE );
+
+		selPos	= cast.first;
+	}
+	else
+	{
+		// Depending on the view, change the coordinates of the selection
+
+		switch ( view->getDispMode() )
+		{
+			case RenderWidget::DispMode::DISP_GRID_XY:
+				selPos.x = (int)pos.x;
+				selPos.y = (int)pos.y;
+				break;
+			case RenderWidget::DispMode::DISP_GRID_XZ:
+				selPos.x = (int)pos.x;
+				selPos.z = (int)pos.z;
+				break;
+			case RenderWidget::DispMode::DISP_GRID_ZY:
+				selPos.z = (int)pos.z;
+				selPos.y = (int)pos.y;
+				break;
+		}
+	}
+
+	if ( event->button() == Qt::LeftButton )
+	{
+		m_editorState->selectionAreaStart = selPos;
+	}
+	else if ( event->button() == Qt::RightButton )
+	{
+		m_editorState->selectionAreaEnd = selPos;
+	}
+
+	view->update();
+}
+
+void CSelectTool::mouseMoveEvent( QMouseEvent *event, Vector3f pos, Vector3f dir, RenderWidget *view )
+{
+	// qDebug() << "Select tool moved @" << pos;
+
+	// Only continue if the mouse is held
+	if ( event->buttons() & Qt::LeftButton )
+	{
+		// No need to cast rays in 2D views
+		Vector3i selPosEnd = m_editorState->selectionAreaEnd;
+
+		if ( view->getDispMode() == RenderWidget::DispMode::DISP_3D || view->getDispMode() == RenderWidget::DispMode::DISP_ISOMETRIC )
+		{
+			CRaycast caster;
+			std::pair<Vector3f, Vector3f> cast = caster.cast( m_editorState->world, pos, dir, TOOL_CAST_DISTANCE );
+
+			selPosEnd	= cast.first;
+		}
+		else
+		{
+			// Depending on the view, change the coordinates of the selection
+
+			switch ( view->getDispMode() )
+			{
+				case RenderWidget::DispMode::DISP_GRID_XY:
+					selPosEnd.x = (int)pos.x;
+					selPosEnd.y = (int)pos.y;
+					break;
+				case RenderWidget::DispMode::DISP_GRID_XZ:
+					selPosEnd.x = (int)pos.x;
+					selPosEnd.z = (int)pos.z;
+					break;
+				case RenderWidget::DispMode::DISP_GRID_ZY:
+					selPosEnd.z = (int)pos.z;
+					selPosEnd.y = (int)pos.y;
+					break;
+			}
+		}
+
+		m_editorState->selectionAreaEnd = selPosEnd;
+	}
+
+	view->update();
 }

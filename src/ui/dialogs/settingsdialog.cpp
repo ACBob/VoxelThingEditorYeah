@@ -87,6 +87,4 @@ void SettingsDialog::accept()
 	settings.setValue( "voidColor", m_voidColorPicker->getColor() );
 	settings.setValue( "gameDef", m_gameDefComboBox->currentText() );
 	QDialog::accept();
-	      
-	m_editorState->setGame( &m_editorState->gameDefs->value( m_gameDefComboBox->currentText() ) );
 }

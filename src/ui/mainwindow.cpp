@@ -10,6 +10,7 @@
 
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QUndoStack>
 
 #include "ui/dialogs/blocklist.hpp"
 #include "ui/dialogs/settingsdialog.hpp"
@@ -65,6 +66,12 @@ MainWindow::MainWindow( EditorState *editorState, QWidget *parent )
 	simulateAction->setActionGroup( toolGroup );
 	this->m_tools.push_back( simulateTool );
 
+	CTool *selectTool	  = new CSelectTool( editorState, this );
+	QAction *selectAction = toolsBar->addAction( QIcon( ":/img/tool.png" ), selectTool->getName() ); // TODO: icon
+	selectAction->setCheckable( true );
+	selectAction->setActionGroup( toolGroup );
+	this->m_tools.push_back( selectTool );
+
 	connect( toolGroup, SIGNAL( triggered( QAction * ) ), this, SLOT( toolChanged( QAction * ) ) );
 
 	// To the right side of the screen we have a list of chunks
@@ -95,13 +102,36 @@ MainWindow::MainWindow( EditorState *editorState, QWidget *parent )
 
 	// File menu
 	QMenu *fileMenu = menuBar->addMenu( tr( "&File" ) );
-	fileMenu->addAction( tr( "&New" ), this, SLOT( newFile() ), QKeySequence::New );
-	fileMenu->addAction( tr( "&Open" ), this, SLOT( openFile() ), QKeySequence::Open );
-	fileMenu->addAction( tr( "&Save" ), this, SLOT( saveFile() ), QKeySequence::Save );
+	QAction *newFileAction = fileMenu->addAction( tr( "&New" ), this, SLOT( newFile() ), QKeySequence::New );
+	newFileAction->setIcon( QIcon::fromTheme( "document-new" ) );
+
+	QAction *openFileAction = fileMenu->addAction( tr( "&Open" ), this, SLOT( openFile() ), QKeySequence::Open );
+	openFileAction->setIcon( QIcon::fromTheme( "document-open" ) );
+
+	QAction *saveFileAction = fileMenu->addAction( tr( "&Save" ), this, SLOT( saveFile() ), QKeySequence::Save );
+	saveFileAction->setIcon( QIcon::fromTheme( "document-save" ) );
+
+	QAction *saveAsFileAction = fileMenu->addAction( tr( "Save &As" ), this, SLOT( saveAsFile() ), QKeySequence::SaveAs );
+	saveAsFileAction->setIcon( QIcon::fromTheme( "document-save-as" ) );
 
 	// Edit menu
 	QMenu *editMenu = menuBar->addMenu( tr( "&Edit" ) );
-	editMenu->addAction( tr( "&Preferences" ), this, SLOT( editPreferences() ), QKeySequence::Preferences );
+
+	QAction *undoAction = m_editorState->undoStack->createUndoAction( this, tr( "Undo" ) );
+	undoAction->setIcon( QIcon::fromTheme( "edit-undo" ) );
+	undoAction->setShortcut( QKeySequence::Undo );
+	editMenu->addAction( undoAction );
+
+	QAction *redoAction = m_editorState->undoStack->createRedoAction( this, tr( "Redo" ) );
+	redoAction->setIcon( QIcon::fromTheme( "edit-redo" ) );
+	redoAction->setShortcut( QKeySequence::Redo );
+	editMenu->addAction( redoAction );
+
+	editMenu->addSeparator();
+
+	QAction *preferencesAction = editMenu->addAction( tr( "&Preferences" ), this, SLOT( editPreferences() ) );
+	preferencesAction->setIcon( QIcon::fromTheme( "preferences-system" ) );
+
 
 	// View menu
 	QMenu *viewMenu = menuBar->addMenu( tr( "&View" ) );
@@ -113,7 +143,8 @@ MainWindow::MainWindow( EditorState *editorState, QWidget *parent )
 
 	// Help menu
 	QMenu *helpMenu = menuBar->addMenu( tr( "&Help" ) );
-	helpMenu->addAction( tr( "&About" ), this, SLOT( showAbout() ) );
+	QAction *aboutAction = helpMenu->addAction( tr( "&About" ), this, SLOT( showAbout() ) );
+	aboutAction->setIcon( QIcon::fromTheme( "help-about" ) );
 
 	// The actions bar
 	// Holds various icons and buttons
@@ -131,6 +162,11 @@ MainWindow::MainWindow( EditorState *editorState, QWidget *parent )
 	QAction *singleChunkAction = actionsBar->addAction( QIcon( ":/img/icon_chunkview.png" ), tr( "Single Chunk" ) );
 	singleChunkAction->setCheckable( true );
 	singleChunkAction->setChecked( false );
+
+	// Undo/redo actions
+	actionsBar->addSeparator();
+	actionsBar->addAction( undoAction );
+	actionsBar->addAction( redoAction );
 }
 
 MainWindow::~MainWindow() {}
