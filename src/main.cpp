@@ -8,6 +8,7 @@
 
 #include <QSplashScreen>
 #include <QTimer>
+#include <QDesktopWidget>
 
 int main( int argc, char *argv[] )
 {
@@ -43,6 +44,10 @@ int main( int argc, char *argv[] )
 	editorState.blockDefs = editorState.game->blockDefs;
 
 	auto pEditor = new MainWindow( &editorState, nullptr );
+
+	// Just looks nice
+	pEditor->resize( app.desktop()->screen()->rect().width() * 0.7, app.desktop()->screen()->rect().height() * 0.7 );
+	pEditor->move( app.desktop()->screen()->rect().center() - pEditor->rect().center() );
 	pEditor->show();
 
 	return app.exec();
