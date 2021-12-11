@@ -42,7 +42,7 @@ MainWindow::MainWindow( EditorState *editorState, QWidget *parent )
 	// This toolbar holds the... well, tools
 	QToolBar *toolsBar = new QToolBar( "Tools Bar", this );
 	this->addToolBar( Qt::LeftToolBarArea, toolsBar );
-	toolsBar->setIconSize( QSize( 64, 64 ) );
+	toolsBar->setIconSize( QSize( 48, 48 ) );
 
 	QActionGroup *toolGroup = new QActionGroup( this );
 	toolGroup->setExclusive( true );
@@ -67,7 +67,7 @@ MainWindow::MainWindow( EditorState *editorState, QWidget *parent )
 	this->m_tools.push_back( simulateTool );
 
 	CTool *selectTool	  = new CSelectTool( editorState, this );
-	QAction *selectAction = toolsBar->addAction( QIcon( ":/img/tool.png" ), selectTool->getName() ); // TODO: icon
+	QAction *selectAction = toolsBar->addAction( QIcon( ":/img/tool_select.png" ), selectTool->getName() );
 	selectAction->setCheckable( true );
 	selectAction->setActionGroup( toolGroup );
 	this->m_tools.push_back( selectTool );
