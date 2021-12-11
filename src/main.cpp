@@ -6,6 +6,9 @@
 
 #include "editor/editorstate.hpp"
 
+#include <QSplashScreen>
+#include <QTimer>
+
 int main( int argc, char *argv[] )
 {
 	QApplication app( argc, argv );
@@ -15,6 +18,12 @@ int main( int argc, char *argv[] )
 
 	// Set icon
 	app.setWindowIcon( QIcon( ":/img/logo.png" ) );
+
+	// Display a splash screen for 2 seconds
+	QSplashScreen splash( QPixmap( ":/img/splash.png" ) );
+	splash.show();
+	app.processEvents();
+	QTimer::singleShot( 2000, &splash, SLOT( close() ) );
 
 	// Create editor state
 	EditorState editorState;
