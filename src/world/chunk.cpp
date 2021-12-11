@@ -179,6 +179,8 @@ void CChunk::rebuildModel()
 	m_model->m_vertices.clear();
 	m_model->m_faces.clear();
 
+	calculateLighting();
+
 	for ( int z = 0; z < m_size.z; z++ )
 	{
 		for ( int y = 0; y < m_size.y; y++ )

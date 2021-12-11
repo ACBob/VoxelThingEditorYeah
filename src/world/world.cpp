@@ -39,7 +39,6 @@ CChunk *CWorld::createChunk( const Vector3i &pos )
 
 	c->m_world		 = this;
 	c->m_editorState = m_editorState;
-	c->calculateLighting();
 	c->rebuildModel();
 
 	// qDebug() << "Created chunk at " << pos;

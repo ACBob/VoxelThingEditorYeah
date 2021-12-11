@@ -59,8 +59,7 @@ MainWindow::MainWindow( EditorState *editorState, QWidget *parent )
 	addTool(wrench, CWrenchTool);
 	addTool(simulate, CSimulateTool);
 	addTool(select, CSelectTool);
-	addTool(lighting, CLightingTool);
-
+	
 	connect( toolGroup, SIGNAL( triggered( QAction * ) ), this, SLOT( toolChanged( QAction * ) ) );
 
 	// To the right side of the screen we have a list of chunks
