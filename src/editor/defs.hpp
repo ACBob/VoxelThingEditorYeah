@@ -35,6 +35,7 @@ using BlockDefs = QMap<int, BlockDef>;
 
 struct GameDef
 {
+	QString id;
 	QString name;
 	QString absolutePath;
 	QString workingPath;

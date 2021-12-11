@@ -30,7 +30,6 @@ MainWindow::MainWindow( EditorState *editorState, QWidget *parent )
 	this->setMinimumSize( 800, 600 );
 
 	m_editorState			 = editorState;
-	m_editorState->blockDefs = definitions::LoadBlockDefs( ":/example/palette_internal.toml" );
 	m_editorState->world	 = &m_world;
 
 	// Worlds always have the 0,0,0 chunk, it cannot be removed

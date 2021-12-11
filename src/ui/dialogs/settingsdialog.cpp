@@ -74,7 +74,7 @@ SettingsDialog::SettingsDialog( EditorState *editorState, QWidget *parent ) : QD
 	m_gameDefComboBox = new QComboBox( tabGame );
 	for ( GameDef &gameDef : *m_editorState->gameDefs )
 	{
-		m_gameDefComboBox->addItem( gameDef.name );
+		m_gameDefComboBox->addItem( gameDef.id );
 	}
 
 	gameLayout->addRow( label3, m_gameDefComboBox );
@@ -85,5 +85,8 @@ void SettingsDialog::accept()
 	QSettings settings;
 	settings.setValue( "gridColor", m_gridColorPicker->getColor() );
 	settings.setValue( "voidColor", m_voidColorPicker->getColor() );
+	settings.setValue( "gameDef", m_gameDefComboBox->currentText() );
 	QDialog::accept();
+	      
+	m_editorState->setGame( &m_editorState->gameDefs->value( m_gameDefComboBox->currentText() ) );
 }

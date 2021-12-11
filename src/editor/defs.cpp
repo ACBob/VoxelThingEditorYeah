@@ -175,6 +175,7 @@ GameDefs *definitions::LoadGameDefs( const QString &path )
 		toml::table *gamedef = k.second.as_table();
 
 		// Get the name
+		def.id = id;
 		def.name = QString::fromStdString( gamedef->get( "name" )->value_or<std::string>( "UnNamed" ) );
 
 		def.absolutePath = QString::fromStdString( gamedef->get( "path" )->value_or<std::string>( "" ) );
