@@ -85,6 +85,8 @@ void SettingsDialog::accept()
 	QSettings settings;
 	settings.setValue( "gridColor", m_gridColorPicker->getColor() );
 	settings.setValue( "voidColor", m_voidColorPicker->getColor() );
-	settings.setValue( "gameDef", m_gameDefComboBox->currentText() );
+	settings.setValue( "gameId", m_gameDefComboBox->currentText() );
 	QDialog::accept();
+
+	m_editorState->setGame( m_gameDefComboBox->currentText() );
 }

@@ -19,8 +19,14 @@ EditorState::EditorState( QObject *parent ) : QObject(parent) {
 
     // Game definition stuff
     QSettings settings;
-    m_gameDefs = definitions::LoadGameDefs( settings.value( "gameDefFileLocation", ":/example/games.toml" ).toString() );
-    m_game = m_gameDefs.begin().value(); // TODO: Setting
+    definitions::LoadGameDefs( settings.value( "gameDefFileLocation", ":/example/games.toml" ).toString(), m_gameDefs );
+    if ( settings.contains( "gameId" ) )
+        if (m_gameDefs.contains( settings.value( "gameId" ).toString() ))
+            m_game = m_gameDefs.value( settings.value( "gameId" ).toString() );
+        else
+            m_game = m_gameDefs.begin().value();
+    else
+        m_game = m_gameDefs.begin().value();
     m_pBlockDefs = m_game.blockDefs;
 }
 
@@ -59,8 +65,14 @@ void EditorState::setBlockTexturePath( QString blockTexturePath )
     m_sBlockTexturePath = blockTexturePath;
     emit blockTexturePathChanged( blockTexturePath );
 }
-void EditorState::setGame( GameDef game )
+void EditorState::setGame( QString gameId )
 {
-    m_game = game;
-    emit gameChanged( &game );
+    if ( !m_gameDefs.contains(gameId) ) {
+        qWarning() << "Unknown Game ID " << gameId;
+        return;
+    }
+
+    m_game = m_gameDefs.value( gameId );
+    m_pBlockDefs = m_game.blockDefs;
+    emit gameChanged( &m_game );
 }
