@@ -8,6 +8,8 @@
 #include <QVBoxLayout>
 #include <QWidget>
 #include <QComboBox>
+#include <QLineEdit>
+#include <QFileDialog>
 
 #include <QSettings>
 
@@ -78,6 +80,30 @@ SettingsDialog::SettingsDialog( EditorState *editorState, QWidget *parent ) : QD
 	}
 
 	gameLayout->addRow( label3, m_gameDefComboBox );
+
+	m_gameDefPathEnter = new QLineEdit( tabGame );
+	QPushButton *gameDefPathButton = new QPushButton( "...", tabGame );
+
+	gameLayout->addRow( new QLabel(tr("Game Definitions")), (QWidget*)nullptr ); // TODO: not form layout
+	gameLayout->addRow( gameDefPathButton, m_gameDefPathEnter );
+
+	m_gameDefPathEnter->setText( settings.value( "gameDefFileLocation", ":/example/games.toml" ).toString() );
+
+	connect( gameDefPathButton, SIGNAL( clicked() ), this, SLOT( browseGameDefsFile() ) );
+}
+
+void SettingsDialog::browseGameDefsFile() {
+	// Display a dialog to select only one directory
+	QFileDialog dialog( this );
+	dialog.setOption( QFileDialog::DontUseNativeDialog, true );
+	dialog.setWindowTitle( tr( "Open File" ) );
+	dialog.setDirectory( QDir::homePath() );
+	dialog.setLabelText( QFileDialog::Accept, tr( "Open" ) );
+
+	if ( dialog.exec() == QDialog::Accepted )
+	{
+		m_gameDefPathEnter->setText( dialog.selectedFiles().value(0) );
+	}
 }
 
 void SettingsDialog::accept()
@@ -86,6 +112,7 @@ void SettingsDialog::accept()
 	settings.setValue( "gridColor", m_gridColorPicker->getColor() );
 	settings.setValue( "voidColor", m_voidColorPicker->getColor() );
 	settings.setValue( "gameId", m_gameDefComboBox->currentText() );
+	settings.setValue( "gameDefFileLocation", m_gameDefPathEnter->text() );
 	QDialog::accept();
 
 	m_editorState->setGame( m_gameDefComboBox->currentText() );

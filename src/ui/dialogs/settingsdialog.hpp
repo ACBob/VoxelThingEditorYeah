@@ -6,6 +6,7 @@
 class ColorPicker;
 class EditorState;
 class QComboBox;
+class QLineEdit;
 
 class SettingsDialog : public QDialog
 {
@@ -17,10 +18,14 @@ class SettingsDialog : public QDialog
   public slots:
 	void accept();
 
+	private slots:
+	void browseGameDefsFile();
+
   private:
 	ColorPicker *m_gridColorPicker;
 	ColorPicker *m_voidColorPicker;
 	QComboBox *m_gameDefComboBox;
+	QLineEdit *m_gameDefPathEnter;
 
 	EditorState *m_editorState;
 };
