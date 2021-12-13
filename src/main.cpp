@@ -29,12 +29,6 @@ int main( int argc, char *argv[] )
 	// Create editor state
 	EditorState editorState;
 
-	// TODO: load the following from the QSettings
-	// TODO: Handle in constructor
-	editorState.m_pGameDefs = definitions::LoadGameDefs(":/example/games.toml");
-	editorState.m_pGame = &editorState.m_pGameDefs->begin().value();
-	editorState.m_pBlockDefs = editorState.m_pGame->blockDefs;
-
 	auto pEditor = new MainWindow( &editorState, nullptr );
 
 	// Just looks nice

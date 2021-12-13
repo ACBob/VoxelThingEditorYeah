@@ -223,7 +223,7 @@ void CChunk::rebuildModel()
 						v.b = qBound(0.1f, fmaxf( blue / 16.0f, sky / 16.0f ) * 1.5f, 1.0f);
 
 						Vector4f uv;
-						if ( m_editorState != nullptr )
+						if ( m_editorState != nullptr && m_editorState->m_pBlockDefs != nullptr )
 						{
 							uv = render::getUV( m_editorState->m_pBlockDefs, getID( x, y, z ) );
 							uv.y -= 1 / 16.0f; // HACK: otherwise all textures are offset by 1/16

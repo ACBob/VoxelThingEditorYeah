@@ -51,7 +51,7 @@ namespace definitions {
 
 	BlockDefs *LoadBlockDefs( const QString &path );
 
-	GameDefs *LoadGameDefs( const QString &path );
-	GameDef LoadGameDef( GameDef def, const QString &path );
+	GameDefs LoadGameDefs( const QString &path );
+	void LoadGameDef( GameDef &def, const QString &path );
 
 }

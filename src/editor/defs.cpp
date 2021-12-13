@@ -143,7 +143,7 @@ BlockDefs *definitions::LoadBlockDefs( const QString &path )
 	return defs;
 }
 
-GameDefs *definitions::LoadGameDefs( const QString &path )
+GameDefs definitions::LoadGameDefs( const QString &path )
 {
 	// Open for reading
 	QFile file( path );
@@ -160,7 +160,7 @@ GameDefs *definitions::LoadGameDefs( const QString &path )
 	// Parse the TOML
 	toml::table root = toml::parse( contents.toStdString() );
 
-	GameDefs *defs = new GameDefs();
+	GameDefs defs;
 
 	for ( auto &k : root )
 	{
@@ -206,7 +206,7 @@ GameDefs *definitions::LoadGameDefs( const QString &path )
 		{
 			// attempt to load the file
 			QString path = QDir( def.absolutePath ).absoluteFilePath( def.filePath );
-			def = LoadGameDef( def, def.filePath );
+			LoadGameDef( def, def.filePath );
 		}
 
 		QString blockdefs = QString::fromStdString( gamedef->get( "blockdefs" )->value_or<std::string>( "" ) );
@@ -222,20 +222,20 @@ GameDefs *definitions::LoadGameDefs( const QString &path )
 			def.blockDefs = LoadBlockDefs( path );
 		}
 
-		defs->insert( id, def );
+		defs.insert( id, def );
 	}
 
 	return defs;
 }
 
-GameDef definitions::LoadGameDef( GameDef def, const QString &path )
+void definitions::LoadGameDef( GameDef &def, const QString &path )
 {
 	// Open for reading
 	QFile file( path );
 	if ( !file.open( QIODevice::ReadOnly ) )
 	{
 		qWarning() << "Failed to open game def file" << path;
-		return def;
+		return;
 	}
 
 	// Read the file
@@ -253,6 +253,4 @@ GameDef definitions::LoadGameDef( GameDef def, const QString &path )
 		def.texturePath = QString::fromStdString( root.get( "texture_path" )->value_or<std::string>( "" ) );
 	if ( root.get("blockdefs") )
 		def.blockDefs = LoadBlockDefs( QDir( def.absolutePath ).absoluteFilePath( QString::fromStdString( root.get( "blockdefs" )->value_or<std::string>( "" ) ) ) );
-
-	return def;
 };

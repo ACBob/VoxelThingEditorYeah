@@ -35,10 +35,10 @@ class EditorState : public QObject
 	BlockDefs *m_pBlockDefs;
 
 	// Pointer to the games we know about.
-	GameDefs *m_pGameDefs;
+	GameDefs m_gameDefs;
 
 	// Pointer to the current game.
-	GameDef *m_pGame;
+	GameDef m_game;
 
 	// TODO: Pointer to a QVector of Entity definitions.
 	// EntityDefs *entityDefs;
@@ -68,8 +68,7 @@ class EditorState : public QObject
 	void setChosenBlockType( uint16_t chosenBlockType );
 	void setChosenBlockMeta( uint16_t chosenBlockMeta );
 	void setBlockTexturePath( QString blockTexturePath );
-	void setGameDefs( GameDefs *gameDefs );
-	void setGame( GameDef *game );
+	void setGame( GameDef game );
 
   signals:
 	void filenameChanged( QString filename );

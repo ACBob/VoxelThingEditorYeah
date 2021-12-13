@@ -1,6 +1,7 @@
 #include "editorstate.hpp"
 
 #include <QUndoStack>
+#include <QSettings>
 
 EditorState::EditorState( QObject *parent ) : QObject(parent) {
     m_sFilename		 = "";
@@ -15,6 +16,12 @@ EditorState::EditorState( QObject *parent ) : QObject(parent) {
 	m_pUndoStack = new QUndoStack( this );
 	m_pUndoStack->setUndoLimit( 100 );
 	m_pUndoStack->clear();
+
+    // Game definition stuff
+    QSettings settings;
+    m_gameDefs = definitions::LoadGameDefs( settings.value( "gameDefFileLocation", ":/example/games.toml" ).toString() );
+    m_game = m_gameDefs.begin().value(); // TODO: Setting
+    m_pBlockDefs = m_game.blockDefs;
 }
 
 void EditorState::setFilename( QString filename )
@@ -52,13 +59,8 @@ void EditorState::setBlockTexturePath( QString blockTexturePath )
     m_sBlockTexturePath = blockTexturePath;
     emit blockTexturePathChanged( blockTexturePath );
 }
-void EditorState::setGameDefs( GameDefs *gameDefs )
+void EditorState::setGame( GameDef game )
 {
-    m_pGameDefs = gameDefs;
-    emit gameDefsChanged( gameDefs );
-}
-void EditorState::setGame( GameDef *game )
-{
-    m_pGame = game;
-    emit gameChanged( game );
+    m_game = game;
+    emit gameChanged( &game );
 }
