@@ -22,9 +22,9 @@ BlockList::BlockList( EditorState *editorState, QWidget *parent ) : QDialog( par
 	m_list = new QListWidget( this );
 	layout->addWidget( m_list );
 
-	for ( int i = 0; i < m_editorState->blockDefs->size(); i++ )
+	for ( int i = 0; i < m_editorState->m_pBlockDefs->size(); i++ )
 	{
-		BlockDef blockDef	  = m_editorState->blockDefs->value( i );
+		BlockDef blockDef	  = m_editorState->m_pBlockDefs->value( i );
 		QString name		  = QString( "%1 : %2" ).arg( QString::number( i ), blockDef.name );
 		QListWidgetItem *item = new QListWidgetItem( name, m_list );
 		item->setData( Qt::UserRole, i );
@@ -35,7 +35,7 @@ BlockList::BlockList( EditorState *editorState, QWidget *parent ) : QDialog( par
 	connect( m_list, SIGNAL( itemClicked( QListWidgetItem * ) ), this, SLOT( onItemClicked( QListWidgetItem * ) ) );
 	connect( m_list, SIGNAL( itemSelectionChanged() ), this, SLOT( onItemSelectionChanged() ) );
 
-	m_blockPreview = new BlockTexture( m_editorState, m_editorState->chosenBlockType, this );
+	m_blockPreview = new BlockTexture( m_editorState, m_editorState->m_nChosenBlockType, this );
 	layout->addWidget( m_blockPreview );
 
 	QHBoxLayout *buttonLayout = new QHBoxLayout();
@@ -49,7 +49,7 @@ BlockList::BlockList( EditorState *editorState, QWidget *parent ) : QDialog( par
 	buttonLayout->addWidget( cancelButton );
 	connect( cancelButton, SIGNAL( clicked() ), this, SLOT( reject() ) );
 
-	m_selectedBlock = m_editorState->chosenBlockType;
+	m_selectedBlock = m_editorState->m_nChosenBlockType;
 	m_list->setCurrentRow( m_selectedBlock );
 }
 

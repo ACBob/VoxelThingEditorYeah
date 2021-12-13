@@ -70,7 +70,7 @@ void RenderWidget::initializeGL()
 	glBlendFunc( GL_ONE, GL_ONE_MINUS_SRC_ALPHA );
 	glBlendEquation( GL_FUNC_ADD );
 
-	m_texture = new QOpenGLTexture( QImage( m_editorState->blockTexturePath ).mirrored() );
+	m_texture = new QOpenGLTexture( QImage( m_editorState->m_sBlockTexturePath ).mirrored() );
 	m_texture->setMinificationFilter( QOpenGLTexture::LinearMipMapLinear );
 	m_texture->setMagnificationFilter( QOpenGLTexture::Linear );
 	m_texture->setWrapMode( QOpenGLTexture::Repeat );
@@ -93,7 +93,7 @@ void RenderWidget::paintGL()
 	glClearColor( voidColor.redF(), voidColor.greenF(), voidColor.blueF(), 1.0f );
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
-	if ( m_editorState->world != nullptr && m_displayMode == DispMode::DISP_3D )
+	if ( m_editorState->m_pWorld != nullptr && m_displayMode == DispMode::DISP_3D )
 	{
 		// first-person camera
 		glMatrixMode( GL_PROJECTION );
@@ -121,11 +121,11 @@ void RenderWidget::paintGL()
 
 		m_texture->bind();
 
-		m_editorState->world->render( context() );
+		m_editorState->m_pWorld->render( context() );
 
 		m_texture->release();
 	}
-	else if ( m_editorState->world != nullptr && m_displayMode >= DispMode::DISP_GRID_XY &&
+	else if ( m_editorState->m_pWorld != nullptr && m_displayMode >= DispMode::DISP_GRID_XY &&
 			  m_displayMode <= DispMode::DISP_GRID_ZY )
 	{
 		// orthographic camera
@@ -174,7 +174,7 @@ void RenderWidget::paintGL()
 		// After that is setup, draw!
 		m_texture->bind();
 
-		m_editorState->world->render( context() );
+		m_editorState->m_pWorld->render( context() );
 
 		m_texture->release();
 
@@ -249,7 +249,7 @@ void RenderWidget::paintGL()
 
 		glEnable( GL_DEPTH_TEST );
 	}
-	else if ( m_editorState->world != nullptr && m_displayMode == DispMode::DISP_ISOMETRIC )
+	else if ( m_editorState->m_pWorld != nullptr && m_displayMode == DispMode::DISP_ISOMETRIC )
 	{
 		glMatrixMode( GL_PROJECTION );
 		glLoadIdentity();
@@ -286,7 +286,7 @@ void RenderWidget::paintGL()
 		// same as DISP_3D now
 		m_texture->bind();
 
-		m_editorState->world->render( context() );
+		m_editorState->m_pWorld->render( context() );
 
 		m_texture->release();
 	}
@@ -296,7 +296,7 @@ void RenderWidget::paintGL()
 	glGetIntegerv( GL_VIEWPORT, m_viewport );
 
 	// Draw the selection if the size is not 0
-	if ( m_editorState->selectionAreaStart != m_editorState->selectionAreaEnd )
+	if ( m_editorState->m_vecSelectionAreaStart != m_editorState->m_vecSelectionAreaEnd )
 	{
 		// Draw it as a yellow cuboid
 		glColor3f( 1.0f, 1.0f, 0.0f );
@@ -306,41 +306,41 @@ void RenderWidget::paintGL()
 
 		glBegin( GL_LINES );
 
-		glVertex3f( m_editorState->selectionAreaStart.x, m_editorState->selectionAreaStart.y, m_editorState->selectionAreaStart.z );
-		glVertex3f( m_editorState->selectionAreaStart.x, m_editorState->selectionAreaStart.y, m_editorState->selectionAreaEnd.z );
+		glVertex3f( m_editorState->m_vecSelectionAreaStart.x, m_editorState->m_vecSelectionAreaStart.y, m_editorState->m_vecSelectionAreaStart.z );
+		glVertex3f( m_editorState->m_vecSelectionAreaStart.x, m_editorState->m_vecSelectionAreaStart.y, m_editorState->m_vecSelectionAreaEnd.z );
 		
-		glVertex3f( m_editorState->selectionAreaStart.x, m_editorState->selectionAreaStart.y, m_editorState->selectionAreaEnd.z );
-		glVertex3f( m_editorState->selectionAreaEnd.x, m_editorState->selectionAreaStart.y, m_editorState->selectionAreaEnd.z );
+		glVertex3f( m_editorState->m_vecSelectionAreaStart.x, m_editorState->m_vecSelectionAreaStart.y, m_editorState->m_vecSelectionAreaEnd.z );
+		glVertex3f( m_editorState->m_vecSelectionAreaEnd.x, m_editorState->m_vecSelectionAreaStart.y, m_editorState->m_vecSelectionAreaEnd.z );
 
-		glVertex3f( m_editorState->selectionAreaEnd.x, m_editorState->selectionAreaStart.y, m_editorState->selectionAreaEnd.z );
-		glVertex3f( m_editorState->selectionAreaEnd.x, m_editorState->selectionAreaStart.y, m_editorState->selectionAreaStart.z );
+		glVertex3f( m_editorState->m_vecSelectionAreaEnd.x, m_editorState->m_vecSelectionAreaStart.y, m_editorState->m_vecSelectionAreaEnd.z );
+		glVertex3f( m_editorState->m_vecSelectionAreaEnd.x, m_editorState->m_vecSelectionAreaStart.y, m_editorState->m_vecSelectionAreaStart.z );
 
-		glVertex3f( m_editorState->selectionAreaEnd.x, m_editorState->selectionAreaStart.y, m_editorState->selectionAreaStart.z );
-		glVertex3f( m_editorState->selectionAreaStart.x, m_editorState->selectionAreaStart.y, m_editorState->selectionAreaStart.z );
+		glVertex3f( m_editorState->m_vecSelectionAreaEnd.x, m_editorState->m_vecSelectionAreaStart.y, m_editorState->m_vecSelectionAreaStart.z );
+		glVertex3f( m_editorState->m_vecSelectionAreaStart.x, m_editorState->m_vecSelectionAreaStart.y, m_editorState->m_vecSelectionAreaStart.z );
 
-		glVertex3f( m_editorState->selectionAreaStart.x, m_editorState->selectionAreaEnd.y, m_editorState->selectionAreaStart.z );
-		glVertex3f( m_editorState->selectionAreaStart.x, m_editorState->selectionAreaEnd.y, m_editorState->selectionAreaEnd.z );
+		glVertex3f( m_editorState->m_vecSelectionAreaStart.x, m_editorState->m_vecSelectionAreaEnd.y, m_editorState->m_vecSelectionAreaStart.z );
+		glVertex3f( m_editorState->m_vecSelectionAreaStart.x, m_editorState->m_vecSelectionAreaEnd.y, m_editorState->m_vecSelectionAreaEnd.z );
 
-		glVertex3f( m_editorState->selectionAreaStart.x, m_editorState->selectionAreaEnd.y, m_editorState->selectionAreaEnd.z );
-		glVertex3f( m_editorState->selectionAreaEnd.x, m_editorState->selectionAreaEnd.y, m_editorState->selectionAreaEnd.z );
+		glVertex3f( m_editorState->m_vecSelectionAreaStart.x, m_editorState->m_vecSelectionAreaEnd.y, m_editorState->m_vecSelectionAreaEnd.z );
+		glVertex3f( m_editorState->m_vecSelectionAreaEnd.x, m_editorState->m_vecSelectionAreaEnd.y, m_editorState->m_vecSelectionAreaEnd.z );
 
-		glVertex3f( m_editorState->selectionAreaEnd.x, m_editorState->selectionAreaEnd.y, m_editorState->selectionAreaEnd.z );
-		glVertex3f( m_editorState->selectionAreaEnd.x, m_editorState->selectionAreaEnd.y, m_editorState->selectionAreaStart.z );
+		glVertex3f( m_editorState->m_vecSelectionAreaEnd.x, m_editorState->m_vecSelectionAreaEnd.y, m_editorState->m_vecSelectionAreaEnd.z );
+		glVertex3f( m_editorState->m_vecSelectionAreaEnd.x, m_editorState->m_vecSelectionAreaEnd.y, m_editorState->m_vecSelectionAreaStart.z );
 
-		glVertex3f( m_editorState->selectionAreaEnd.x, m_editorState->selectionAreaEnd.y, m_editorState->selectionAreaStart.z );
-		glVertex3f( m_editorState->selectionAreaStart.x, m_editorState->selectionAreaEnd.y, m_editorState->selectionAreaStart.z );
+		glVertex3f( m_editorState->m_vecSelectionAreaEnd.x, m_editorState->m_vecSelectionAreaEnd.y, m_editorState->m_vecSelectionAreaStart.z );
+		glVertex3f( m_editorState->m_vecSelectionAreaStart.x, m_editorState->m_vecSelectionAreaEnd.y, m_editorState->m_vecSelectionAreaStart.z );
 
-		glVertex3f( m_editorState->selectionAreaStart.x, m_editorState->selectionAreaStart.y, m_editorState->selectionAreaStart.z );
-		glVertex3f( m_editorState->selectionAreaStart.x, m_editorState->selectionAreaEnd.y, m_editorState->selectionAreaStart.z );
+		glVertex3f( m_editorState->m_vecSelectionAreaStart.x, m_editorState->m_vecSelectionAreaStart.y, m_editorState->m_vecSelectionAreaStart.z );
+		glVertex3f( m_editorState->m_vecSelectionAreaStart.x, m_editorState->m_vecSelectionAreaEnd.y, m_editorState->m_vecSelectionAreaStart.z );
 
-		glVertex3f( m_editorState->selectionAreaStart.x, m_editorState->selectionAreaStart.y, m_editorState->selectionAreaEnd.z );
-		glVertex3f( m_editorState->selectionAreaStart.x, m_editorState->selectionAreaEnd.y, m_editorState->selectionAreaEnd.z );
+		glVertex3f( m_editorState->m_vecSelectionAreaStart.x, m_editorState->m_vecSelectionAreaStart.y, m_editorState->m_vecSelectionAreaEnd.z );
+		glVertex3f( m_editorState->m_vecSelectionAreaStart.x, m_editorState->m_vecSelectionAreaEnd.y, m_editorState->m_vecSelectionAreaEnd.z );
 
-		glVertex3f( m_editorState->selectionAreaEnd.x, m_editorState->selectionAreaStart.y, m_editorState->selectionAreaStart.z );
-		glVertex3f( m_editorState->selectionAreaEnd.x, m_editorState->selectionAreaEnd.y, m_editorState->selectionAreaStart.z );
+		glVertex3f( m_editorState->m_vecSelectionAreaEnd.x, m_editorState->m_vecSelectionAreaStart.y, m_editorState->m_vecSelectionAreaStart.z );
+		glVertex3f( m_editorState->m_vecSelectionAreaEnd.x, m_editorState->m_vecSelectionAreaEnd.y, m_editorState->m_vecSelectionAreaStart.z );
 
-		glVertex3f( m_editorState->selectionAreaEnd.x, m_editorState->selectionAreaStart.y, m_editorState->selectionAreaEnd.z );
-		glVertex3f( m_editorState->selectionAreaEnd.x, m_editorState->selectionAreaEnd.y, m_editorState->selectionAreaEnd.z );
+		glVertex3f( m_editorState->m_vecSelectionAreaEnd.x, m_editorState->m_vecSelectionAreaStart.y, m_editorState->m_vecSelectionAreaEnd.z );
+		glVertex3f( m_editorState->m_vecSelectionAreaEnd.x, m_editorState->m_vecSelectionAreaEnd.y, m_editorState->m_vecSelectionAreaEnd.z );
 
 		glEnd();
 
@@ -349,9 +349,9 @@ void RenderWidget::paintGL()
 	}
 
 	// Draw the tool last
-	if ( m_editorState->tool != nullptr )
+	if ( m_editorState->m_pTool != nullptr )
 	{
-		m_editorState->tool->draw( this );
+		m_editorState->m_pTool->draw( this );
 	}
 
 	glDisable( GL_DEPTH_TEST );
@@ -513,7 +513,7 @@ void RenderWidget::mouseMoveEvent( QMouseEvent *event )
 		ray_direction = Vector3f( x, y, z ) - Vector3f( m_modelview[12], m_modelview[13], m_modelview[14] );
 	ray_direction = ray_direction.Normal();
 
-	m_editorState->tool->mouseMoveEvent( event, Vector3f( x, y, z ), ray_direction, this );
+	m_editorState->m_pTool->mouseMoveEvent( event, Vector3f( x, y, z ), ray_direction, this );
 }
 
 void RenderWidget::mousePressEvent( QMouseEvent *event )
@@ -537,7 +537,7 @@ void RenderWidget::mousePressEvent( QMouseEvent *event )
 		}
 	}
 
-	if ( m_editorState->tool != nullptr )
+	if ( m_editorState->m_pTool != nullptr )
 	{
 		if ( !m_captureMouse )
 		{
@@ -560,11 +560,11 @@ void RenderWidget::mousePressEvent( QMouseEvent *event )
 				ray_direction = Vector3f( x, y, z ) - Vector3f( m_modelview[12], m_modelview[13], m_modelview[14] );
 			ray_direction = ray_direction.Normal();
 
-			m_editorState->tool->mousePressEvent( event, Vector3f( x, y, z ), ray_direction, this );
+			m_editorState->m_pTool->mousePressEvent( event, Vector3f( x, y, z ), ray_direction, this );
 		}
 		else
 		{
-			m_editorState->tool->mousePressEvent( event, m_camera, m_camera_forward, this );
+			m_editorState->m_pTool->mousePressEvent( event, m_camera, m_camera_forward, this );
 		}
 	}
 }
@@ -584,8 +584,8 @@ void RenderWidget::wheelEvent( QWheelEvent *event )
 {
 	if ( m_displayMode == DispMode::DISP_3D )
 	{
-		if ( m_editorState->tool != nullptr )
-			m_editorState->tool->wheelEvent( event, m_camera, m_camera_forward, this );
+		if ( m_editorState->m_pTool != nullptr )
+			m_editorState->m_pTool->wheelEvent( event, m_camera, m_camera_forward, this );
 		update();
 		return;
 	}

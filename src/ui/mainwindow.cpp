@@ -38,7 +38,7 @@ MainWindow::MainWindow( EditorState *editorState, QWidget *parent )
 	this->setMinimumSize( 800, 600 );
 
 	m_editorState			 = editorState;
-	m_editorState->world	 = &m_world;
+	m_editorState->m_pWorld	 = &m_world;
 
 	// Worlds always have the 0,0,0 chunk, it cannot be removed
 	m_world.createChunk( 0, 0, 0 );
@@ -82,7 +82,7 @@ MainWindow::MainWindow( EditorState *editorState, QWidget *parent )
 	// Editor 4-pane
 	m_editor = new Editor4Pane( editorState, this );
 	this->setCentralWidget( m_editor );
-	m_editorState->tool = m_tools[0];
+	m_editorState->m_pTool = m_tools[0];
 
 	// Menubar
 	QMenuBar *menuBar = new QMenuBar( this );
@@ -105,12 +105,12 @@ MainWindow::MainWindow( EditorState *editorState, QWidget *parent )
 	// Edit menu
 	QMenu *editMenu = menuBar->addMenu( tr( "&Edit" ) );
 
-	QAction *undoAction = m_editorState->undoStack->createUndoAction( this, tr( "Undo" ) );
+	QAction *undoAction = m_editorState->m_pUndoStack->createUndoAction( this, tr( "Undo" ) );
 	undoAction->setIcon( QIcon::fromTheme( "edit-undo" ) );
 	undoAction->setShortcut( QKeySequence::Undo );
 	editMenu->addAction( undoAction );
 
-	QAction *redoAction = m_editorState->undoStack->createRedoAction( this, tr( "Redo" ) );
+	QAction *redoAction = m_editorState->m_pUndoStack->createRedoAction( this, tr( "Redo" ) );
 	redoAction->setIcon( QIcon::fromTheme( "edit-redo" ) );
 	redoAction->setShortcut( QKeySequence::Redo );
 	editMenu->addAction( redoAction );
@@ -173,7 +173,7 @@ void MainWindow::toolChanged( QAction *action )
 	{
 		if ( tool->getName() == action->text() )
 		{
-			m_editorState->tool = tool;
+			m_editorState->setTool( tool );
 			return;
 		}
 	}
@@ -252,6 +252,6 @@ void MainWindow::showBlocks()
 	{
 		m_editorState->setChosenBlockType( dialog->getSelectedBlock() );
 
-		qDebug() << "Chosen block: " << m_editorState->chosenBlockType;
+		qDebug() << "Chosen block: " << m_editorState->m_nChosenBlockType;
 	}
 }

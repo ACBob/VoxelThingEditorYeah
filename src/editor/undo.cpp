@@ -20,12 +20,12 @@ UndoBlockEdit::UndoBlockEdit( EditorState *editorState, int x, int y, int z, uin
 
 void UndoBlockEdit::undo()
 {
-    m_editorState->world->set( m_x, m_y, m_z, m_oldVoxel );
+    m_editorState->m_pWorld->set( m_x, m_y, m_z, m_oldVoxel );
 }
 
 void UndoBlockEdit::redo()
 {
-    m_editorState->world->set( m_x, m_y, m_z, m_newVoxel );
+    m_editorState->m_pWorld->set( m_x, m_y, m_z, m_newVoxel );
 }
 
 

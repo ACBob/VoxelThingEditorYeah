@@ -10,7 +10,7 @@
 BlockTexture::BlockTexture( EditorState *editorState, uint16_t id, QWidget *parent )
 	: QWidget( parent ), m_editorState( editorState )
 {
-	m_texture.load( editorState->blockTexturePath );
+	m_texture.load( editorState->m_sBlockTexturePath );
 
 	m_id = id;
 }
@@ -22,7 +22,7 @@ bool BlockTexture::hasHeightForWidth() const { return true; }
 void BlockTexture::paintEvent( QPaintEvent *event )
 {
 	// get UV coordinates
-	Vector4f uv = render::getUV( m_editorState->blockDefs, m_id );
+	Vector4f uv = render::getUV( m_editorState->m_pBlockDefs, m_id );
 	uv.x *= m_texture.width();
 	uv.y *= m_texture.height();
 	uv.z = m_texture.height() / 16.0f;

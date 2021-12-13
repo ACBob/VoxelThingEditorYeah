@@ -24,7 +24,7 @@ CurrentBlock::CurrentBlock( EditorState *editorState, QWidget *parent ) : QDockW
 
 	QLabel *label = new QLabel( tr( "Current Block" ), widget );
 	layout->addWidget( label, 0, 0 );
-	m_blockTexWidget = new BlockTexture( m_editorState, m_editorState->chosenBlockType, widget );
+	m_blockTexWidget = new BlockTexture( m_editorState, m_editorState->m_nChosenBlockType, widget );
 	layout->addWidget( m_blockTexWidget, 1, 0 );
 	m_blockTexWidget->setFixedSize( 64, 64 );
 

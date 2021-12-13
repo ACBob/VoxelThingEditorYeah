@@ -46,7 +46,7 @@ void CHandTool::mousePressEvent( QMouseEvent *event, Vector3f pos, Vector3f dir,
 	// view->update();
 
 	CRaycast caster;
-	std::pair<Vector3f, Vector3f> cast = caster.cast( m_editorState->world, pos, dir, TOOL_CAST_DISTANCE );
+	std::pair<Vector3f, Vector3f> cast = caster.cast( m_editorState->m_pWorld, pos, dir, TOOL_CAST_DISTANCE );
 
 	m_selectedBlockPos	  = cast.first;
 	m_selectedBlockNormal = cast.second;
@@ -56,36 +56,36 @@ void CHandTool::mousePressEvent( QMouseEvent *event, Vector3f pos, Vector3f dir,
 		if ( event->button() == Qt::LeftButton )
 		{
 			Vector3f p = m_selectedBlockPos;
-			uint32_t oldVoxel = m_editorState->world->get( p.x, p.y, p.z );
-			m_editorState->world->setID( p.x, p.y, p.z, 0 );
-			m_editorState->world->setMeta( p.x, p.y, p.z, 0 );
+			uint32_t oldVoxel = m_editorState->m_pWorld->get( p.x, p.y, p.z );
+			m_editorState->m_pWorld->setID( p.x, p.y, p.z, 0 );
+			m_editorState->m_pWorld->setMeta( p.x, p.y, p.z, 0 );
 
 			// find chunk
-			CChunk *c = m_editorState->world->getChunkWorldPos( p );
+			CChunk *c = m_editorState->m_pWorld->getChunkWorldPos( p );
 			c->rebuildModel();
 
 			// push the undo
 			UndoBlockEdit *undo = new UndoBlockEdit( m_editorState, p.x, p.y, p.z, oldVoxel, 0 );
-			m_editorState->undoStack->push( undo );
+			m_editorState->m_pUndoStack->push( undo );
 		}
 		else if ( event->button() == Qt::RightButton )
 		{
 			Vector3f p = m_selectedBlockPos + m_selectedBlockNormal;
-			uint32_t oldVoxel = m_editorState->world->get( p.x, p.y, p.z );
-			m_editorState->world->setID( p.x, p.y, p.z, m_editorState->chosenBlockType );
-			m_editorState->world->setMeta( p.x, p.y, p.z, m_editorState->chosenBlockMeta );
-			CChunk *c = m_editorState->world->getChunkWorldPos( p );
+			uint32_t oldVoxel = m_editorState->m_pWorld->get( p.x, p.y, p.z );
+			m_editorState->m_pWorld->setID( p.x, p.y, p.z, m_editorState->m_nChosenBlockType );
+			m_editorState->m_pWorld->setMeta( p.x, p.y, p.z, m_editorState->m_nChosenBlockMeta );
+			CChunk *c = m_editorState->m_pWorld->getChunkWorldPos( p );
 			c->rebuildModel();
 
 			// push the undo
-			UndoBlockEdit *undo = new UndoBlockEdit( m_editorState, p.x, p.y, p.z, oldVoxel, m_editorState->chosenBlockType );
-			m_editorState->undoStack->push( undo );
+			UndoBlockEdit *undo = new UndoBlockEdit( m_editorState, p.x, p.y, p.z, oldVoxel, m_editorState->m_nChosenBlockType );
+			m_editorState->m_pUndoStack->push( undo );
 		}
 		else if ( event->button() == Qt::MiddleButton )
 		{
 			Vector3f p = m_selectedBlockPos;
 			uint16_t id, meta;
-			m_editorState->world->get( p.x, p.y, p.z, id, meta );
+			m_editorState->m_pWorld->get( p.x, p.y, p.z, id, meta );
 			m_editorState->setChosenBlockType( id );
 			m_editorState->setChosenBlockMeta( meta );
 		}
@@ -99,7 +99,7 @@ void CHandTool::mouseMoveEvent( QMouseEvent *event, Vector3f pos, Vector3f dir, 
 	// qDebug () << "Hand tool moved @" << pos;
 
 	CRaycast caster;
-	std::pair<Vector3f, Vector3f> cast = caster.cast( m_editorState->world, pos, dir, TOOL_CAST_DISTANCE );
+	std::pair<Vector3f, Vector3f> cast = caster.cast( m_editorState->m_pWorld, pos, dir, TOOL_CAST_DISTANCE );
 
 	m_selectedBlockPos	  = cast.first;
 	m_selectedBlockNormal = cast.second;
@@ -113,17 +113,17 @@ void CHandTool::wheelEvent( QWheelEvent *event, Vector3f pos, Vector3f dir, Rend
 
 	if ( event->delta() > 0 )
 	{
-		m_editorState->chosenBlockType++;
-		if ( m_editorState->chosenBlockType >= m_editorState->blockDefs->keys().size() )
-			m_editorState->chosenBlockType = 1;
-		m_editorState->setChosenBlockType( m_editorState->chosenBlockType ); // HACK: emit the signal
+		m_editorState->m_nChosenBlockType++;
+		if ( m_editorState->m_nChosenBlockType >= m_editorState->m_pBlockDefs->keys().size() )
+			m_editorState->m_nChosenBlockType = 1;
+		m_editorState->setChosenBlockType( m_editorState->m_nChosenBlockType ); // HACK: emit the signal
 	}
 	else
 	{
-		m_editorState->chosenBlockType--;
-		if ( m_editorState->chosenBlockType < 1 )
-			m_editorState->chosenBlockType = m_editorState->blockDefs->keys().size() - 1;
-		m_editorState->setChosenBlockType( m_editorState->chosenBlockType ); // HACK: emit the signal
+		m_editorState->m_nChosenBlockType--;
+		if ( m_editorState->m_nChosenBlockType < 1 )
+			m_editorState->m_nChosenBlockType = m_editorState->m_pBlockDefs->keys().size() - 1;
+		m_editorState->setChosenBlockType( m_editorState->m_nChosenBlockType ); // HACK: emit the signal
 	}
 }
 
@@ -205,7 +205,7 @@ void CWrenchTool::mousePressEvent( QMouseEvent *event, Vector3f pos, Vector3f di
 	// view->update();
 
 	CRaycast caster;
-	std::pair<Vector3f, Vector3f> cast = caster.cast( m_editorState->world, pos, dir, TOOL_CAST_DISTANCE );
+	std::pair<Vector3f, Vector3f> cast = caster.cast( m_editorState->m_pWorld, pos, dir, TOOL_CAST_DISTANCE );
 
 	m_selectedBlockPos	  = cast.first;
 	m_selectedBlockNormal = cast.second;
@@ -218,26 +218,26 @@ void CWrenchTool::mousePressEvent( QMouseEvent *event, Vector3f pos, Vector3f di
 			{
 				// Display configure dialog
 				uint16_t id, meta;
-				m_editorState->world->get( m_selectedBlockPos.x, m_selectedBlockPos.y, m_selectedBlockPos.z, id, meta );
-				BlockPropertyDialog *dlg = new BlockPropertyDialog( m_editorState->blockDefs, id, meta );
+				m_editorState->m_pWorld->get( m_selectedBlockPos.x, m_selectedBlockPos.y, m_selectedBlockPos.z, id, meta );
+				BlockPropertyDialog *dlg = new BlockPropertyDialog( m_editorState->m_pBlockDefs, id, meta );
 
 				if ( dlg->exec() == QDialog::Accepted )
 				{
-					uint32_t oldVoxel = m_editorState->world->get( m_selectedBlockPos.x, m_selectedBlockPos.y, m_selectedBlockPos.z );
+					uint32_t oldVoxel = m_editorState->m_pWorld->get( m_selectedBlockPos.x, m_selectedBlockPos.y, m_selectedBlockPos.z );
 					id	 = dlg->getChosenId();
 					meta = dlg->getChosenMeta();
 
-					m_editorState->world->set( m_selectedBlockPos.x, m_selectedBlockPos.y, m_selectedBlockPos.z, id,
+					m_editorState->m_pWorld->set( m_selectedBlockPos.x, m_selectedBlockPos.y, m_selectedBlockPos.z, id,
 											   meta );
-					m_editorState->world->getChunkWorldPos( m_selectedBlockPos )->rebuildModel();
+					m_editorState->m_pWorld->getChunkWorldPos( m_selectedBlockPos )->rebuildModel();
 					view->update();
 
-					uint32_t newVoxel = m_editorState->world->get( m_selectedBlockPos.x, m_selectedBlockPos.y, m_selectedBlockPos.z );
+					uint32_t newVoxel = m_editorState->m_pWorld->get( m_selectedBlockPos.x, m_selectedBlockPos.y, m_selectedBlockPos.z );
 
 					// Push undo
 					UndoBlockEdit *undo = new UndoBlockEdit( m_editorState, m_selectedBlockPos.x, m_selectedBlockPos.y,
 															  m_selectedBlockPos.z, oldVoxel, newVoxel );
-					m_editorState->undoStack->push( undo );
+					m_editorState->m_pUndoStack->push( undo );
 				}
 			}
 		}
@@ -251,7 +251,7 @@ void CWrenchTool::mouseMoveEvent( QMouseEvent *event, Vector3f pos, Vector3f dir
 	// qDebug () << "Wrench tool moved @" << pos;
 
 	CRaycast caster;
-	std::pair<Vector3f, Vector3f> cast = caster.cast( m_editorState->world, pos, dir, TOOL_CAST_DISTANCE );
+	std::pair<Vector3f, Vector3f> cast = caster.cast( m_editorState->m_pWorld, pos, dir, TOOL_CAST_DISTANCE );
 
 	m_selectedBlockPos	  = cast.first;
 	m_selectedBlockNormal = cast.second;
@@ -291,10 +291,10 @@ void CSimulateTool::mousePressEvent( QMouseEvent *event, Vector3f pos, Vector3f 
 
 	// cast a ray to find the block we're pointing at
 	CRaycast caster;
-	std::pair<Vector3f, Vector3f> cast = caster.cast( m_editorState->world, pos, dir, TOOL_CAST_DISTANCE );
+	std::pair<Vector3f, Vector3f> cast = caster.cast( m_editorState->m_pWorld, pos, dir, TOOL_CAST_DISTANCE );
 
 	// find the chunk the block is in
-	CChunk *chunk = m_editorState->world->getChunkWorldPos( cast.first );
+	CChunk *chunk = m_editorState->m_pWorld->getChunkWorldPos( cast.first );
 
 	if ( chunk != nullptr )
 	{
@@ -321,7 +321,7 @@ void CSimulateTool::mousePressEvent( QMouseEvent *event, Vector3f pos, Vector3f 
 
 			// from there the undo will delete the arrays when it doesn't need them anymore
 			UndoChunkEdit *undo = new UndoChunkEdit( m_editorState, chunk, oldVoxels, newVoxels );
-			m_editorState->undoStack->push( undo );
+			m_editorState->m_pUndoStack->push( undo );
 		}
 		else if ( event->button() == Qt::RightButton )
 		{
@@ -368,7 +368,7 @@ void CSimulateTool::mousePressEvent( QMouseEvent *event, Vector3f pos, Vector3f 
 
 				// from there the undo will delete the arrays when it doesn't need them anymore
 				UndoChunkEdit *undo = new UndoChunkEdit( m_editorState, chunk, oldVoxels, newVoxels );
-				m_editorState->undoStack->push( undo );
+				m_editorState->m_pUndoStack->push( undo );
 			}
 		}
 		else
@@ -392,14 +392,14 @@ void CSelectTool::mousePressEvent( QMouseEvent *event, Vector3f pos, Vector3f di
 	qDebug() << "Select tool pressed @" << pos;
 
 	// No need to cast rays in 2D views
-	Vector3i selPos = m_editorState->selectionAreaStart;
+	Vector3i selPos = m_editorState->m_vecSelectionAreaStart;
 	if (event->button() == Qt::RightButton)
-		selPos = m_editorState->selectionAreaEnd;	
+		selPos = m_editorState->m_vecSelectionAreaEnd;	
 
 	if ( view->getDispMode() == RenderWidget::DispMode::DISP_3D || view->getDispMode() == RenderWidget::DispMode::DISP_ISOMETRIC )
 	{
 		CRaycast caster;
-		std::pair<Vector3f, Vector3f> cast = caster.cast( m_editorState->world, pos, dir, TOOL_CAST_DISTANCE );
+		std::pair<Vector3f, Vector3f> cast = caster.cast( m_editorState->m_pWorld, pos, dir, TOOL_CAST_DISTANCE );
 
 		selPos	= cast.first;
 	}
@@ -426,11 +426,11 @@ void CSelectTool::mousePressEvent( QMouseEvent *event, Vector3f pos, Vector3f di
 
 	if ( event->button() == Qt::LeftButton )
 	{
-		m_editorState->selectionAreaStart = selPos;
+		m_editorState->m_vecSelectionAreaStart = selPos;
 	}
 	else if ( event->button() == Qt::RightButton )
 	{
-		m_editorState->selectionAreaEnd = selPos;
+		m_editorState->m_vecSelectionAreaEnd = selPos;
 	}
 
 	view->update();
@@ -444,12 +444,12 @@ void CSelectTool::mouseMoveEvent( QMouseEvent *event, Vector3f pos, Vector3f dir
 	if ( event->buttons() & Qt::LeftButton )
 	{
 		// No need to cast rays in 2D views
-		Vector3i selPosEnd = m_editorState->selectionAreaEnd;
+		Vector3i selPosEnd = m_editorState->m_vecSelectionAreaEnd;
 
 		if ( view->getDispMode() == RenderWidget::DispMode::DISP_3D || view->getDispMode() == RenderWidget::DispMode::DISP_ISOMETRIC )
 		{
 			CRaycast caster;
-			std::pair<Vector3f, Vector3f> cast = caster.cast( m_editorState->world, pos, dir, TOOL_CAST_DISTANCE );
+			std::pair<Vector3f, Vector3f> cast = caster.cast( m_editorState->m_pWorld, pos, dir, TOOL_CAST_DISTANCE );
 
 			selPosEnd	= cast.first;
 		}
@@ -474,7 +474,7 @@ void CSelectTool::mouseMoveEvent( QMouseEvent *event, Vector3f pos, Vector3f dir
 			}
 		}
 
-		m_editorState->selectionAreaEnd = selPosEnd;
+		m_editorState->m_vecSelectionAreaEnd = selPosEnd;
 	}
 
 	view->update();

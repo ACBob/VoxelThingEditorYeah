@@ -20,90 +20,56 @@ class EditorState : public QObject
 	Q_OBJECT
 
   public:
+	EditorState( QObject *parent = 0 );
+
 	// The current filename.
-	QString filename;
+	QString m_sFilename;
 
 	// Pointer to the world object.
-	CWorld *world;
+	CWorld *m_pWorld;
 
 	// Pointer to the current tool.
-	CTool *tool;
+	CTool *m_pTool;
 
 	// Pointer to a QVector of block definitions.
-	BlockDefs *blockDefs;
+	BlockDefs *m_pBlockDefs;
 
 	// Pointer to the games we know about.
-	GameDefs *gameDefs;
+	GameDefs *m_pGameDefs;
 
 	// Pointer to the current game.
-	GameDef *game;
+	GameDef *m_pGame;
 
 	// TODO: Pointer to a QVector of Entity definitions.
 	// EntityDefs *entityDefs;
 
 	// Holds the block type / meta we want to place.
 	// Interpreted by tools differently.
-	uint16_t chosenBlockType;
-	uint16_t chosenBlockMeta;
+	uint16_t m_nChosenBlockType;
+	uint16_t m_nChosenBlockMeta;
 
 	// The absolute path of the block texture.
-	QString blockTexturePath;
+	QString m_sBlockTexturePath;
 
     // The undo stack
-    QUndoStack *undoStack;
+    QUndoStack *m_pUndoStack;
 
     // Selection Area
-    Vector3i selectionAreaStart;
-    Vector3i selectionAreaEnd;
+    Vector3i m_vecSelectionAreaStart;
+    Vector3i m_vecSelectionAreaEnd;
 
 	// Functions to set
 	// These ideally should be what you call to set stuff, where-as you just access the variables directly.
 	// These functions notifies the editor that something has changed, and the editor should update.
-	void setFilename( QString filename )
-	{
-		this->filename = filename;
-		emit filenameChanged( filename );
-	}
-	void setWorld( CWorld *world )
-	{
-		this->world = world;
-		emit worldChanged( world );
-	}
-	void setTool( CTool *tool )
-	{
-		this->tool = tool;
-		emit toolChanged( tool );
-	}
-	void setBlockDefs( BlockDefs *blockDefs )
-	{
-		this->blockDefs = blockDefs;
-		emit blockDefsChanged( blockDefs );
-	}
-	void setChosenBlockType( uint16_t chosenBlockType )
-	{
-		this->chosenBlockType = chosenBlockType;
-		emit chosenBlockTypeChanged( chosenBlockType );
-	}
-	void setChosenBlockMeta( uint16_t chosenBlockMeta )
-	{
-		this->chosenBlockMeta = chosenBlockMeta;
-		emit chosenBlockMetaChanged( chosenBlockMeta );
-	}
-	void setBlockTexturePath( QString blockTexturePath )
-	{
-		this->blockTexturePath = blockTexturePath;
-		emit blockTexturePathChanged( blockTexturePath );
-	}
-	void setGameDefs( GameDefs *gameDefs )
-	{
-		this->gameDefs = gameDefs;
-		emit gameDefsChanged( gameDefs );
-	}
-	void setGame( GameDef *game )
-	{
-		this->game = game;
-		emit gameChanged( game );
-	}
+	void setFilename( QString filename );
+	void setWorld( CWorld *world );
+	void setTool( CTool *tool );
+	void setBlockDefs( BlockDefs *blockDefs );
+	void setChosenBlockType( uint16_t chosenBlockType );
+	void setChosenBlockMeta( uint16_t chosenBlockMeta );
+	void setBlockTexturePath( QString blockTexturePath );
+	void setGameDefs( GameDefs *gameDefs );
+	void setGame( GameDef *game );
 
   signals:
 	void filenameChanged( QString filename );

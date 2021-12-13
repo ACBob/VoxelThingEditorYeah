@@ -8,3 +8,11 @@ texture_path = "img"
 blockdefs = "example/palette_internal.toml"
 working_dir = ""
 file = ""
+
+[devtest_two]
+name = "Developer Test Two"
+path = ":"
+texture_path = "img"
+blockdefs = "example/palette_two.toml"
+working_dir = ""
+file = ""

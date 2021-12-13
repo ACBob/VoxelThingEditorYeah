@@ -1,0 +1,25 @@
+# Block Palette!
+# Defines ID, name, meta use, and texture position.
+
+# [ID]
+# name = "Block Name"
+# metaUse = One of "Color", "DirectionHoriz", "DirectionVert", "Direction", "Level", "Toggle", "BitField", "OtherBlock", "None"
+# metaMax = Maximum value for meta. ( Only usable for Level )
+# metaMin = Minimum value for meta. ( Only usable for Level )
+# texturePos = [x, y]
+# isLiquid = True/False assumed false, if true, will be simulated as a liquid.
+# liquidSource = id of liquid source block.
+# liquidFlow = id of liquid flow block.
+
+# This is the internal file. It contains basic testing data.
+# Ideally each game provides their own file!
+
+[0]
+name = "Air"
+metaUse = "None"
+texturePos = [0, 0]
+
+[1]
+name = "Bone"
+metaUse = "None"
+texturePos = [0, 1]

@@ -54,6 +54,7 @@ set(SRC
     src/editor/toml.hpp
     src/editor/defs.cpp
     src/editor/defs.hpp
+    src/editor/editorstate.cpp
     src/editor/editorstate.hpp
     src/editor/undo.cpp
     src/editor/undo.hpp

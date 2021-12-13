@@ -19,5 +19,6 @@
         <!-- Text Files -->
         <file>example/palette_internal.toml</file>
         <file>example/games.toml</file>
+        <file>example/palette_two.toml</file>
     </qresource>
 </RCC>

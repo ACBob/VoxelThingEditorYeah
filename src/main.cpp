@@ -28,20 +28,12 @@ int main( int argc, char *argv[] )
 
 	// Create editor state
 	EditorState editorState;
-	editorState.filename		 = "";
-	editorState.world			 = nullptr;
-	editorState.tool			 = nullptr;
-	editorState.chosenBlockType	 = 1;
-	editorState.chosenBlockMeta	 = 0;
-	editorState.blockTexturePath = ":/img/texatlas_internal.png";
-	editorState.undoStack = new QUndoStack( &editorState );
-	editorState.undoStack->setUndoLimit( 100 );
-	editorState.undoStack->clear();
 
 	// TODO: load the following from the QSettings
-	editorState.gameDefs = definitions::LoadGameDefs(":/example/games.toml");
-	editorState.game = &editorState.gameDefs->begin().value();
-	editorState.blockDefs = editorState.game->blockDefs;
+	// TODO: Handle in constructor
+	editorState.m_pGameDefs = definitions::LoadGameDefs(":/example/games.toml");
+	editorState.m_pGame = &editorState.m_pGameDefs->begin().value();
+	editorState.m_pBlockDefs = editorState.m_pGame->blockDefs;
 
 	auto pEditor = new MainWindow( &editorState, nullptr );
 

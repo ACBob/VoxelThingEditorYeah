@@ -225,7 +225,7 @@ void CChunk::rebuildModel()
 						Vector4f uv;
 						if ( m_editorState != nullptr )
 						{
-							uv = render::getUV( m_editorState->blockDefs, getID( x, y, z ) );
+							uv = render::getUV( m_editorState->m_pBlockDefs, getID( x, y, z ) );
 							uv.y -= 1 / 16.0f; // HACK: otherwise all textures are offset by 1/16
 							uv.w -= 1 / 16.0f;
 						}
@@ -300,9 +300,9 @@ void CChunk::simulateLiquid()
 				}
 
 				// if it is marked as liquid by the block definition, add it to the list
-				if ( m_editorState->blockDefs->value( id ).isLiquid )
+				if ( m_editorState->m_pBlockDefs->value( id ).isLiquid )
 				{
-					if ( m_editorState->blockDefs->value( id ).liquidSource == 0 )
+					if ( m_editorState->m_pBlockDefs->value( id ).liquidSource == 0 )
 						continue;
 					liquidPositions.append( Vector3i( x, y, z ) );
 				}
@@ -330,7 +330,7 @@ void CChunk::simulateLiquid()
 			continue;
 		}
 
-		uint16_t flowBlock = m_editorState->blockDefs->value( id ).liquidFlow;
+		uint16_t flowBlock = m_editorState->m_pBlockDefs->value( id ).liquidFlow;
 
 		if ( onFloor && level > 0 )
 		{
@@ -345,7 +345,7 @@ void CChunk::simulateLiquid()
 
 		// if the block is not on the floor, flow down
 		setIfAir( pos.x, pos.y - 1, pos.z, flowBlock,
-				  (uint16_t)qBound( 0, level + 1, (int)m_editorState->blockDefs->value( id ).metaMax ) );
+				  (uint16_t)qBound( 0, level + 1, (int)m_editorState->m_pBlockDefs->value( id ).metaMax ) );
 	}
 }
 
@@ -422,7 +422,7 @@ void CChunk::calculateLighting() {
 
 	// Step 1. Sunlight propagation
 	// test the chunk above us
-	CChunk *chunkAbove = m_editorState->world->getChunk( m_pos + Vector3i( 0, 1, 0 ) );
+	CChunk *chunkAbove = m_editorState->m_pWorld->getChunk( m_pos + Vector3i( 0, 1, 0 ) );
 	uint8_t *skyLight = new uint8_t[m_size.x * m_size.z];
 	if (chunkAbove != nullptr) {
 		for (int z = 0; z < m_size.z; z++) {

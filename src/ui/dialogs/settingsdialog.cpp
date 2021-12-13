@@ -72,7 +72,7 @@ SettingsDialog::SettingsDialog( EditorState *editorState, QWidget *parent ) : QD
 	QLabel *label3 = new QLabel( tr( "Game Definition:" ), tabGame );
 
 	m_gameDefComboBox = new QComboBox( tabGame );
-	for ( GameDef &gameDef : *m_editorState->gameDefs )
+	for ( GameDef &gameDef : *m_editorState->m_pGameDefs )
 	{
 		m_gameDefComboBox->addItem( gameDef.id );
 	}
