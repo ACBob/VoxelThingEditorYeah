@@ -264,6 +264,7 @@ void MainWindow::showBlocks()
 
 void MainWindow::editWorldProperties()
 {
+	// TODO: handle def stuff somewhere else
 	EntityDef def;
 	def.properties = {
 		{
@@ -286,8 +287,8 @@ void MainWindow::editWorldProperties()
 		},
 		{
 			"author.license", EntityProperty{
-				"World License", "STRING", "CC-0", "CC-0",
-				"The license of the world"
+				"World License", "LIST", "CC-0", "0,CC-0,CC-BY-SA,CC-BY-NC,CC-BY-NC-SA,CC-BY-NC-ND",
+				"The license of the world. Assumeed to be CC 4.0"
 			}
 		},
 		{

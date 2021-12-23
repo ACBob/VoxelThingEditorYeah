@@ -10,6 +10,7 @@
 #include <QHeaderView>
 #include <QLineEdit>
 #include <QDial>
+#include <QComboBox>
 
 EntityPropertyDialog::EntityPropertyDialog( EditorState *editorState, EntityDef begin,  QWidget *parent ) : QDialog( parent )
 {
@@ -119,6 +120,10 @@ EntityPropertyDialog::EntityPropertyDialog( EditorState *editorState, EntityDef 
                 m_stringPropertyEdit = new QLineEdit( this );
                 propertyEditGroupLayout->addWidget( m_stringPropertyEdit );
                 m_stringPropertyEdit->setVisible( false );
+
+                m_listPropertyEdit = new QComboBox( this );
+                propertyEditGroupLayout->addWidget( m_listPropertyEdit );
+                m_listPropertyEdit->setVisible( false );
             }
             // End smart editable types
 
@@ -153,8 +158,15 @@ EntityPropertyDialog::EntityPropertyDialog( EditorState *editorState, EntityDef 
     
         for ( QString key : m_entityDef.properties.keys() )
         {
-            QTableWidgetItem *name = new QTableWidgetItem( key );
+            QTableWidgetItem *name = new QTableWidgetItem( m_entityDef.properties[key].name );
             QTableWidgetItem *value = new QTableWidgetItem( m_entityDef.properties[key].value );
+
+            name->setToolTip( m_entityDef.properties[key].description );
+            value->setToolTip( m_entityDef.properties[key].description );
+
+            // Store the actual key in the item data
+            name->setData( Qt::UserRole, key );
+            value->setData( Qt::UserRole, key );
 
             m_properties->insertRow( m_properties->rowCount() );
             m_properties->setItem( m_properties->rowCount() - 1, 0, name );
@@ -225,15 +237,52 @@ void EntityPropertyDialog::onSelectionChanged( )
     if (!nameItem || !valueItem)
         return;
 
+    QString key = nameItem->data( Qt::UserRole ).toString();
+
+    m_addKeyButton->setVisible( false );
+    m_removeKeyButton->setVisible( false );
+    m_keyEdit->setVisible( false );
+    m_valueEdit->setVisible( false );
+    m_stringPropertyEdit->setVisible( false );
+    m_listPropertyEdit->setVisible( false );
+
     if ( m_smartEdit )
     {
-        m_addKeyButton->setVisible( false );
-        m_removeKeyButton->setVisible( false );
-        m_keyEdit->setVisible( false );
-        m_valueEdit->setVisible( false );
+        QString type = m_entityDef.properties[key].type;
 
-        m_stringPropertyEdit->setVisible( true );
-        m_stringPropertyEdit->setText( valueItem->text() );
+        if ( type == "STRING" )
+        {
+            m_stringPropertyEdit->setVisible( true );
+            m_stringPropertyEdit->setText( valueItem->text() );
+        }
+        else if ( type == "LIST" )
+        {
+            m_listPropertyEdit->setVisible( true );
+            m_listPropertyEdit->clear();
+
+            // The list of values is stored as "defaultIndex,value1,value2,value3" in the default value
+            // And then the value is set to an index of the list
+            QStringList values = m_entityDef.properties[key].defaultValue.split( "," );
+            // remove the first
+            values.removeFirst();
+
+            for ( QString value : values )
+            {
+                // Add the value to the list
+                m_listPropertyEdit->addItem( value );    
+            }
+
+            // if current value is a number, set it as the index
+            if ( valueItem->text().toInt() >= 0 )
+            {
+                m_listPropertyEdit->setCurrentIndex( valueItem->text().toInt() );
+            }
+            else
+            {
+                // Otherwise, set it to the first item
+                m_listPropertyEdit->setCurrentIndex( 0 );
+            }
+        }
     }
     else
     {
@@ -242,9 +291,7 @@ void EntityPropertyDialog::onSelectionChanged( )
         m_keyEdit->setVisible( true );
         m_valueEdit->setVisible( true );
 
-        m_stringPropertyEdit->setVisible( false );
-
-        m_keyEdit->setText( nameItem->text() );
+        m_keyEdit->setText( key );
         m_valueEdit->setText( valueItem->text() );
     }
 

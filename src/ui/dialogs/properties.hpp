@@ -11,6 +11,7 @@ class QDial;
 class QLineEdit;
 class QTableWidget;
 class QPushButton;
+class QComboBox;
 
 class EntityPropertyDialog : public QDialog
 {
@@ -45,6 +46,7 @@ class EntityPropertyDialog : public QDialog
 
         // Different edit widgets for different types of properties
         QLineEdit *m_stringPropertyEdit;
+        QComboBox *m_listPropertyEdit;
 
         bool m_smartEdit;
 };
