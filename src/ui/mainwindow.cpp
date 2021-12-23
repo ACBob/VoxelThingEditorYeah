@@ -14,6 +14,7 @@
 
 #include "ui/dialogs/blocklist.hpp"
 #include "ui/dialogs/settingsdialog.hpp"
+#include "ui/dialogs/properties.hpp"
 #include "ui/docks/currentblock.hpp"
 #include "ui/docks/editor4pane.hpp"
 
@@ -114,6 +115,11 @@ MainWindow::MainWindow( EditorState *editorState, QWidget *parent )
 	redoAction->setIcon( QIcon::fromTheme( "edit-redo" ) );
 	redoAction->setShortcut( QKeySequence::Redo );
 	editMenu->addAction( redoAction );
+
+	editMenu->addSeparator();
+
+	QAction *editWorldPropertiesAction = editMenu->addAction( tr( "Edit World Properties" ), this, SLOT( editWorldProperties() ) );
+	editWorldPropertiesAction->setIcon( QIcon::fromTheme( "document-properties" ) );
 
 	editMenu->addSeparator();
 
@@ -253,5 +259,51 @@ void MainWindow::showBlocks()
 		m_editorState->setChosenBlockType( dialog->getSelectedBlock() );
 
 		qDebug() << "Chosen block: " << m_editorState->m_nChosenBlockType;
+	}
+}
+
+void MainWindow::editWorldProperties()
+{
+	EntityDef def;
+	def.properties = {
+		{
+			"author.name", EntityProperty{
+				"Author Name", "STRING", "", "",
+				"The name of the author of the world"
+			}
+		},
+		{
+			"author.email", EntityProperty{
+				"Author Email", "STRING", "", "",
+				"The email of the author of the world"
+			}
+		},
+		{
+			"author.url", EntityProperty{
+				"Author Website", "STRING", "", "",
+				"The website of the author of the world"
+			}
+		},
+		{
+			"author.license", EntityProperty{
+				"World License", "STRING", "CC-0", "CC-0",
+				"The license of the world"
+			}
+		},
+		{
+			"author.description", EntityProperty{
+				"Author Description", "STRING", "Created in VTEY v" VTEY_VERSION, "Created in VTEY v" VTEY_VERSION,
+				"An author-provided description of the world"
+			}
+		}
+	};
+	def.entityType = "world";
+	def.name = m_world.getName();
+	
+	EntityPropertyDialog *dialog = new EntityPropertyDialog( m_editorState, def, this );
+
+	if ( dialog->exec() == QDialog::Accepted )
+	{
+		qDebug() << "World properties changed";
 	}
 }

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.15)
 
-project(VoxelThingEditorYeah CXX)
+project(VoxelThingEditorYeah VERSION "0.1.0" LANGUAGES CXX)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
@@ -37,6 +37,8 @@ set(SRC
     src/ui/dialogs/settingsdialog.hpp
     src/ui/dialogs/blocklist.cpp
     src/ui/dialogs/blocklist.hpp
+    src/ui/dialogs/properties.cpp
+    src/ui/dialogs/properties.hpp
 
     src/world/chunk.cpp
     src/world/chunk.hpp
@@ -72,6 +74,12 @@ find_package(Qt5 REQUIRED COMPONENTS Widgets Core Gui OpenGL)
 
 # OpenGL itself
 find_package(OpenGL REQUIRED)
+
+# Configure config.hpp.in
+configure_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/editor/config.h.in"
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/editor/config.h"
+)
 
 add_executable(${PROJECT_NAME} ${SRC} ${RESOURCES})
 target_link_libraries(${PROJECT_NAME} Qt5::Widgets Qt5::Core Qt5::Gui Qt5::OpenGL OpenGL::GL OpenGL::GLU)

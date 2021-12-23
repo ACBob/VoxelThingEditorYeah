@@ -28,6 +28,8 @@ class MainWindow : public QMainWindow
 	// void closeAllFiles();
 	// void closeAllFilesButThis();
 
+	void editWorldProperties();
+
 	void onChunkSelected( int );
 	void toolChanged( QAction * );
 

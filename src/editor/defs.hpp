@@ -5,6 +5,9 @@
 #include <QPoint>
 #include <QString>
 
+// VTEY_VERSION definition
+#include "config.h"
+
 #pragma once
 
 enum BlockMetaType {
@@ -55,3 +58,20 @@ namespace definitions {
 	void LoadGameDef( const QString &path, GameDef &def );
 
 }
+
+struct EntityProperty
+{
+	QString name;
+	QString type;
+	QString value;
+	QString defaultValue;
+	QString description;
+};
+
+struct EntityDef
+{
+	QString name;
+	QString entityType;
+	
+	QMap<QString, EntityProperty> properties;
+};
