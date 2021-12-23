@@ -11,6 +11,7 @@
 #include <QLineEdit>
 #include <QDial>
 #include <QComboBox>
+#include <QListWidget>
 
 EntityPropertyDialog::EntityPropertyDialog( EditorState *editorState, EntityDef begin,  QWidget *parent ) : QDialog( parent )
 {
@@ -184,7 +185,27 @@ EntityPropertyDialog::EntityPropertyDialog( EditorState *editorState, EntityDef 
     QWidget *flagsTab = new QWidget( this );
     tabWidget->addTab( flagsTab, tr("Flags") );
 
-    // TODO: flags tab
+    // Flags tab
+    {
+        QVBoxLayout *tabLayout = new QVBoxLayout( flagsTab );
+        flagsTab->setLayout( tabLayout );
+
+        QListWidget *flagsList = new QListWidget( this );
+        tabLayout->addWidget( flagsList );
+
+        int flagVal = 0;
+        for ( QString flag : m_entityDef.flags )
+        {
+            QListWidgetItem *item = new QListWidgetItem( flagsList );
+            item->setText( flag );
+            item->setData( Qt::UserRole, 1 << flagVal );
+            item->setFlags( Qt::ItemIsUserCheckable | Qt::ItemIsEnabled );
+            item->setCheckState( Qt::Unchecked );
+
+            flagVal++;
+        }
+    }
+    // End flags tab
 
     QHBoxLayout *footerLayout = new QHBoxLayout( this );
     layout->addLayout( footerLayout );

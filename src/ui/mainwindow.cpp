@@ -300,6 +300,14 @@ void MainWindow::editWorldProperties()
 	};
 	def.entityType = "world";
 	def.name = m_world.getName();
+
+	def.flags = QStringList{
+		"Flag 1",
+		"Shmeebo",
+		"Zeebo",
+		"Squalmbo",
+		"Flag 5",
+	};
 	
 	EntityPropertyDialog *dialog = new EntityPropertyDialog( m_editorState, def, this );
 

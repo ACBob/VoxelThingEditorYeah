@@ -74,4 +74,6 @@ struct EntityDef
 	QString entityType;
 	
 	QMap<QString, EntityProperty> properties;
+
+	QStringList flags; // Flag value is 1 << index
 };
