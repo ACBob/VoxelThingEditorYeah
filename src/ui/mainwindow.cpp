@@ -21,6 +21,7 @@
 #include "editor/defs.hpp"
 #include "editor/editorstate.hpp"
 #include "editor/tools.hpp"
+#include "editor/entity.hpp"
 #include "world/chunk.hpp"
 #include "world/loading/worldformat.hpp"
 #include "world/world.hpp"
@@ -265,51 +266,9 @@ void MainWindow::showBlocks()
 void MainWindow::editWorldProperties()
 {
 	// TODO: handle def stuff somewhere else
-	EntityDef def;
-	def.properties = {
-		{
-			"author.name", EntityProperty{
-				"Author Name", "STRING", "", "",
-				"The name of the author of the world"
-			}
-		},
-		{
-			"author.email", EntityProperty{
-				"Author Email", "STRING", "", "",
-				"The email of the author of the world"
-			}
-		},
-		{
-			"author.url", EntityProperty{
-				"Author Website", "STRING", "", "",
-				"The website of the author of the world"
-			}
-		},
-		{
-			"author.license", EntityProperty{
-				"World License", "LIST", "CC-0", "0,CC-0,CC-BY-SA,CC-BY-NC,CC-BY-NC-SA,CC-BY-NC-ND",
-				"The license of the world. Assumeed to be CC 4.0"
-			}
-		},
-		{
-			"author.description", EntityProperty{
-				"Author Description", "STRING", "Created in VTEY v" VTEY_VERSION, "Created in VTEY v" VTEY_VERSION,
-				"An author-provided description of the world"
-			}
-		}
-	};
-	def.entityType = "world";
-	def.name = m_world.getName();
-
-	def.flags = QStringList{
-		"Flag 1",
-		"Shmeebo",
-		"Zeebo",
-		"Squalmbo",
-		"Flag 5",
-	};
+	Entity *tempWorldEnt = new Entity( m_editorState, "world", this );
 	
-	EntityPropertyDialog *dialog = new EntityPropertyDialog( m_editorState, def, this );
+	EntityPropertyDialog *dialog = new EntityPropertyDialog( m_editorState, tempWorldEnt, this );
 
 	if ( dialog->exec() == QDialog::Accepted )
 	{

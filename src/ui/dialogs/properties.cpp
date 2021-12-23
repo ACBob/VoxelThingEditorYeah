@@ -13,13 +13,15 @@
 #include <QComboBox>
 #include <QListWidget>
 
-EntityPropertyDialog::EntityPropertyDialog( EditorState *editorState, EntityDef begin,  QWidget *parent ) : QDialog( parent )
+#include "editor/entity.hpp"
+
+EntityPropertyDialog::EntityPropertyDialog( EditorState *editorState, Entity *ent,  QWidget *parent ) : QDialog( parent )
 {
     setWindowTitle( tr("Properties") );
     setMinimumSize( 640, 480 );
 
     m_editorState = editorState;
-    m_entityDef = begin;
+    m_entity = ent;
     m_smartEdit = true;
 
 
@@ -35,7 +37,7 @@ EntityPropertyDialog::EntityPropertyDialog( EditorState *editorState, EntityDef 
         headerLayout->addLayout( leftLayout );
 
         m_nameEdit = new QLineEdit( this );
-        m_nameEdit->setText( m_entityDef.entityType );
+        m_nameEdit->setText( m_entity->m_entityType );
         leftLayout->addWidget( m_nameEdit );
 
         QHBoxLayout *leftButtonsLayout = new QHBoxLayout( this );
@@ -157,17 +159,20 @@ EntityPropertyDialog::EntityPropertyDialog( EditorState *editorState, EntityDef 
         }
         // End property edit
     
-        for ( QString key : m_entityDef.properties.keys() )
+        const EntityDef &entityDef = m_editorState->m_pEntityDefs->value( m_entity->m_entityType );
+        for ( const EntityProperty &property : entityDef.properties )
         {
-            QTableWidgetItem *name = new QTableWidgetItem( m_entityDef.properties[key].name );
-            QTableWidgetItem *value = new QTableWidgetItem( m_entityDef.properties[key].value );
+            QString val = m_entity->m_properties.contains( property.name ) ? m_entity->m_properties[ property.name ] : property.defaultValue;
 
-            name->setToolTip( m_entityDef.properties[key].description );
-            value->setToolTip( m_entityDef.properties[key].description );
+            QTableWidgetItem *name = new QTableWidgetItem( property.name );
+            QTableWidgetItem *value = new QTableWidgetItem( val );
+
+            name->setToolTip( property.description );
+            value->setToolTip( property.description );
 
             // Store the actual key in the item data
-            name->setData( Qt::UserRole, key );
-            value->setData( Qt::UserRole, key );
+            name->setData( Qt::UserRole, property.name );
+            value->setData( Qt::UserRole, property.name );
 
             m_properties->insertRow( m_properties->rowCount() );
             m_properties->setItem( m_properties->rowCount() - 1, 0, name );
@@ -193,17 +198,17 @@ EntityPropertyDialog::EntityPropertyDialog( EditorState *editorState, EntityDef 
         QListWidget *flagsList = new QListWidget( this );
         tabLayout->addWidget( flagsList );
 
-        int flagVal = 0;
-        for ( QString flag : m_entityDef.flags )
-        {
-            QListWidgetItem *item = new QListWidgetItem( flagsList );
-            item->setText( flag );
-            item->setData( Qt::UserRole, 1 << flagVal );
-            item->setFlags( Qt::ItemIsUserCheckable | Qt::ItemIsEnabled );
-            item->setCheckState( Qt::Unchecked );
+        // int flagVal = 0;
+        // for ( QString flag : m_entityDef.flags )
+        // {
+        //     QListWidgetItem *item = new QListWidgetItem( flagsList );
+        //     item->setText( flag );
+        //     item->setData( Qt::UserRole, 1 << flagVal );
+        //     item->setFlags( Qt::ItemIsUserCheckable | Qt::ItemIsEnabled );
+        //     item->setCheckState( Qt::Unchecked );
 
-            flagVal++;
-        }
+        //     flagVal++;
+        // }
     }
     // End flags tab
 
@@ -220,17 +225,6 @@ EntityPropertyDialog::EntityPropertyDialog( EditorState *editorState, EntityDef 
     connect( okButton, SIGNAL( clicked( ) ), this, SLOT( accept( ) ) );
     connect( cancelButton, SIGNAL( clicked( ) ), this, SLOT( reject( ) ) );
 }
-
-void EntityPropertyDialog::setEntityDef( const EntityDef &def )
-{
-    m_entityDef = def;
-}
-
-const EntityDef &EntityPropertyDialog::getEntityDef()
-{
-    return m_entityDef;
-}
-
 void EntityPropertyDialog::onSmartEditToggled( bool checked )
 {
     m_smartEdit = checked;
@@ -269,7 +263,7 @@ void EntityPropertyDialog::onSelectionChanged( )
 
     if ( m_smartEdit )
     {
-        QString type = m_entityDef.properties[key].type;
+        QString type = m_editorState->m_pEntityDefs->value( m_entity->m_entityType ).properties.value( key ).type;
 
         if ( type == "STRING" )
         {
@@ -281,27 +275,37 @@ void EntityPropertyDialog::onSelectionChanged( )
             m_listPropertyEdit->setVisible( true );
             m_listPropertyEdit->clear();
 
-            // The list of values is stored as "defaultIndex,value1,value2,value3" in the default value
-            // And then the value is set to an index of the list
-            QStringList values = m_entityDef.properties[key].defaultValue.split( "," );
-            // remove the first
-            values.removeFirst();
+            // The list of values is stored as a "id:value,id:value,id:value,..." string
+            QStringList values = m_editorState->m_pEntityDefs->value( m_entity->m_entityType ).properties.value( key ).min.split( "," );
 
             for ( QString value : values )
             {
                 // Add the value to the list
-                m_listPropertyEdit->addItem( value );    
+                QString valueName = value.split( ":" ).last();
+                m_listPropertyEdit->addItem( valueName );
             }
 
             // if current value is a number, set it as the index
-            if ( valueItem->text().toInt() >= 0 )
+            if ( m_entity->m_properties.contains( key ) )
             {
-                m_listPropertyEdit->setCurrentIndex( valueItem->text().toInt() );
+                int index = m_listPropertyEdit->findText( m_entity->m_properties[ key ] );
+                if ( index != -1 )
+                {
+                    m_listPropertyEdit->setCurrentIndex( index );
+                }
+                // Otherwise, set to default
+                else
+                {
+                    // Otherwise, set it to the default value
+                    int defaultIndex = m_editorState->m_pEntityDefs->value( m_entity->m_entityType ).properties.value( key ).max.toInt();
+                    m_listPropertyEdit->setCurrentIndex( defaultIndex );
+                }
             }
             else
             {
-                // Otherwise, set it to the first item
-                m_listPropertyEdit->setCurrentIndex( 0 );
+                // Otherwise, set it to the default value
+                int defaultIndex = m_editorState->m_pEntityDefs->value( m_entity->m_entityType ).properties.value( key ).max.toInt();
+                m_listPropertyEdit->setCurrentIndex( defaultIndex );
             }
         }
     }

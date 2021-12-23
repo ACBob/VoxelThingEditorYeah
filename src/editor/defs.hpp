@@ -36,6 +36,31 @@ struct BlockDef
 
 using BlockDefs = QMap<int, BlockDef>;
 
+struct EntityProperty
+{
+	QString name; // The name of the property
+	QString type; // The type of the property
+	QString defaultValue; // The default value of the property
+	QString description; // The description of the property
+	QString min; // The minimum value of the property
+	QString max; // The maximum value of the property
+};
+
+struct EntityDef
+{
+	QString entityType; // The type of the entity
+	QString friendlyName; // The friendly name of the entity
+	QString documentation; // Markdown documentation of the entity
+
+	QString visualType; // The type of the visual
+	QString texture; // The texture of the visual
+	
+	QMap<QString, EntityProperty> properties; // The properties of the entity
+	QStringList flags; // Flag value is 1 << index
+};
+
+using EntityDefs = QMap<QString, EntityDef>;
+
 struct GameDef
 {
 	QString id;
@@ -46,6 +71,7 @@ struct GameDef
 	QString filePath;
 
 	BlockDefs *blockDefs;
+	EntityDefs *entityDefs;
 };
 
 using GameDefs = QMap<QString, GameDef>;
@@ -53,27 +79,9 @@ using GameDefs = QMap<QString, GameDef>;
 namespace definitions {
 
 	BlockDefs *LoadBlockDefs( const QString &path );
+	EntityDefs *LoadEntityDefs( const QString &path );
 
 	void LoadGameDefs( const QString &path, GameDefs &toPutInto );
 	void LoadGameDef( const QString &path, GameDef &def );
 
 }
-
-struct EntityProperty
-{
-	QString name;
-	QString type;
-	QString value;
-	QString defaultValue;
-	QString description;
-};
-
-struct EntityDef
-{
-	QString name;
-	QString entityType;
-	
-	QMap<QString, EntityProperty> properties;
-
-	QStringList flags; // Flag value is 1 << index
-};

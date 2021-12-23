@@ -33,6 +33,8 @@ class EditorState : public QObject
 
 	// Pointer to a QVector of block definitions.
 	BlockDefs *m_pBlockDefs;
+	// Pointer to a QVector of entity definitions.
+	EntityDefs *m_pEntityDefs;
 
 	// The current game definitions file (GameID -> Game)
 	GameDefs m_gameDefs;

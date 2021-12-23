@@ -13,15 +13,14 @@ class QTableWidget;
 class QPushButton;
 class QComboBox;
 
+class Entity;
+
 class EntityPropertyDialog : public QDialog
 {
     Q_OBJECT;
 
     public:
-        EntityPropertyDialog( EditorState *editorState, EntityDef begin,  QWidget *parent = 0 );
-
-        void setEntityDef( const EntityDef &def );
-        const EntityDef &getEntityDef();
+        EntityPropertyDialog( EditorState *editorState, Entity *ent,  QWidget *parent = 0 );
 
     private slots:
         void onNameChanged( const QString &name );
@@ -32,7 +31,7 @@ class EntityPropertyDialog : public QDialog
 
     private:
         EditorState *m_editorState;
-        EntityDef m_entityDef;
+        Entity *m_entity;
 
         QDial *m_rotationDial;
         QLineEdit *m_nameEdit;

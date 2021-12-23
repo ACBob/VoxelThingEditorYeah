@@ -1,0 +1,87 @@
+# Example Entities
+# Some developer-game entity definitions.
+
+[world]
+name = "World"
+description = "The base world."
+doc = """
+# The World
+The world contains all that is.
+"""
+
+[world.properties]
+name = [
+    "STRING",
+    "The world name.",
+    "",
+    "",
+    ""
+]
+authorName = [
+    "STRING",
+    "The world author's name.",
+    "",
+    "",
+    ""
+]
+authorEmail = [
+    "STRING",
+    "The world author's email.",
+    "",
+    "",
+    ""
+]
+authorWebsite = [
+    "STRING",
+    "The world author's website.",
+    "",
+    "",
+    ""
+]
+authorDescription = [
+    "STRING",
+    "World Description",
+    "",
+    "",
+    ""
+]
+authorLicense = [
+    "LIST",
+    "The world's license.",
+    "0:CC-0,1:CC-BY,2:CC-BY-SA,3:CC-BY-ND,4:CC-BY-NC,5:CC-BY-NC-SA,6:CC-BY-NC-ND,7:All Rights Reserved",
+    "5"
+]
+
+[_base_entity] # IDs starting with _ are not listed in the entity list.
+name = "Base Entity"
+description = "A base entity."
+
+[_base_entity.properties]
+name = [
+    "STRING",
+    "The name of the entity.",
+    "",
+    "",
+    ""
+]
+
+[player_start]
+name = "Player Start"
+visualType = "sprite"
+texture = "player_start"
+absorb = "_base_entity"
+
+[player_start.properties]
+gameMode = [
+    "LIST",
+    "The game mode to start in.",
+    "0:survival,1:creative,2:adventure,3:spectator",
+    "0"
+]
+health = [
+    "INT",
+    "The starting health of the player.",
+    "0",
+    "20",
+    "20"
+]

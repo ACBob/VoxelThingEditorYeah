@@ -30,6 +30,7 @@ path = "." # A path relative to the directory containing the game.toml file
 working_dir = "." # The ideal working directory, relative to the game's path
 texture_path = "assets/textures" # The path to the game's textures, relative to the game's path
 blockdefs = "foobar.toml" # A path to the blockdefs file, relative to the game directory.
+entdefs = "foobar.toml" # A path to the entity palette, relative to the game directory.
 ```
 
 ## palette.toml
@@ -62,10 +63,12 @@ liquidFlow = <id> # The id of the block that is the flow of the liquid
 The entity palette stores some information about the entities that can be placed in the world. It provides the entity name, some legal metadata, a visual type and a texture.
 
 ```toml
-[<id>]
-name = "foo" # The name of the entity, used for i/o
+[<id>] # ID is a string that is the name of the entity
+name = "foo" # The "friendly" name of the entity (i.e "Foo Bar" instead of "foobar")
 visualType = "sprite" # See below
 texture = "foo.png" # The path to the entity's texture, relative to the texture path
+absorb = [<id>] # Inherit the properties of another entity
+doc = "" # A mark-down formatted string that describes the entity
 
 # This next section allows you to specify arbitrary metadata for the entity.
 [<id>.properties]
@@ -76,10 +79,16 @@ texture = "foo.png" # The path to the entity's texture, relative to the texture 
     <max>, # The maximum value of the metadata
     <default> # The default value of the metadata
 ]
+"flags" = [ # This is a special property, that gets displayed in a separate tab. The value of each flag is 1 << index.
+    "Flag1",
+    "Flag2",
+    "Flag3"
+]
+
 ```
 
 `visualType` may be one of the following:
- - `sprite`: The entity will be displayed as a sprite.
+ - `sprite`: The entity will be displayed as a sprite that always faces the camera.
  - `model`: The entity will be displayed as a model. An additional `model` property must be specified.
 
 Entity metadata type may be one of the following:
@@ -87,4 +96,12 @@ Entity metadata type may be one of the following:
  - `FLOAT`: The metadata is a float.
  - `STRING`: The metadata is a string.
  - `BOOL`: The metadata is a boolean.
- - `LIST`: The metadata is a list. If it is a list, instead of a `min` value, you specify the list of values. Instead of `max`, you specify the default value.
+ - `LIST`: The metadata is a list.\
+    LISTs are handled differently. A list is defined as such:
+    ```toml
+    keyName = [
+        "LIST",
+        description,
+        "0:list,1:of,3:values", # The list of values, comma separated value:name pairs
+        "0" # The default value
+    ]

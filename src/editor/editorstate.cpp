@@ -28,6 +28,7 @@ EditorState::EditorState( QObject *parent ) : QObject(parent) {
     else
         m_game = m_gameDefs.begin().value();
     m_pBlockDefs = m_game.blockDefs;
+    m_pEntityDefs = m_game.entityDefs;
 }
 
 void EditorState::setFilename( QString filename )

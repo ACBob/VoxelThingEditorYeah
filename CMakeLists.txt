@@ -60,6 +60,8 @@ set(SRC
     src/editor/editorstate.hpp
     src/editor/undo.cpp
     src/editor/undo.hpp
+    src/editor/entity.cpp
+    src/editor/entity.hpp
 
     src/render/model.cpp
     src/render/model.hpp

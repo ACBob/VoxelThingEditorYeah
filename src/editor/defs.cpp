@@ -143,6 +143,162 @@ BlockDefs *definitions::LoadBlockDefs( const QString &path )
 	return defs;
 }
 
+EntityDefs *definitions::LoadEntityDefs(const QString &path)
+{
+	// Open for reading
+	QFile file(path);
+	if (!file.open(QIODevice::ReadOnly))
+	{
+		// qWarning() << "Failed to open entitydefs file" << path;
+		// Display a warning popup
+		QDialog *dialog = new QDialog();
+		dialog->setWindowTitle("Failed to open entitydefs file");
+		dialog->setWindowModality(Qt::WindowModal);
+		dialog->setAttribute(Qt::WA_DeleteOnClose);
+		dialog->show();
+		return {};
+	}
+
+	// Read the file
+	QString contents = file.readAll();
+	file.close();
+
+	// Parse the TOML
+	toml::table root = toml::parse(contents.toStdString());
+
+	EntityDefs *defs = new EntityDefs();
+
+	for (auto &k : root)
+	{
+		EntityDef def;
+
+		// the ID is the key
+		QString id = QString(k.first.c_str());
+
+		qDebug() << "Loading entitydef for" << id;
+
+		// Get the entitydef
+		toml::table *entitydef = k.second.as_table();
+
+		if (entitydef->get("friendlyName"))
+		{
+			QString friendlyName = QString::fromStdString(entitydef->get("friendlyName")->value_or<std::string>(""));
+			if (friendlyName.isEmpty())
+			{
+				qWarning() << "Entitydef" << id << "has no friendly name";
+				friendlyName = id;
+			}
+			def.friendlyName = friendlyName;
+		}
+		else
+		{
+			qWarning() << "Entitydef" << id << "has no friendly name";
+			def.friendlyName = id;
+		}
+
+		// store visualtype
+		if (entitydef->get("visualType"))
+		{
+			QString visualType = QString::fromStdString(entitydef->get("visualType")->value_or<std::string>(""));
+			if (visualType.isEmpty())
+			{
+				qWarning() << "Entitydef" << id << "has no visual type";
+				visualType = "sprite";
+			}
+			if (visualType == "model")
+			{
+				qWarning() << "Model entitydefs not yet supported";
+				visualType = "sprite";
+			}
+			def.visualType = visualType;
+		}
+		else
+		{
+			qWarning() << "Entitydef" << id << "has no visual type";
+			def.visualType = "sprite";
+		}
+
+		// store texture
+		if (entitydef->get("texture"))
+		{
+			QString texture = QString::fromStdString(entitydef->get("texture")->value_or<std::string>(""));
+			if (texture.isEmpty())
+			{
+				qWarning() << "Entitydef" << id << "has no texture";
+				texture = "default";
+			}
+			def.texture = texture;
+		}
+		else
+		{
+			qWarning() << "Entitydef" << id << "has no texture";
+			def.texture = "default";
+		}
+
+		// if we have an absorb value
+		if (entitydef->get("absorb"))
+		{
+			// Merge with specified entitydef
+			QString absorb = QString::fromStdString(entitydef->get("absorb")->value_or<std::string>(""));
+			if (!defs->contains(absorb))
+			{
+				qWarning() << "Entitydef" << id << "has invalid absorb value" << absorb;
+				continue;
+			}
+
+			EntityDef other = defs->value(absorb);
+
+			// Merge our properties with the other
+			def.properties.unite(other.properties);
+		}
+
+		// Now work on properties
+		toml::table *propertyTable = entitydef->get("properties")->as_table();
+		for (auto &k : *propertyTable)
+		{
+			// Key is the name
+			QString name = QString(k.first.c_str());
+
+			// The value is a list of strings
+			toml::array *values = k.second.as_array();
+
+			qDebug() << "Property" << name << "has" << values->size() << "values";
+
+			if (values->size() < 4 || values->size() > 5)
+			{
+				qWarning() << "Property" << name << "has invalid number of values";
+				continue;
+			}
+
+			// Create a new property
+			EntityProperty prop;
+
+			prop.name = name;
+			prop.type = QString::fromStdString(values->get(0)->value_or<std::string>(""));
+			if (prop.type != "LIST" && values->size() < 5)
+			{
+				qWarning() << "Property" << name << "has invalid number of values";
+				continue;
+			}
+			prop.description = QString::fromStdString(values->get(1)->value_or<std::string>(""));
+			prop.min = QString::fromStdString(values->get(2)->value_or<std::string>("")); // in a list, is actually the list of values
+			prop.max = QString::fromStdString(values->get(3)->value_or<std::string>("")); // in a list, is actually the default value
+
+			if (values->size() == 5)
+			{
+				prop.defaultValue = QString::fromStdString(values->get(4)->value_or<std::string>(""));
+			}
+
+			// Add the property
+			def.properties.insert(name, prop);
+		}
+
+		defs->insert(id, def);
+	}
+
+	return defs;
+}
+
 void definitions::LoadGameDefs( const QString &path, GameDefs &defs )
 {
 	// Open for reading
@@ -220,6 +376,19 @@ void definitions::LoadGameDefs( const QString &path, GameDefs &defs )
 			def.blockDefs = LoadBlockDefs( path );
 		}
 
+		QString entitydefs = QString::fromStdString( gamedef->get( "entdefs" )->value_or<std::string>( "" ) );
+		if ( entitydefs.isEmpty() )
+		{
+			qWarning() << "Game def" << id << "has no entitydefs";
+			def.entityDefs = nullptr;
+		}
+		else
+		{
+			// attempt to load the file
+			QString path = QDir( def.absolutePath ).absoluteFilePath( entitydefs );
+			def.entityDefs = LoadEntityDefs( path );
+		}
+
 		defs.insert( id, def );
 	}
 }
@@ -249,4 +418,6 @@ void definitions::LoadGameDef( const QString &path, GameDef &def )
 		def.texturePath = QString::fromStdString( root.get( "texture_path" )->value_or<std::string>( "" ) );
 	if ( root.get("blockdefs") )
 		def.blockDefs = LoadBlockDefs( QDir( def.absolutePath ).absoluteFilePath( QString::fromStdString( root.get( "blockdefs" )->value_or<std::string>( "" ) ) ) );
+	if ( root.get("entdefs") )
+		def.entityDefs = LoadEntityDefs( QDir( def.absolutePath ).absoluteFilePath( QString::fromStdString( root.get( "entdefs" )->value_or<std::string>( "" ) ) ) );
 };
