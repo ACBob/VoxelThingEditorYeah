@@ -39,6 +39,7 @@ using BlockDefs = QMap<int, BlockDef>;
 struct EntityProperty
 {
 	QString name; // The name of the property
+	QString friendlyName; // Name displayed in the editor
 	QString type; // The type of the property
 	QString defaultValue; // The default value of the property
 	QString description; // The description of the property

@@ -264,7 +264,7 @@ EntityDefs *definitions::LoadEntityDefs(const QString &path)
 
 			qDebug() << "Property" << name << "has" << values->size() << "values";
 
-			if (values->size() < 4 || values->size() > 5)
+			if (values->size() < 5 || values->size() > 6)
 			{
 				qWarning() << "Property" << name << "has invalid number of values";
 				continue;
@@ -274,19 +274,20 @@ EntityDefs *definitions::LoadEntityDefs(const QString &path)
 			EntityProperty prop;
 
 			prop.name = name;
-			prop.type = QString::fromStdString(values->get(0)->value_or<std::string>(""));
-			if (prop.type != "LIST" && values->size() < 5)
+			prop.friendlyName = QString::fromStdString(values->get(0)->value_or<std::string>(""));
+			prop.type = QString::fromStdString(values->get(1)->value_or<std::string>(""));
+			if (prop.type != "LIST" && values->size() < 6)
 			{
 				qWarning() << "Property" << name << "has invalid number of values";
 				continue;
 			}
-			prop.description = QString::fromStdString(values->get(1)->value_or<std::string>(""));
-			prop.min = QString::fromStdString(values->get(2)->value_or<std::string>("")); // in a list, is actually the list of values
-			prop.max = QString::fromStdString(values->get(3)->value_or<std::string>("")); // in a list, is actually the default value
+			prop.description = QString::fromStdString(values->get(2)->value_or<std::string>(""));
+			prop.min = QString::fromStdString(values->get(3)->value_or<std::string>("")); // in a list, is actually the list of values
+			prop.max = QString::fromStdString(values->get(4)->value_or<std::string>("")); // in a list, is actually the default value
 
-			if (values->size() == 5)
+			if (values->size() == 6)
 			{
-				prop.defaultValue = QString::fromStdString(values->get(4)->value_or<std::string>(""));
+				prop.defaultValue = QString::fromStdString(values->get(5)->value_or<std::string>(""));
 			}
 
 			// Add the property

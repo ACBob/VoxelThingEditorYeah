@@ -73,8 +73,9 @@ doc = "" # A mark-down formatted string that describes the entity
 # This next section allows you to specify arbitrary metadata for the entity.
 [<id>.properties]
 "keyName" = [
+    <name>, # A friendly name to display to the user
     <type>, # The type of the metadata, see below
-    description = "foo" # A description of the metadata
+    <description>, # A description of the metadata
     <min>, # The minimum value of the metadata
     <max>, # The maximum value of the metadata
     <default> # The default value of the metadata
@@ -100,6 +101,7 @@ Entity metadata type may be one of the following:
     LISTs are handled differently. A list is defined as such:
     ```toml
     keyName = [
+        <name>, # A friendly name to display to the user
         "LIST",
         description,
         "0:list,1:of,3:values", # The list of values, comma separated value:name pairs

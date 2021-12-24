@@ -29,6 +29,11 @@ class EntityPropertyDialog : public QDialog
 
         void onSelectionChanged( );
 
+        void onStringPropertyEditFinished();
+        void onListPropertyEditChanged( int value );
+
+        void resetProperties();
+
     private:
         EditorState *m_editorState;
         Entity *m_entity;

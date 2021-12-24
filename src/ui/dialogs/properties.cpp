@@ -97,7 +97,7 @@ EntityPropertyDialog::EntityPropertyDialog( EditorState *editorState, Entity *en
         m_properties->setSelectionBehavior( QAbstractItemView::SelectRows );
         m_properties->setEditTriggers( QAbstractItemView::NoEditTriggers );
         m_properties->setAlternatingRowColors( true );
-        m_properties->setSortingEnabled( true );
+        m_properties->setSortingEnabled( false );
 
         m_properties->horizontalHeader()->setSectionResizeMode( QHeaderView::Stretch );
         m_properties->verticalHeader()->setVisible( false );
@@ -124,9 +124,13 @@ EntityPropertyDialog::EntityPropertyDialog( EditorState *editorState, Entity *en
                 propertyEditGroupLayout->addWidget( m_stringPropertyEdit );
                 m_stringPropertyEdit->setVisible( false );
 
+                connect( m_stringPropertyEdit, SIGNAL( editingFinished( ) ), this, SLOT( onStringPropertyEditFinished( ) ) );
+
                 m_listPropertyEdit = new QComboBox( this );
                 propertyEditGroupLayout->addWidget( m_listPropertyEdit );
                 m_listPropertyEdit->setVisible( false );
+
+                connect( m_listPropertyEdit, SIGNAL( currentIndexChanged( int ) ), this, SLOT( onListPropertyEditChanged( int ) ) );
             }
             // End smart editable types
 
@@ -159,25 +163,7 @@ EntityPropertyDialog::EntityPropertyDialog( EditorState *editorState, Entity *en
         }
         // End property edit
     
-        const EntityDef &entityDef = m_editorState->m_pEntityDefs->value( m_entity->m_entityType );
-        for ( const EntityProperty &property : entityDef.properties )
-        {
-            QString val = m_entity->m_properties.contains( property.name ) ? m_entity->m_properties[ property.name ] : property.defaultValue;
-
-            QTableWidgetItem *name = new QTableWidgetItem( property.name );
-            QTableWidgetItem *value = new QTableWidgetItem( val );
-
-            name->setToolTip( property.description );
-            value->setToolTip( property.description );
-
-            // Store the actual key in the item data
-            name->setData( Qt::UserRole, property.name );
-            value->setData( Qt::UserRole, property.name );
-
-            m_properties->insertRow( m_properties->rowCount() );
-            m_properties->setItem( m_properties->rowCount() - 1, 0, name );
-            m_properties->setItem( m_properties->rowCount() - 1, 1, value );
-        }
+        resetProperties();
 
         // Make sure atleast the first row is selected
         if ( m_properties->rowCount() > 0 )
@@ -190,7 +176,7 @@ EntityPropertyDialog::EntityPropertyDialog( EditorState *editorState, Entity *en
     QWidget *flagsTab = new QWidget( this );
     tabWidget->addTab( flagsTab, tr("Flags") );
 
-    // Flags tab
+    // Flags tab (TODO)
     {
         QVBoxLayout *tabLayout = new QVBoxLayout( flagsTab );
         flagsTab->setLayout( tabLayout );
@@ -230,6 +216,7 @@ void EntityPropertyDialog::onSmartEditToggled( bool checked )
     m_smartEdit = checked;
 
     // HACK: force a refresh of the properties
+    emit resetProperties( );
     emit onSelectionChanged( );
 }
 
@@ -317,8 +304,88 @@ void EntityPropertyDialog::onSelectionChanged( )
         m_valueEdit->setVisible( true );
 
         m_keyEdit->setText( key );
-        m_valueEdit->setText( valueItem->text() );
+        m_valueEdit->setText( m_entity->m_properties[ key ] );
+    }
+}
+
+// Contrary to the name, it does not reset all to defaults
+// Instead, it deletes the properties list and remakes it
+void EntityPropertyDialog::resetProperties()
+{
+    // disable signals
+    m_properties->blockSignals( true );
+
+    int selectedRow = m_properties->currentRow();
+
+    m_properties->clearContents();
+    m_properties->setRowCount( 0 );
+
+    // Add the properties
+    for ( QString key : m_editorState->m_pEntityDefs->value( m_entity->m_entityType ).properties.keys() )
+    {
+        QString nameToDisplay = key;
+        QString valueToDisplay = m_entity->m_properties.value( key, m_editorState->m_pEntityDefs->value( m_entity->m_entityType ).properties.value( key ).min );
+
+        if (m_smartEdit)
+        {
+            nameToDisplay = m_editorState->m_pEntityDefs->value( m_entity->m_entityType ).properties.value( key ).friendlyName;
+
+            // If it's a list, display the label instead of the value
+            if ( m_editorState->m_pEntityDefs->value( m_entity->m_entityType ).properties.value( key ).type == "LIST" )
+            {
+                QStringList values = m_editorState->m_pEntityDefs->value( m_entity->m_entityType ).properties.value( key ).min.split( "," );
+                valueToDisplay = values.value( valueToDisplay.toInt() ).split(":").last();
+            }
+        }
+
+        QTableWidgetItem *name = new QTableWidgetItem( nameToDisplay );
+        QTableWidgetItem *value = new QTableWidgetItem( valueToDisplay );
+        
+        name->setToolTip( m_editorState->m_pEntityDefs->value( m_entity->m_entityType ).properties.value( key ).description );
+        value->setToolTip( m_editorState->m_pEntityDefs->value( m_entity->m_entityType ).properties.value( key ).description );
+
+        // Store the actual key in the item data
+        name->setData( Qt::UserRole, key );
+        value->setData( Qt::UserRole, key );
+
+        m_properties->insertRow( m_properties->rowCount() );
+        m_properties->setItem( m_properties->rowCount() - 1, 0, name );
+        m_properties->setItem( m_properties->rowCount() - 1, 1, value );
     }
 
-    update();
+    // select the row that was selected before (or try to)
+    m_properties->selectRow( qMin( selectedRow, m_properties->rowCount() - 1 ) );
+
+    // enable signals
+    m_properties->blockSignals( false );
+}
+
+void EntityPropertyDialog::onStringPropertyEditFinished()
+{
+    QTableWidgetItem *nameItem = m_properties->selectedItems().first();
+    QTableWidgetItem *valueItem = m_properties->selectedItems().last();
+    if (!nameItem || !valueItem)
+        return;
+
+    QString key = nameItem->data( Qt::UserRole ).toString();
+
+    QString value = m_stringPropertyEdit->text();
+    m_entity->m_properties[ key ] = value;
+
+    // HACK: force a refresh of the properties
+    emit resetProperties();
+}
+
+void EntityPropertyDialog::onListPropertyEditChanged( int index )
+{
+    QTableWidgetItem *nameItem = m_properties->selectedItems().first();
+    QTableWidgetItem *valueItem = m_properties->selectedItems().last();
+    if (!nameItem || !valueItem)
+        return;
+
+    QString key = nameItem->data( Qt::UserRole ).toString();
+    m_entity->m_properties[ key ] = QString::number( index );
+
+    // HACK: force a refresh of the properties
+    emit resetProperties();
 }
